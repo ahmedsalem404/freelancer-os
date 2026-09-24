@@ -12,4 +12,12 @@ export const recordPaymentInput = z.object({
   proofName: z.string().trim().min(1).max(255).optional(),
 })
 
+/** What every "bill this" action answers with. */
+export const issuedInvoiceSchema = z.object({
+  id: z.string(),
+  number: z.string(),
+  itemIds: z.array(z.string()),
+})
+
 export type RecordPaymentInput = z.infer<typeof recordPaymentInput>
+export type IssuedInvoiceResult = z.infer<typeof issuedInvoiceSchema>

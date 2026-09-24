@@ -1,3 +1,5 @@
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import {
   addMonths,
@@ -12,7 +14,6 @@ import {
 } from 'date-fns'
 import { Link } from '@tanstack/react-router'
 import { currentCycle, isOpenInvoice } from '@/domain/selectors'
-import { today, useStore } from '@/mock/store'
 import { ar as arLocale, enUS } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -45,8 +46,8 @@ const KIND_STYLE: Record<Kind, string> = {
 
 /** The calendar is a derived view — no events table of its own. */
 function useEvents(): CalendarEvent[] {
-  const db = useStore()
-  const now = today()
+  const db = useDb()
+  const now = todayIso()
   const deliverables = db.deliverables.flatMap((d) =>
     d.dueOn
       ? [
@@ -98,7 +99,7 @@ export function CalendarPage() {
   const locale = lang === 'ar' ? arLocale : enUS
   const events = useEvents()
   const [month, setMonth] = useState(() => startOfMonth(new Date()))
-  const [selected, setSelected] = useState(today())
+  const [selected, setSelected] = useState(todayIso())
   const weekStartsOn = lang === 'ar' ? 6 : 1
 
   const days = eachDayOfInterval({
@@ -163,7 +164,7 @@ export function CalendarPage() {
                   <span
                     className={cn(
                       'num grid size-6 place-items-center rounded-full text-xs',
-                      iso === today() && 'bg-primary text-primary-foreground'
+                      iso === todayIso() && 'bg-primary text-primary-foreground'
                     )}
                   >
                     {format(day, 'd')}

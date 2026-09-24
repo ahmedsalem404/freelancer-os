@@ -1,3 +1,6 @@
+import { useRevealSecret } from './api/use-reveal-secret'
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
@@ -7,7 +10,6 @@ import {
   engagementMeter,
 } from '@/domain/selectors'
 import type { Client } from '@/domain/types'
-import { today, useStore } from '@/mock/store'
 import { Eye, EyeOff, KeyRound, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateFormat } from '@/lib/dates'
@@ -23,7 +25,7 @@ const REVEAL_MS = 10_000
 
 export function ClientDetail({ id }: { id: string }) {
   const { t } = useTranslation()
-  const client = useStore((s) => s.clients.find((c) => c.id === id))
+  const client = useDb().clients.find((c) => c.id === id)
   if (!client) {
     return (
       <PageShell title={t('common.noResults')}>
@@ -37,8 +39,8 @@ export function ClientDetail({ id }: { id: string }) {
 function ClientView({ client }: { client: Client }) {
   const { t, i18n } = useTranslation()
   const fmt = useDateFormat()
-  const db = useStore()
-  const now = today()
+  const db = useDb()
+  const now = todayIso()
   const identity = db.identities.find((i) => i.id === client.billingIdentityId)
   const engagements = db.engagements.filter((e) => e.clientId === client.id)
   const invoices = db.invoices.filter((i) => i.clientId === client.id)
@@ -155,8 +157,8 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 
 function VaultPanel({ clientId }: { clientId: string }) {
   const { t } = useTranslation()
-  const vault = useStore((s) => s.vault)
-  const revealSecret = useStore((s) => s.revealSecret)
+  const vault = useDb().vault
+  const reveal = useRevealSecret()
   const [revealed, setRevealed] = useState<{ id: string; secret: string }>()
   const entries = vault.filter((v) => v.clientId === clientId)
 
@@ -193,12 +195,14 @@ function VaultPanel({ clientId }: { clientId: string }) {
                   <Button
                     size='sm'
                     variant='ghost'
+                    disabled={reveal.isPending}
                     onClick={() =>
-                      setRevealed(
-                        isShown
-                          ? undefined
-                          : { id: entry.id, secret: revealSecret(entry.id) }
-                      )
+                      isShown
+                        ? setRevealed(undefined)
+                        : reveal.mutate(entry.id, {
+                            onSuccess: ({ secret }) =>
+                              setRevealed({ id: entry.id, secret }),
+                          })
                     }
                   >
                     {isShown ? <EyeOff /> : <Eye />}

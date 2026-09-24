@@ -1,7 +1,7 @@
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { Link, useLocation } from '@tanstack/react-router'
 import { engagementMeter } from '@/domain/selectors'
-import { today } from '@/mock/seed'
-import { useStore } from '@/mock/store'
 import { useTranslation } from 'react-i18next'
 import { useLayout } from '@/context/layout-provider'
 import {
@@ -48,10 +48,10 @@ export function AppSidebar() {
   const { t } = useTranslation()
   const { setOpenMobile } = useSidebar()
   const pathname = useLocation({ select: (l) => l.pathname })
-  const db = useStore()
+  const db = useDb()
   const owner = db.team[0]
   const overCount = db.engagements.filter(
-    (e) => engagementMeter(db, e, today()).unbilled > 0
+    (e) => engagementMeter(db, e, todayIso()).unbilled > 0
   ).length
 
   const isActive = (url: string) =>

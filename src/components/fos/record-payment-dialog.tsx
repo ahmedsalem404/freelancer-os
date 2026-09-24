@@ -1,8 +1,10 @@
+import { useRecordPayment } from '@/features/invoices/api/use-record-payment'
+import { useCurrentRate, useLastRates } from '@/features/rates/api/use-rates'
+import { useDb } from '@/app/client/snapshot-query'
 import { useState } from 'react'
 import { toMajor, toMinor } from '@/domain/money'
 import { invoiceBalance } from '@/domain/selectors'
 import type { Invoice, PaymentMethodKind } from '@/domain/types'
-import { useStore } from '@/mock/store'
 import { Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -55,8 +57,10 @@ function PaymentForm({
   onDone: () => void
 }) {
   const { t } = useTranslation()
-  const db = useStore()
-  const recordPayment = useStore((s) => s.recordPayment)
+  const db = useDb()
+  const recordPayment = useRecordPayment()
+  const currentRate = useCurrentRate()
+  const lastRates = useLastRates()
   const balance = invoiceBalance(db, invoice)
   const [amount, setAmount] = useState(String(toMajor(balance)))
   // YER is typed the way the market quotes it (1 SAR = ? YER), then inverted.
@@ -64,8 +68,8 @@ function PaymentForm({
   const [rate, setRate] = useState(() =>
     String(
       isYer
-        ? db.dailyRates[0].sarInYer
-        : Number(db.lastRates[invoice.currency].toFixed(4))
+        ? currentRate.sarInYer
+        : Number(lastRates[invoice.currency].toFixed(4))
     )
   )
   const [method, setMethod] = useState<PaymentMethodKind>('bank')
@@ -82,15 +86,22 @@ function PaymentForm({
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
-    if (!isValid) return
-    recordPayment(invoice.id, {
-      amountMinor: toMinor(amountValue),
-      rateToBase: needsRate ? rateValue : 1,
-      method,
-      proofName,
-    })
-    toast.success(t('finance.paymentSaved'))
-    onDone()
+    if (!isValid || recordPayment.isPending) return
+    recordPayment.mutate(
+      {
+        invoiceId: invoice.id,
+        amountMinor: toMinor(amountValue),
+        rateToBase: needsRate ? rateValue : 1,
+        method,
+        proofName,
+      },
+      {
+        onSuccess: () => {
+          toast.success(t('finance.paymentSaved'))
+          onDone()
+        },
+      }
+    )
   }
 
   return (

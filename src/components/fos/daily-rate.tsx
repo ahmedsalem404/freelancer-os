@@ -1,3 +1,10 @@
+import {
+  useCurrentRate,
+  useLastRates,
+  useSaveDailyRate,
+} from '@/features/rates/api/use-rates'
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import {
   CURRENCIES,
@@ -7,7 +14,6 @@ import {
   toMinor,
 } from '@/domain/money'
 import type { Currency } from '@/domain/types'
-import { today, useStore } from '@/mock/store'
 import { ArrowLeftRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -31,8 +37,8 @@ const quoteFormat = new Intl.NumberFormat('en-US', {
 /** Today's rate form (both quotes in YER) + history + quick converter. */
 export function DailyRateEditor({ onSaved }: { onSaved?: () => void }) {
   const { t } = useTranslation()
-  const current = useStore((s) => s.dailyRates[0])
-  const setDailyRate = useStore((s) => s.setDailyRate)
+  const current = useCurrentRate()
+  const saveRate = useSaveDailyRate()
   const [sar, setSar] = useState(String(current.sarInYer))
   const [usd, setUsd] = useState(String(current.usdInYer))
 
@@ -46,9 +52,15 @@ export function DailyRateEditor({ onSaved }: { onSaved?: () => void }) {
       toast.error(t('rates.invalid'))
       return
     }
-    setDailyRate(sarValue, usdValue)
-    toast.success(t('rates.saved'))
-    onSaved?.()
+    saveRate.mutate(
+      { sarInYer: sarValue, usdInYer: usdValue },
+      {
+        onSuccess: () => {
+          toast.success(t('rates.saved'))
+          onSaved?.()
+        },
+      }
+    )
   }
 
   return (
@@ -119,7 +131,7 @@ function RateInput({ id, label, value, onChange }: RateInputProps) {
 
 function RateHistory() {
   const { t } = useTranslation()
-  const dailyRates = useStore((s) => s.dailyRates)
+  const dailyRates = useDb().dailyRates
   return (
     <div className='grid gap-1.5 border-t pt-3'>
       <div className='text-xs font-medium text-muted-foreground'>
@@ -156,7 +168,7 @@ function RateHistory() {
 function QuickConverter() {
   const { t } = useTranslation()
   const lang = useLang()
-  const rates = useStore((s) => s.lastRates)
+  const rates = useLastRates()
   const [amount, setAmount] = useState('100')
   const [from, setFrom] = useState<Currency>('USD')
   const value = Number(amount)
@@ -230,9 +242,9 @@ function CurrencyPicker({
 /** Header chip: today's rate at a glance; opens the editor. */
 export function DailyRateButton() {
   const { t } = useTranslation()
-  const current = useStore((s) => s.dailyRates[0])
+  const current = useCurrentRate()
   const [open, setOpen] = useState(false)
-  const isStale = current.day !== today()
+  const isStale = current.day !== todayIso()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

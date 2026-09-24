@@ -87,6 +87,20 @@ describe('today', () => {
     }
   })
 
+  it('closes the day: reflection saved and tasks carried in one step', async () => {
+    t = createTestApp()
+    const res = await t.call('POST', '/day/close', { note: 'good day' })
+    expect(res.status).toBe(200)
+    const db = await t.snapshot()
+    expect(db.reflections).toContainEqual(
+      expect.objectContaining({ day: today, note: 'good day' })
+    )
+    const leftToday = db.tasks.filter(
+      (task) => !task.completedAt && task.dueOn !== undefined && task.dueOn <= today
+    )
+    expect(leftToday.filter((task) => task.assigneeId === 'm-owner')).toEqual([])
+  })
+
   it('keeps one reflection per day', async () => {
     t = createTestApp()
     await t.call('PUT', '/reflections/today', { note: 'first' })

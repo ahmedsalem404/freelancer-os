@@ -12,3 +12,6 @@ export const addMonthsIso = (day: string, n: number) =>
 
 /** Local calendar day of an instant. */
 export const isoDay = (at: Date) => format(at, ISO_DAY)
+
+/** Today on this device, `YYYY-MM-DD`. */
+export const todayIso = () => isoDay(new Date())

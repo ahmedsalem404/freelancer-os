@@ -1,6 +1,6 @@
+import { useUiPrefs } from '@/app/client/ui-prefs'
 import type { ReactNode } from 'react'
 import { CURRENCIES } from '@/domain/money'
-import { useStore } from '@/mock/store'
 import { Languages, Moon, Sun } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
@@ -15,8 +15,8 @@ import { DailyRateButton } from './daily-rate'
 
 function CurrencyToggle() {
   const { t } = useTranslation()
-  const display = useStore((s) => s.displayCurrency)
-  const setDisplay = useStore((s) => s.setDisplayCurrency)
+  const display = useUiPrefs((s) => s.displayCurrency)
+  const setDisplay = useUiPrefs((s) => s.setDisplayCurrency)
   return (
     <div
       role='radiogroup'

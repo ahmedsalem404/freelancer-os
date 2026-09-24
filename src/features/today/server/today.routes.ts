@@ -3,6 +3,7 @@ import { jsonBody } from '@/shared/http/validate'
 import type { AppEnv } from '@/shared/server/context'
 import { Hono } from 'hono'
 import { addTaskInput, saveReflectionInput } from '../model/today.schema'
+import { closeDay } from './close-day.service'
 import { saveReflection } from './reflections.service'
 import { addTask, carryOverTasks, toggleTask } from './tasks.service'
 
@@ -21,4 +22,8 @@ export const todayRoutes = new Hono<AppEnv>()
   .put('/reflections/today', jsonBody(saveReflectionInput), (c) => {
     const input = c.req.valid('json')
     return c.json(success(c.var.run((ctx) => saveReflection(ctx, input))))
+  })
+  .post('/day/close', jsonBody(saveReflectionInput), (c) => {
+    const input = c.req.valid('json')
+    return c.json(success(c.var.run((ctx) => closeDay(ctx, input))))
   })

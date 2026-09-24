@@ -1,3 +1,7 @@
+import { useCurrentMember } from '@/app/client/use-current-member'
+import { useAddTask, useToggleTask } from './api/use-today-actions'
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
@@ -9,7 +13,6 @@ import {
   subscriptionState,
 } from '@/domain/selectors'
 import type { Task } from '@/domain/types'
-import { today, useStore } from '@/mock/store'
 import { ar as arLocale, enUS } from 'date-fns/locale'
 import { ArrowUpLeft, Moon, Plus } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
@@ -32,10 +35,10 @@ export function Today() {
   const lang = useLang()
   const fmt = useDateFormat()
   const moneyText = useMoneyText()
-  const db = useStore()
+  const db = useDb()
   const [reflectOpen, setReflectOpen] = useState(false)
-  const now = today()
-  const owner = db.team.find((m) => m.id === db.currentMemberId)!
+  const now = todayIso()
+  const owner = useCurrentMember()
   const clientOf = (id: string) => db.clients.find((c) => c.id === id)!
 
   const active = db.engagements.filter((e) => e.status === 'active')
@@ -72,7 +75,7 @@ export function Today() {
 
   const myTasks = db.tasks.filter(
     (task) =>
-      task.assigneeId === db.currentMemberId &&
+      task.assigneeId === owner.id &&
       task.dueOn !== undefined &&
       task.dueOn <= now
   )
@@ -306,17 +309,23 @@ function TasksPanel({
   tasks: Task[]
 }) {
   const { t } = useTranslation()
-  const toggleTask = useStore((s) => s.toggleTask)
-  const addTask = useStore((s) => s.addTask)
+  const toggleTask = useToggleTask()
+  const addTask = useAddTask()
   const [draft, setDraft] = useState('')
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
     const title = draft.trim()
-    if (!title) return
-    addTask(title)
-    setDraft('')
-    toast.success(title)
+    if (!title || addTask.isPending) return
+    addTask.mutate(
+      { title },
+      {
+        onSuccess: () => {
+          setDraft('')
+          toast.success(title)
+        },
+      }
+    )
   }
 
   return (
@@ -340,7 +349,7 @@ function TasksPanel({
           >
             <Checkbox
               checked={!!task.completedAt}
-              onCheckedChange={() => toggleTask(task.id)}
+              onCheckedChange={() => toggleTask.mutate(task.id)}
               className='mt-0.5'
             />
             <span

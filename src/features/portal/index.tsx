@@ -1,3 +1,8 @@
+import {
+  useAddFeedback,
+  useApproveDeliverable,
+} from '@/features/engagements/api/use-deliverable-actions'
+import { useDb } from '@/app/client/snapshot-query'
 import { useState } from 'react'
 import {
   deliverableApproval,
@@ -5,7 +10,6 @@ import {
   roundsOf,
 } from '@/domain/selectors'
 import type { Deliverable } from '@/domain/types'
-import { useStore } from '@/mock/store'
 import { Check, Languages, MessageSquare } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
@@ -20,7 +24,7 @@ import { Textarea } from '@/components/ui/textarea'
 export function Portal({ token }: { token: string }) {
   const { t } = useTranslation()
   const { lang, toggleLang } = useLocale()
-  const db = useStore()
+  const db = useDb()
   const engagement = db.engagements.find((e) => e.id === token)
 
   if (!engagement) {
@@ -117,9 +121,9 @@ export function Portal({ token }: { token: string }) {
 function PortalDeliverable({ deliverable }: { deliverable: Deliverable }) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const db = useStore()
-  const approve = useStore((s) => s.approveDeliverable)
-  const addFeedback = useStore((s) => s.addFeedback)
+  const db = useDb()
+  const approve = useApproveDeliverable()
+  const addFeedback = useAddFeedback()
   const [isRequesting, setIsRequesting] = useState(false)
   const [note, setNote] = useState('')
   const approval = deliverableApproval(db, deliverable.id)
@@ -127,12 +131,18 @@ function PortalDeliverable({ deliverable }: { deliverable: Deliverable }) {
 
   const requestChanges = (event: React.FormEvent) => {
     event.preventDefault()
-    if (!note.trim()) return
+    if (!note.trim() || addFeedback.isPending) return
     // Owner decision: a client change request is a real revision round.
-    const roundNo = addFeedback(deliverable.id, note.trim(), 'client_link')
-    toast.success(t('engagements.feedbackSaved', { n: roundNo }))
-    setNote('')
-    setIsRequesting(false)
+    addFeedback.mutate(
+      { deliverableId: deliverable.id, note: note.trim(), source: 'client_link' },
+      {
+        onSuccess: ({ roundNo }) => {
+          toast.success(t('engagements.feedbackSaved', { n: roundNo }))
+          setNote('')
+          setIsRequesting(false)
+        },
+      }
+    )
   }
 
   return (
@@ -162,10 +172,13 @@ function PortalDeliverable({ deliverable }: { deliverable: Deliverable }) {
             </Button>
             <Button
               size='sm'
-              onClick={() => {
-                approve(deliverable.id, 'client_link')
-                toast.success(t('portal.approvedToast'))
-              }}
+              disabled={approve.isPending}
+              onClick={() =>
+                approve.mutate(
+                  { deliverableId: deliverable.id, source: 'client_link' },
+                  { onSuccess: () => toast.success(t('portal.approvedToast')) }
+                )
+              }
             >
               <Check /> {t('portal.approve')}
             </Button>

@@ -1,3 +1,5 @@
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { addDays, format, parseISO } from 'date-fns'
 import {
@@ -7,7 +9,6 @@ import {
   itemsOf,
 } from '@/domain/selectors'
 import type { Invoice } from '@/domain/types'
-import { today, useStore } from '@/mock/store'
 import { BellRing, MessageCircle, Printer, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateFormat } from '@/lib/dates'
@@ -21,7 +22,7 @@ import { RecordPaymentDialog } from '@/components/fos/record-payment-dialog'
 
 export function InvoiceDetail({ id }: { id: string }) {
   const { t } = useTranslation()
-  const invoice = useStore((s) => s.invoices.find((i) => i.id === id))
+  const invoice = useDb().invoices.find((i) => i.id === id)
   if (!invoice) {
     return (
       <PageShell title={t('invoice.notFound')}>
@@ -36,10 +37,10 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
   const moneyText = useMoneyText()
-  const db = useStore()
+  const db = useDb()
   const [isPaying, setIsPaying] = useState(false)
   const client = db.clients.find((c) => c.id === invoice.clientId)!
-  const status = invoiceStatus(db, invoice, today())
+  const status = invoiceStatus(db, invoice, todayIso())
   const balance = invoiceBalance(db, invoice)
   const message = t('invoice.whatsappMessage', {
     name: client.name,
@@ -133,8 +134,8 @@ type RemindersProps = { invoice: Invoice; message: string; whatsapp: string }
 function RemindersPanel({ invoice, message, whatsapp }: RemindersProps) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const offsets = useStore((s) => s.settings.reminderOffsets)
-  const now = today()
+  const offsets = useDb().settings.reminderOffsets
+  const now = todayIso()
   return (
     <Panel
       title={
@@ -188,7 +189,7 @@ function RemindersPanel({ invoice, message, whatsapp }: RemindersProps) {
 function InvoiceDocument({ invoice }: { invoice: Invoice }) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const db = useStore()
+  const db = useDb()
   const identity = db.identities.find(
     (i) => i.id === invoice.billingIdentityId
   )!

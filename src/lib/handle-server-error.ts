@@ -1,5 +1,13 @@
 import { AxiosError } from 'axios'
 import { toast } from 'sonner'
+import i18n from '@/i18n'
+import { ApiError } from '@/shared/http/api-client'
+
+/** Translated message for an API error code, else the generic one. */
+function apiErrorMessage(error: ApiError) {
+  const key = `apiErrors.${error.code}`
+  return i18n.exists(key) ? i18n.t(key) : i18n.t('apiErrors.generic')
+}
 
 export function handleServerError(error: unknown) {
   if (import.meta.env.DEV) {
@@ -8,6 +16,11 @@ export function handleServerError(error: unknown) {
   }
 
   let errMsg = 'Something went wrong!'
+
+  if (error instanceof ApiError) {
+    toast.error(apiErrorMessage(error))
+    return
+  }
 
   if (
     error &&

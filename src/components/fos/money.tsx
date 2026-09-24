@@ -1,6 +1,7 @@
+import { useUiPrefs } from '@/app/client/ui-prefs'
+import { useLastRates } from '@/features/rates/api/use-rates'
 import { currencySymbol, formatAmount, fromBase } from '@/domain/money'
 import type { Currency } from '@/domain/types'
-import { useStore } from '@/mock/store'
 import { useLang } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 
@@ -23,8 +24,8 @@ export function Money({
   className,
 }: MoneyProps) {
   const lang = useLang()
-  const display = useStore((s) => s.displayCurrency)
-  const rates = useStore((s) => s.lastRates)
+  const display = useUiPrefs((s) => s.displayCurrency)
+  const rates = useLastRates()
   const base = amount * (rateToBase ?? rates[currency])
   return (
     <span className={cn('inline-flex flex-col', className)}>
@@ -56,8 +57,8 @@ export function BaseMoney({
   className?: string
 }) {
   const lang = useLang()
-  const display = useStore((s) => s.displayCurrency)
-  const rates = useStore((s) => s.lastRates)
+  const display = useUiPrefs((s) => s.displayCurrency)
+  const rates = useLastRates()
   return (
     <span className={cn('whitespace-nowrap', className)}>
       <span className='num'>

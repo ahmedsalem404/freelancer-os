@@ -1,3 +1,9 @@
+import { useDb } from '@/app/client/snapshot-query'
+import {
+  useAddFeedback,
+  useApproveDeliverable,
+  useBillOverageRounds,
+} from './api/use-deliverable-actions'
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { AnimatePresence, motion } from 'motion/react'
@@ -12,7 +18,6 @@ import {
   roundsOf,
 } from '@/domain/selectors'
 import type { Deliverable, Engagement } from '@/domain/types'
-import { useStore } from '@/mock/store'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { AllowanceMeter } from '@/components/fos/allowance-meter'
@@ -25,10 +30,10 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
   const fmt = useDateFormat()
   const moneyText = useMoneyText()
   const navigate = useNavigate()
-  const db = useStore()
-  const addFeedback = useStore((s) => s.addFeedback)
-  const approve = useStore((s) => s.approveDeliverable)
-  const billOverageRounds = useStore((s) => s.billOverageRounds)
+  const db = useDb()
+  const addFeedback = useAddFeedback()
+  const approve = useApproveDeliverable()
+  const billOverageRounds = useBillOverageRounds()
   const [isLogging, setIsLogging] = useState(false)
   const [note, setNote] = useState('')
 
@@ -37,22 +42,19 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
   const approval = deliverableApproval(db, deliverable.id)
   const price = moneyText(engagement.overageUnitPrice, engagement.currency)
 
-  const billRounds = () => {
-    const invoice = billOverageRounds(deliverable.id)
-    if (!invoice) return
-    toast.success(t('guard.invoiceCreated', { number: invoice.number }), {
-      action: {
-        label: t('common.open'),
-        onClick: () =>
-          navigate({ to: '/invoices/$id', params: { id: invoice.id } }),
-      },
+  const billRounds = () =>
+    billOverageRounds.mutate(deliverable.id, {
+      onSuccess: (invoice) =>
+        toast.success(t('guard.invoiceCreated', { number: invoice.number }), {
+          action: {
+            label: t('common.open'),
+            onClick: () =>
+              navigate({ to: '/invoices/$id', params: { id: invoice.id } }),
+          },
+        }),
     })
-  }
 
-  const save = (event: React.FormEvent) => {
-    event.preventDefault()
-    if (!note.trim()) return
-    const roundNo = addFeedback(deliverable.id, note.trim())
+  const onSaved = ({ roundNo }: { roundNo: number }) => {
     setNote('')
     setIsLogging(false)
     if (roundNo > deliverable.revisionLimit) {
@@ -66,6 +68,15 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
     } else {
       toast.success(t('engagements.feedbackSaved', { n: roundNo }))
     }
+  }
+
+  const save = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (!note.trim() || addFeedback.isPending) return
+    addFeedback.mutate(
+      { deliverableId: deliverable.id, note: note.trim() },
+      { onSuccess: onSaved }
+    )
   }
 
   return (
@@ -99,7 +110,9 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
           <Button
             size='sm'
             variant='ghost'
-            onClick={() => approve(deliverable.id, 'owner')}
+            onClick={() =>
+              approve.mutate({ deliverableId: deliverable.id, source: 'owner' })
+            }
           >
             <Check /> {t('engagements.approve')}
           </Button>

@@ -1,5 +1,8 @@
+import { useCloseDay } from './api/use-today-actions'
+import { useCurrentMember } from '@/app/client/use-current-member'
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
-import { today, useStore } from '@/mock/store'
 import { Check, CircleDashed } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -18,12 +21,11 @@ type Props = { open: boolean; onOpenChange: (open: boolean) => void }
 
 export function ReflectionDialog({ open, onOpenChange }: Props) {
   const { t } = useTranslation()
-  const tasks = useStore((s) => s.tasks)
-  const memberId = useStore((s) => s.currentMemberId)
-  const carryOverTasks = useStore((s) => s.carryOverTasks)
-  const saveReflection = useStore((s) => s.saveReflection)
+  const tasks = useDb().tasks
+  const memberId = useCurrentMember().id
+  const closeDay = useCloseDay()
   const [note, setNote] = useState('')
-  const now = today()
+  const now = todayIso()
 
   const mine = tasks.filter((task) => task.assigneeId === memberId)
   const done = mine.filter((task) => task.completedAt?.startsWith(now))
@@ -32,13 +34,17 @@ export function ReflectionDialog({ open, onOpenChange }: Props) {
       !task.completedAt && task.dueOn !== undefined && task.dueOn <= now
   )
 
-  const complete = () => {
-    saveReflection(note.trim())
-    carryOverTasks()
-    toast.success(t('reflection.saved'))
-    setNote('')
-    onOpenChange(false)
-  }
+  const complete = () =>
+    closeDay.mutate(
+      { note: note.trim() },
+      {
+        onSuccess: () => {
+          toast.success(t('reflection.saved'))
+          setNote('')
+          onOpenChange(false)
+        },
+      }
+    )
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -1,3 +1,5 @@
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
@@ -10,7 +12,6 @@ import {
   subscriptionState,
 } from '@/domain/selectors'
 import type { EngagementType } from '@/domain/types'
-import { today, useStore } from '@/mock/store'
 import { AllowanceMeter } from '@/components/fos/allowance-meter'
 import { SubStateBadge, TypeBadge } from '@/components/fos/badges'
 import { Money } from '@/components/fos/money'
@@ -22,9 +23,9 @@ const FILTERS: Filter[] = ['all', 'project', 'retainer', 'subscription']
 
 export function Engagements() {
   const { t } = useTranslation()
-  const db = useStore()
+  const db = useDb()
   const [filter, setFilter] = useState<Filter>('all')
-  const now = today()
+  const now = todayIso()
 
   const rows = db.engagements
     .filter((e) => filter === 'all' || e.type === filter)

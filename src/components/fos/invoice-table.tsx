@@ -1,10 +1,11 @@
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useDateFormat } from '@/lib/dates'
 import { invoiceBalance, invoiceStatus } from '@/domain/selectors'
 import type { Invoice } from '@/domain/types'
-import { today, useStore } from '@/mock/store'
 import { Button } from '@/components/ui/button'
 import { InvoiceStatusBadge } from './badges'
 import { Money } from './money'
@@ -16,9 +17,9 @@ type Props = { invoices: Invoice[]; showClient?: boolean }
 export function InvoiceTable({ invoices, showClient = true }: Props) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const db = useStore()
+  const db = useDb()
   const [paying, setPaying] = useState<Invoice>()
-  const now = today()
+  const now = todayIso()
 
   if (invoices.length === 0) return <EmptyState>{t('common.empty')}</EmptyState>
 

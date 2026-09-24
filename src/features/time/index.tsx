@@ -1,4 +1,5 @@
-import { today, useStore } from '@/mock/store'
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { daysFrom, useDateFormat } from '@/lib/dates'
@@ -10,8 +11,8 @@ const hours = (minutes: number) => Math.round((minutes / 60) * 10) / 10
 export function TimePage() {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const db = useStore()
-  const now = today()
+  const db = useDb()
+  const now = todayIso()
 
   const recent = db.timeEntries.filter(
     (e) => -daysFrom(now, e.workOn) < WINDOW_DAYS

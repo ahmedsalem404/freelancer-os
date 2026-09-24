@@ -1,7 +1,10 @@
+import { useUiPrefs } from '@/app/client/ui-prefs'
+import { useLastRates } from '@/features/rates/api/use-rates'
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { addDays, differenceInCalendarWeeks, format, parseISO } from 'date-fns'
 import { formatAmount, fromBase, toMajor } from '@/domain/money'
 import { currentCycle, invoiceBalance, isOpenInvoice } from '@/domain/selectors'
-import { today, useStore } from '@/mock/store'
 import { Paperclip } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -31,8 +34,8 @@ const TABS = [
 type Week = { label: string; incoming: number; outgoing: number }
 
 function useFinance() {
-  const db = useStore()
-  const now = today()
+  const db = useDb()
+  const now = todayIso()
   const monthPrefix = now.slice(0, 7)
 
   const collected = db.payments
@@ -87,7 +90,7 @@ function useFinance() {
 
 export function Finance() {
   const { t } = useTranslation()
-  const invoices = useStore((s) => s.invoices)
+  const invoices = useDb().invoices
   const f = useFinance()
 
   return (
@@ -157,8 +160,8 @@ export function Finance() {
 function ForecastChart({ weeks }: { weeks: Week[] }) {
   const { t } = useTranslation()
   const lang = useLang()
-  const rates = useStore((s) => s.lastRates)
-  const display = useStore((s) => s.displayCurrency)
+  const rates = useLastRates()
+  const display = useUiPrefs((s) => s.displayCurrency)
   const data = weeks.map((w) => ({
     ...w,
     incoming: toMajor(fromBase(w.incoming, rates[display])),
@@ -230,7 +233,7 @@ function ForecastChart({ weeks }: { weeks: Week[] }) {
 function PaymentsList() {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const db = useStore()
+  const db = useDb()
   return (
     <Panel bodyClassName='p-0'>
       <ul className='divide-y'>
@@ -281,7 +284,7 @@ function PaymentsList() {
 function ExpensesList() {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const expenses = useStore((s) => s.expenses)
+  const expenses = useDb().expenses
   return (
     <Panel bodyClassName='p-0'>
       <ul className='divide-y'>
@@ -312,7 +315,7 @@ function ExpensesList() {
 function SubscriptionsList() {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const subs = useStore((s) => s.ownSubscriptions)
+  const subs = useDb().ownSubscriptions
   return (
     <Panel bodyClassName='p-0'>
       <ul className='divide-y'>

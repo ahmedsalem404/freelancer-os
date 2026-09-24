@@ -1,10 +1,11 @@
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { Link } from '@tanstack/react-router'
 import {
   clientCollectedBase,
   clientHealth,
   clientOutstandingBase,
 } from '@/domain/selectors'
-import { today, useStore } from '@/mock/store'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { HealthBadge } from '@/components/fos/badges'
@@ -13,8 +14,8 @@ import { PageShell } from '@/components/fos/page'
 
 export function Clients() {
   const { t } = useTranslation()
-  const db = useStore()
-  const now = today()
+  const db = useDb()
+  const now = todayIso()
 
   return (
     <PageShell

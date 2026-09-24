@@ -1,4 +1,4 @@
-import { useStore } from '@/mock/store'
+import { useDb } from '@/app/client/snapshot-query'
 import { Download, Languages, Moon, Sun, Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -11,7 +11,7 @@ import { PageShell, Panel } from '@/components/fos/page'
 
 export function SettingsPage() {
   const { t } = useTranslation()
-  const db = useStore()
+  const db = useDb()
   const { lang, setLang } = useLocale()
   const { resolvedTheme, setTheme } = useTheme()
   const soon = () => toast(t('settings.backendSoon'))

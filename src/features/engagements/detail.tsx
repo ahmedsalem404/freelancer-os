@@ -1,3 +1,6 @@
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
+import { useToggleStage } from './api/use-engagement-actions'
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
@@ -21,7 +24,6 @@ import {
   scopeGuard,
 } from '@/domain/selectors'
 import type { Engagement } from '@/domain/types'
-import { today, useStore } from '@/mock/store'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AllowanceMeter } from '@/components/fos/allowance-meter'
@@ -35,11 +37,13 @@ import {
   StatTile,
 } from '@/components/fos/page'
 import { DeliverableCard } from './deliverable-card'
-import { ChangeScopeDialog, CyclePanel, RetainerPanel } from './panels'
+import { ChangeScopeDialog } from './ui/change-scope-dialog'
+import { CyclePanel } from './ui/cycle-panel'
+import { RetainerPanel } from './ui/retainer-panel'
 
 export function EngagementDetail({ id }: { id: string }) {
   const { t } = useTranslation()
-  const engagement = useStore((s) => s.engagements.find((e) => e.id === id))
+  const engagement = useDb().engagements.find((e) => e.id === id)
   if (!engagement) {
     return (
       <PageShell title={t('common.noResults')}>
@@ -52,10 +56,10 @@ export function EngagementDetail({ id }: { id: string }) {
 
 function EngagementView({ engagement: e }: { engagement: Engagement }) {
   const { t } = useTranslation()
-  const db = useStore()
+  const db = useDb()
   const [isScopeOpen, setIsScopeOpen] = useState(false)
   const client = db.clients.find((c) => c.id === e.clientId)!
-  const meter = engagementMeter(db, e, today())
+  const meter = engagementMeter(db, e, todayIso())
   const scope = scopeGuard(db, e)
   const firstTab =
     e.type === 'project' ? 'work' : e.type === 'retainer' ? 'usage' : 'cycle'
@@ -198,8 +202,8 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
 
 function StagesPanel({ engagementId }: { engagementId: string }) {
   const { t } = useTranslation()
-  const stages = useStore((s) => s.stages)
-  const toggleStage = useStore((s) => s.toggleStage)
+  const stages = useDb().stages
+  const toggleStage = useToggleStage()
   const list = stages
     .filter((s) => s.engagementId === engagementId)
     .sort((a, b) => a.position - b.position)
@@ -211,7 +215,7 @@ function StagesPanel({ engagementId }: { engagementId: string }) {
         {list.map((stage, index) => (
           <li key={stage.id}>
             <button
-              onClick={() => toggleStage(stage.id)}
+              onClick={() => toggleStage.mutate(stage.id)}
               className='flex w-full items-center gap-3 rounded-md px-2 py-2 text-start text-sm hover:bg-accent/40'
             >
               <span
@@ -280,7 +284,7 @@ function ClientLinkPanel({ engagementId }: { engagementId: string }) {
 
 function MoneyTab({ engagement: e }: { engagement: Engagement }) {
   const { t } = useTranslation()
-  const db = useStore()
+  const db = useDb()
   const invoices = db.invoices.filter((i) => i.engagementId === e.id)
   const invoiced = invoices
     .filter((i) => i.state === 'issued')
@@ -315,8 +319,8 @@ function MoneyTab({ engagement: e }: { engagement: Engagement }) {
 function TimeTab({ engagementId }: { engagementId: string }) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const timeEntries = useStore((s) => s.timeEntries)
-  const team = useStore((s) => s.team)
+  const timeEntries = useDb().timeEntries
+  const team = useDb().team
   const entries = timeEntries.filter((x) => x.engagementId === engagementId)
   if (entries.length === 0) return <EmptyState>{t('common.empty')}</EmptyState>
   return (
@@ -349,7 +353,7 @@ function TimeTab({ engagementId }: { engagementId: string }) {
 function FilesTab({ engagementId }: { engagementId: string }) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const attachments = useStore((s) => s.attachments)
+  const attachments = useDb().attachments
   const files = attachments.filter((a) => a.engagementId === engagementId)
   return (
     <Panel

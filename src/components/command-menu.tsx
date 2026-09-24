@@ -1,6 +1,6 @@
+import { useDb } from '@/app/client/snapshot-query'
 import React from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { useStore } from '@/mock/store'
 import { Handshake, Moon, Sun, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useSearch } from '@/context/search-provider'
@@ -22,8 +22,8 @@ export function CommandMenu() {
   const { t } = useTranslation()
   const { setTheme } = useTheme()
   const { open, setOpen } = useSearch()
-  const clients = useStore((s) => s.clients)
-  const engagements = useStore((s) => s.engagements)
+  const clients = useDb().clients
+  const engagements = useDb().engagements
 
   const run = React.useCallback(
     (command: () => unknown) => {

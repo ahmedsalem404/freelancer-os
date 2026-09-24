@@ -1,5 +1,7 @@
+import { useMoveLead } from './api/use-move-lead'
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import type { Lead, LeadStage } from '@/domain/types'
-import { today, useStore } from '@/mock/store'
 import {
   DndContext,
   type DragEndEvent,
@@ -24,8 +26,8 @@ const STALE_DAYS = 7
 
 export function Leads() {
   const { t } = useTranslation()
-  const leads = useStore((s) => s.leads)
-  const moveLead = useStore((s) => s.moveLead)
+  const leads = useDb().leads
+  const moveLead = useMoveLead()
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor)
@@ -36,8 +38,13 @@ export function Leads() {
     const stage = over.id as LeadStage
     const lead = leads.find((l) => l.id === active.id)
     if (!lead || lead.stage === stage) return
-    moveLead(lead.id, stage)
-    toast.success(t('leads.moved', { stage: t(`leadStage.${stage}`) }))
+    moveLead.mutate(
+      { leadId: lead.id, stage },
+      {
+        onSuccess: () =>
+          toast.success(t('leads.moved', { stage: t(`leadStage.${stage}`) })),
+      }
+    )
   }
 
   return (
@@ -94,7 +101,7 @@ function LeadCard({ lead }: { lead: Lead }) {
   const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: lead.id })
-  const idle = lead.lastContactOn ? -daysFrom(today(), lead.lastContactOn) : 0
+  const idle = lead.lastContactOn ? -daysFrom(todayIso(), lead.lastContactOn) : 0
   const isStale = idle >= STALE_DAYS && !['won', 'lost'].includes(lead.stage)
 
   return (
