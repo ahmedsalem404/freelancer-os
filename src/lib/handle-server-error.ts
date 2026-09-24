@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 import { toast } from 'sonner'
-import i18n from '@/i18n'
+import i18n from 'i18next'
 import { ApiError } from '@/shared/http/api-client'
 
 /** Translated message for an API error code, else the generic one. */

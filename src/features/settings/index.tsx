@@ -1,3 +1,6 @@
+import { DailyRateEditor } from '@/features/rates/ui/daily-rate-editor'
+import { PageShell } from '@/app/client/layout/page-shell'
+import { Panel } from '@/shared/components/panel'
 import { useDb } from '@/app/client/snapshot-query'
 import { Download, Languages, Moon, Sun, Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -6,8 +9,6 @@ import { cn } from '@/lib/utils'
 import { useLocale } from '@/context/direction-provider'
 import { useTheme } from '@/context/theme-provider'
 import { Button } from '@/components/ui/button'
-import { DailyRateEditor } from '@/components/fos/daily-rate'
-import { PageShell, Panel } from '@/components/fos/page'
 
 export function SettingsPage() {
   const { t } = useTranslation()

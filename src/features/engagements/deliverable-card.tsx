@@ -1,3 +1,5 @@
+import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
+import { useMoneyText } from '@/features/rates/ui/money'
 import { deliverableApproval, revisionGuard, roundsOf } from '@/features/engagements/model/guard'
 import type { Deliverable } from '@/features/engagements/model/work.schema'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
@@ -17,8 +19,6 @@ import { cn } from '@/lib/utils'
 import { useDateFormat } from '@/lib/dates'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { AllowanceMeter } from '@/components/fos/allowance-meter'
-import { useMoneyText } from '@/components/fos/money'
 
 type Props = { deliverable: Deliverable; engagement: Engagement }
 

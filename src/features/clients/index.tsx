@@ -1,12 +1,12 @@
+import { HealthBadge } from '@/features/clients/ui/health-badge'
+import { BaseMoney } from '@/features/rates/ui/money'
+import { PageShell } from '@/app/client/layout/page-shell'
 import { clientCollectedBase, clientHealth, clientOutstandingBase } from '@/features/clients/model/client-health'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
-import { HealthBadge } from '@/components/fos/badges'
-import { BaseMoney } from '@/components/fos/money'
-import { PageShell } from '@/components/fos/page'
 
 export function Clients() {
   const { t } = useTranslation()

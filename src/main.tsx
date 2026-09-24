@@ -14,7 +14,7 @@ import { DirectionProvider } from './context/direction-provider'
 import { FontProvider } from './context/font-provider'
 import { ThemeProvider } from './context/theme-provider'
 // i18n must initialize before the first render
-import './i18n'
+import '@/app/client/i18n'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 // Styles

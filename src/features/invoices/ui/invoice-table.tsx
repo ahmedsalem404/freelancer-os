@@ -1,3 +1,7 @@
+import { InvoiceStatusBadge } from '@/features/invoices/ui/invoice-status-badge'
+import { Money } from '@/features/rates/ui/money'
+import { EmptyState } from '@/shared/components/empty-state'
+import { RecordPaymentDialog } from '@/features/invoices/ui/record-payment-dialog'
 import { invoiceBalance, invoiceStatus } from '@/features/invoices/model/invoice-status'
 import type { Invoice } from '@/features/invoices/model/invoice.schema'
 import { useDb } from '@/app/client/snapshot-query'
@@ -7,10 +11,6 @@ import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useDateFormat } from '@/lib/dates'
 import { Button } from '@/components/ui/button'
-import { InvoiceStatusBadge } from './badges'
-import { Money } from './money'
-import { EmptyState } from './page'
-import { RecordPaymentDialog } from './record-payment-dialog'
 
 type Props = { invoices: Invoice[]; showClient?: boolean }
 

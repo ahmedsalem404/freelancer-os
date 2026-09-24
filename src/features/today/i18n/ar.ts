@@ -1,0 +1,32 @@
+/** Arabic strings owned by `today` (keys stay global: `t('today.…')`). */
+export const todayAr = {
+  today: {
+    greeting: 'صباح الخير يا {{name}}',
+    subtitle: 'هذا ما يحتاج انتباهك اليوم',
+    tasks: 'مهام اليوم',
+    tasksDone: '{{done}} من {{total}} منجزة',
+    addTask: 'أضف مهمة لليوم…',
+    unpaid: 'بانتظار التحصيل',
+    unpaidCount_one: 'فاتورة واحدة',
+    unpaidCount: '{{count}} فواتير',
+    billable: 'عمل خارج الاتفاق',
+    billableHint: 'لم يُفوتر بعد',
+    renewals: 'تجديدات هذا الأسبوع',
+    nextActions: 'الخطوة التالية لكل اتفاق',
+    alerts: 'تحتاج قراراً',
+    noAlerts: 'لا شيء عالق. كل الاتفاقات ضمن حدودها.',
+    wrapUp: 'اختم يومك',
+    upcoming: 'قادم',
+  },
+  reflection: {
+    title: 'ختام اليوم',
+    subtitle: 'أغلق يومك بوضوح وابدأ غداً من حيث توقفت.',
+    done: 'أنجزت اليوم',
+    open: 'لم تكتمل',
+    carry: 'انقل الكل لغدٍ',
+    notes: 'ملاحظة لنفسك غداً',
+    notesPlaceholder: 'إنجاز اليوم، درس، أو أول شيء تبدأ به غداً…',
+    complete: 'أنهِ اليوم',
+    saved: 'تم حفظ ختام اليوم',
+  },
+}

@@ -1,3 +1,9 @@
+import { InvoiceStatusBadge } from '@/features/invoices/ui/invoice-status-badge'
+import { Money, useMoneyText } from '@/features/rates/ui/money'
+import { EmptyState } from '@/shared/components/empty-state'
+import { PageShell } from '@/app/client/layout/page-shell'
+import { Panel } from '@/shared/components/panel'
+import { RecordPaymentDialog } from '@/features/invoices/ui/record-payment-dialog'
 import { invoiceBalance, invoicePaid, invoiceStatus, itemsOf } from '@/features/invoices/model/invoice-status'
 import type { Invoice } from '@/features/invoices/model/invoice.schema'
 import { useDb } from '@/app/client/snapshot-query'
@@ -10,10 +16,6 @@ import { useDateFormat } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 import { waLink } from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
-import { InvoiceStatusBadge } from '@/components/fos/badges'
-import { Money, useMoneyText } from '@/components/fos/money'
-import { EmptyState, PageShell, Panel } from '@/components/fos/page'
-import { RecordPaymentDialog } from '@/components/fos/record-payment-dialog'
 
 export function InvoiceDetail({ id }: { id: string }) {
   const { t } = useTranslation()

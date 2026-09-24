@@ -1,3 +1,8 @@
+import { InvoiceTable } from '@/features/invoices/ui/invoice-table'
+import { BaseMoney, Money } from '@/features/rates/ui/money'
+import { PageShell } from '@/app/client/layout/page-shell'
+import { Panel } from '@/shared/components/panel'
+import { StatTile } from '@/shared/components/stat-tile'
 import { formatAmount, fromBase, toMajor } from '@/shared/money/money'
 import { currentCycle } from '@/features/engagements/model/cycles'
 import { invoiceBalance, isOpenInvoice } from '@/features/invoices/model/invoice-status'
@@ -19,9 +24,6 @@ import {
 } from 'recharts'
 import { useDateFormat, useLang } from '@/lib/dates'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { InvoiceTable } from '@/components/fos/invoice-table'
-import { BaseMoney, Money } from '@/components/fos/money'
-import { PageShell, Panel, StatTile } from '@/components/fos/page'
 
 const FORECAST_WEEKS = 8
 const TABS = [

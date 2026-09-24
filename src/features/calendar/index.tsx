@@ -1,3 +1,6 @@
+import { EmptyState } from '@/shared/components/empty-state'
+import { PageShell } from '@/app/client/layout/page-shell'
+import { Panel } from '@/shared/components/panel'
 import { currentCycle } from '@/features/engagements/model/cycles'
 import { isOpenInvoice } from '@/features/invoices/model/invoice-status'
 import { useDb } from '@/app/client/snapshot-query'
@@ -21,7 +24,6 @@ import { useTranslation } from 'react-i18next'
 import { useLang } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { EmptyState, PageShell, Panel } from '@/components/fos/page'
 
 type Kind =
   'deliverable' | 'renewal' | 'invoice' | 'domain' | 'ssl' | 'license' | 'other'

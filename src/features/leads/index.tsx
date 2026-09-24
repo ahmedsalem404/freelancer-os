@@ -1,3 +1,6 @@
+import { LEAD_TONE } from '@/features/leads/ui/lead-tone'
+import { BaseMoney, Money } from '@/features/rates/ui/money'
+import { PageShell } from '@/app/client/layout/page-shell'
 import type { Lead } from '@/features/leads/model/lead.schema'
 import type { LeadStage } from '@/features/leads/model/enums'
 import { useMoveLead } from './api/use-move-lead'
@@ -18,9 +21,6 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { daysFrom } from '@/lib/dates'
 import { cn } from '@/lib/utils'
-import { LEAD_TONE } from '@/components/fos/badges'
-import { BaseMoney, Money } from '@/components/fos/money'
-import { PageShell } from '@/components/fos/page'
 
 const STAGES: LeadStage[] = ['lead', 'proposal', 'negotiation', 'won', 'lost']
 const STALE_DAYS = 7

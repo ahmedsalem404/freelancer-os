@@ -1,0 +1,25 @@
+/** Arabic strings owned by `pricing` (keys stay global: `t('pricing.…')`). */
+export const pricingAr = {
+  pricing: {
+    title: 'التسعير',
+    subtitle: 'اعرف سعرك قبل أن تقول «تمام».',
+    baseline: 'خط الأساس السنوي',
+    income: 'الدخل الصافي المستهدف سنوياً',
+    hoursWeek: 'ساعات مفوترة أسبوعياً',
+    weeksOff: 'أسابيع إجازة',
+    monthlyCosts: 'مصاريف شهرية',
+    tax: 'احتياطي ضريبي %',
+    profit: 'هامش ربح %',
+    hourly: 'سعر الساعة المرجعي',
+    daily: 'سعر اليوم',
+    monthlyTarget: 'هدف الدخل الشهري',
+    shouldAccept: 'هل أقبل هذا المشروع؟',
+    offer: 'المبلغ المعروض',
+    effort: 'الساعات المتوقعة',
+    effective: 'سعرك الفعلي للساعة',
+    verdictGood: 'اقبله — أعلى من سعرك المرجعي',
+    verdictOk: 'مقبول — قريب من سعرك',
+    verdictBad: 'فاوض أو ارفض — أقل من سعرك بـ {{pct}}%',
+    suggested: 'السعر المقترح لهذا الجهد',
+  },
+}

@@ -1,3 +1,7 @@
+import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
+import { SubStateBadge } from '@/features/engagements/ui/badges'
+import { useMoneyText } from '@/features/rates/ui/money'
+import { Panel } from '@/shared/components/panel'
 import { currentCycle, subscriptionState } from '@/features/engagements/model/cycles'
 import { engagementMeter } from '@/features/engagements/model/meter'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
@@ -10,10 +14,6 @@ import { useDateFormat } from '@/lib/dates'
 import { useInvoiceToast } from '@/features/invoices/ui/use-invoice-toast'
 import { todayIso } from '@/shared/model/dates'
 import { Button } from '@/components/ui/button'
-import { AllowanceMeter } from '@/components/fos/allowance-meter'
-import { SubStateBadge } from '@/components/fos/badges'
-import { useMoneyText } from '@/components/fos/money'
-import { Panel } from '@/components/fos/page'
 import {
   useExtendGrace,
   useRenewCycle,

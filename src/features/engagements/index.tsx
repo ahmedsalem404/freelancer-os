@@ -1,3 +1,7 @@
+import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
+import { SubStateBadge, TypeBadge } from '@/features/engagements/ui/badges'
+import { Money } from '@/features/rates/ui/money'
+import { PageShell } from '@/app/client/layout/page-shell'
 import { currentCycle, subscriptionState } from '@/features/engagements/model/cycles'
 import { engagementCurrentValue } from '@/features/engagements/model/guard'
 import { engagementMeter } from '@/features/engagements/model/meter'
@@ -9,10 +13,6 @@ import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { AllowanceMeter } from '@/components/fos/allowance-meter'
-import { SubStateBadge, TypeBadge } from '@/components/fos/badges'
-import { Money } from '@/components/fos/money'
-import { PageShell } from '@/components/fos/page'
 
 type Filter = 'all' | EngagementType
 

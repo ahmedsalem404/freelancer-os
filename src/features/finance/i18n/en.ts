@@ -1,0 +1,44 @@
+import type { Widen } from '@/shared/i18n/widen'
+import type { financeAr } from './ar'
+
+export const financeEn: Widen<typeof financeAr> = {
+  finance: {
+    title: 'Finance',
+    tabs: {
+      overview: 'Overview',
+      invoices: 'Invoices',
+      payments: 'Payments',
+      expenses: 'Expenses',
+      subscriptions: 'My subscriptions',
+    },
+    collected: 'Collected this month',
+    receivable: 'Waiting to be collected',
+    expenses: 'Expenses',
+    net: 'Net income',
+    netHint: 'After expenses and your subscriptions',
+    forecast: 'Cash-flow forecast',
+    forecastHint: 'Invoices due and upcoming renewals over 8 weeks',
+    subscriptionBurn: 'Your monthly subscription cost',
+    recordPayment: 'Record payment',
+    paymentAmount: 'Amount received',
+    paymentMethod: 'Payment method',
+    proof: 'Proof of payment',
+    proofHint: 'Transfer screenshot attached',
+    proofAttached: 'Proof attached',
+    noProof: 'No proof',
+    paymentSaved: 'Payment recorded',
+    number: 'Number',
+    perMonth: 'monthly',
+    perYear: 'yearly',
+    renews: 'Renews',
+    week: 'Week {{n}}',
+    category: {
+      software: 'Software',
+      equipment: 'Equipment',
+      contractors: 'Contractors',
+      marketing: 'Marketing',
+      subscription: 'Tool subscription',
+      other: 'Other',
+    },
+  },
+}

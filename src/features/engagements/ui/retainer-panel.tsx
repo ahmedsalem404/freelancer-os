@@ -1,3 +1,6 @@
+import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
+import { useMoneyText } from '@/features/rates/ui/money'
+import { Panel } from '@/shared/components/panel'
 import { engagementMeter } from '@/features/engagements/model/meter'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import { useState } from 'react'
@@ -14,9 +17,6 @@ import {
 import { todayIso } from '@/shared/model/dates'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { AllowanceMeter } from '@/components/fos/allowance-meter'
-import { useMoneyText } from '@/components/fos/money'
-import { Panel } from '@/components/fos/page'
 
 const MINUTES_PER_HOUR = 60
 

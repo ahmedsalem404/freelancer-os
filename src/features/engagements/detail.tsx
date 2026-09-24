@@ -1,3 +1,11 @@
+import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
+import { TypeBadge } from '@/features/engagements/ui/badges'
+import { InvoiceTable } from '@/features/invoices/ui/invoice-table'
+import { Money } from '@/features/rates/ui/money'
+import { EmptyState } from '@/shared/components/empty-state'
+import { PageShell } from '@/app/client/layout/page-shell'
+import { Panel } from '@/shared/components/panel'
+import { StatTile } from '@/shared/components/stat-tile'
 import { deliverablesOf, engagementCurrentValue, scopeGuard } from '@/features/engagements/model/guard'
 import { engagementMeter } from '@/features/engagements/model/meter'
 import { invoicePaid } from '@/features/invoices/model/invoice-status'
@@ -22,16 +30,6 @@ import { cn } from '@/lib/utils'
 import { useDateFormat } from '@/lib/dates'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AllowanceMeter } from '@/components/fos/allowance-meter'
-import { TypeBadge } from '@/components/fos/badges'
-import { InvoiceTable } from '@/components/fos/invoice-table'
-import { Money } from '@/components/fos/money'
-import {
-  EmptyState,
-  PageShell,
-  Panel,
-  StatTile,
-} from '@/components/fos/page'
 import { DeliverableCard } from './deliverable-card'
 import { ChangeScopeDialog } from './ui/change-scope-dialog'
 import { CyclePanel } from './ui/cycle-panel'

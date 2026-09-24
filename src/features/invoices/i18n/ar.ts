@@ -1,0 +1,45 @@
+/** Arabic strings owned by `invoices` (keys stay global: `t('invoiceStatus.…')`). */
+export const invoicesAr = {
+  invoiceStatus: {
+    unpaid: 'غير مدفوعة',
+    partial: 'مدفوعة جزئياً',
+    paid: 'مدفوعة',
+    overdue: 'متأخرة',
+    draft: 'مسودة',
+    void: 'ملغاة',
+  },
+  invoiceKind: {
+    standard: 'عادية',
+    deposit: 'دفعة مقدمة',
+    overage: 'تجاوز',
+    renewal: 'تجديد',
+    scope: 'توسعة نطاق',
+  },
+  payMethod: {
+    bank: 'تحويل بنكي',
+    kuraimi: 'الكريمي',
+    usdt: 'USDT',
+    cash: 'نقداً',
+  },
+  invoice: {
+    title: 'فاتورة',
+    billTo: 'إلى',
+    from: 'من',
+    issueDate: 'تاريخ الإصدار',
+    dueDate: 'تاريخ الاستحقاق',
+    item: 'البند',
+    qty: 'الكمية',
+    price: 'السعر',
+    lineTotal: 'المجموع',
+    total: 'الإجمالي المستحق',
+    payWith: 'طرق الدفع',
+    thanks: 'شكراً لثقتك.',
+    whatsappMessage:
+      'مرحباً {{name}}، هذه فاتورة {{number}} بمبلغ {{amount}}، تاريخ الاستحقاق {{due}}. شكراً لك.',
+    reminders: 'تذكيرات تلقائية',
+    remindersHint: 'رسالة جاهزة من النظام — بدون إحراج',
+    reminderAt_zero: 'يوم الاستحقاق',
+    reminderAt: 'بعد {{count}} يوماً',
+    notFound: 'لم يتم العثور على الفاتورة',
+  },
+}

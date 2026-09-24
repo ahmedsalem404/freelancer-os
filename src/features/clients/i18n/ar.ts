@@ -1,0 +1,25 @@
+/** Arabic strings owned by `clients` (keys stay global: `t('health.…')`). */
+export const clientsAr = {
+  health: { good: 'منتظم', watch: 'راقبه', risk: 'متعثر' },
+  clients: {
+    title: 'العملاء',
+    count_one: 'عميل واحد',
+    count: '{{count}} عملاء',
+    add: 'عميل جديد',
+    person: 'فرد',
+    company: 'شركة',
+    city: 'المدينة',
+    localTime: 'التوقيت المحلي',
+    identity: 'هوية الفوترة',
+    currency: 'عملة التعامل',
+    health: 'صحة العميل',
+    revenue: 'المحصّل',
+    outstanding: 'غير محصّل',
+    since: 'عميل منذ',
+    vault: 'خزنة الوصول',
+    vaultHint: 'بيانات دخول مشفّرة — تظهر لك فقط',
+    noVault: 'لا توجد بيانات وصول محفوظة',
+    engagements: 'الاتفاقات',
+    invoices: 'الفواتير',
+  },
+}
