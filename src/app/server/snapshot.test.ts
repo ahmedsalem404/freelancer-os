@@ -9,15 +9,10 @@ import {
 import { seedDb, today } from '@/mock/seed'
 import { sql } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
+import { parseSnapshot } from '../client/snapshot.schema'
 import { openDatabase, runMigrations } from './db'
 import { seedDemo } from './seed/demo'
 import { loadSnapshot } from './snapshot'
-
-/** SQL NULL → undefined, the same normalisation the client schemas apply. */
-const nullsToUndefined = <T>(value: unknown): T =>
-  JSON.parse(JSON.stringify(value), (_key, v: unknown) =>
-    v === null ? undefined : v
-  )
 
 function seededSnapshot() {
   const { db, close } = openDatabase(':memory:')
@@ -32,11 +27,8 @@ function seededSnapshot() {
 describe('SQLite round trip (migrate → seed → snapshot)', () => {
   const mock = seedDb()
   const { snapshot, fkViolations } = seededSnapshot()
-  // Attachments change shape in the DB (owner FKs); the guard never reads them.
-  const fromDb: Db = {
-    ...nullsToUndefined<Db>(snapshot),
-    attachments: mock.attachments,
-  }
+  // The same JSON → Zod path the browser takes (throws if the schema drifts).
+  const fromDb: Db = parseSnapshot(JSON.parse(JSON.stringify(snapshot)))
   const day = today()
 
   it('stores every demo row with no foreign-key violations', () => {

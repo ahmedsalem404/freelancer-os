@@ -107,7 +107,7 @@ export function allowanceState(
   return 'ok'
 }
 
-export const roundsOf = (db: Db, deliverableId: string) =>
+export const roundsOf = (db: Pick<Db, 'rounds'>, deliverableId: string) =>
   db.rounds
     .filter((r) => r.deliverableId === deliverableId)
     .sort((a, b) => a.roundNo - b.roundNo)
@@ -160,7 +160,7 @@ export function engagementCurrentValue(db: Db, engagement: Engagement) {
   return engagement.amount + scopeLines.reduce((s, i) => s + i.amount, 0)
 }
 
-export function currentCycle(db: Db, engagementId: string) {
+export function currentCycle(db: Pick<Db, 'cycles'>, engagementId: string) {
   return db.cycles
     .filter(
       (c) =>
@@ -172,7 +172,7 @@ export function currentCycle(db: Db, engagementId: string) {
 
 /** Retainer hours consumed inside a cycle window [startsOn, endsOn). */
 export function cycleHoursUsed(
-  db: Db,
+  db: Pick<Db, 'timeEntries'>,
   engagementId: string,
   cycle: EngagementCycle
 ) {
@@ -188,7 +188,10 @@ export function cycleHoursUsed(
   return Math.round((minutes / 60) * 10) / 10
 }
 
-export function cycleBilledOverage(db: Db, cycleId: string) {
+export function cycleBilledOverage(
+  db: Pick<Db, 'invoiceItems' | 'invoices'>,
+  cycleId: string
+) {
   return db.invoiceItems
     .filter((item) => {
       if (item.cycleId !== cycleId || item.sourceKind !== 'retainer_overage')
@@ -273,10 +276,8 @@ export function engagementMeter(db: Db, e: Engagement, today: string): Meter {
     }
   }
 
-  const used = cycleHoursUsed(db, e.id, cycle)
+  const { used, overage, unbilled } = retainerOverage(db, e.id, cycle)
   const included = cycle.includedUnits
-  const overage = Math.max(0, Math.round((used - included) * 10) / 10)
-  const unbilled = Math.max(0, overage - cycleBilledOverage(db, cycle.id))
   return {
     unit: e.allowanceUnit,
     used,
@@ -285,6 +286,21 @@ export function engagementMeter(db: Db, e: Engagement, today: string): Meter {
     unbilled,
     state: allowanceState(included, used, near),
   }
+}
+
+/** Retainer hours over the cycle allowance, and how many are not invoiced. */
+export function retainerOverage(
+  db: Pick<Db, 'timeEntries' | 'invoiceItems' | 'invoices'>,
+  engagementId: string,
+  cycle: EngagementCycle
+) {
+  const used = cycleHoursUsed(db, engagementId, cycle)
+  const overage = Math.max(
+    0,
+    Math.round((used - cycle.includedUnits) * 10) / 10
+  )
+  const unbilled = Math.max(0, overage - cycleBilledOverage(db, cycle.id))
+  return { used, overage, unbilled }
 }
 
 // ─── Clients ────────────────────────────────────────────────

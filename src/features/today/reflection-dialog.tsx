@@ -27,7 +27,10 @@ export function ReflectionDialog({ open, onOpenChange }: Props) {
 
   const mine = tasks.filter((task) => task.assigneeId === memberId)
   const done = mine.filter((task) => task.completedAt?.startsWith(now))
-  const pending = mine.filter((task) => !task.completedAt && task.dueOn <= now)
+  const pending = mine.filter(
+    (task) =>
+      !task.completedAt && task.dueOn !== undefined && task.dueOn <= now
+  )
 
   const complete = () => {
     saveReflection(note.trim())

@@ -1,0 +1,61 @@
+import { success } from '@/shared/http/envelope'
+import { jsonBody } from '@/shared/http/validate'
+import type { AppEnv } from '@/shared/server/context'
+import { Hono } from 'hono'
+import {
+  addFeedbackInput,
+  approveInput,
+  changeScopeInput,
+  extendGraceInput,
+} from '../model/engagement.input'
+import { extendGrace, renewCycle, stopCycle } from './cycles.service'
+import {
+  addFeedback,
+  approveDeliverable,
+  billOverageRounds,
+} from './deliverables.service'
+import { changeScope } from './scope.service'
+import { toggleStage } from './stages.service'
+
+export const engagementsRoutes = new Hono<AppEnv>()
+  .post('/deliverables/:id/rounds', jsonBody(addFeedbackInput), (c) => {
+    const id = c.req.param('id')
+    const input = c.req.valid('json')
+    const result = c.var.run((ctx) => addFeedback(ctx, id, input))
+    return c.json(success(result), 201)
+  })
+  .post('/deliverables/:id/approval', jsonBody(approveInput), (c) => {
+    const id = c.req.param('id')
+    const input = c.req.valid('json')
+    const result = c.var.run((ctx) => approveDeliverable(ctx, id, input))
+    return c.json(success(result), 201)
+  })
+  .post('/deliverables/:id/bill-overage', (c) => {
+    const id = c.req.param('id')
+    const result = c.var.run((ctx) => billOverageRounds(ctx, id))
+    return c.json(success(result), 201)
+  })
+  .post('/engagements/:id/scope', jsonBody(changeScopeInput), (c) => {
+    const id = c.req.param('id')
+    const input = c.req.valid('json')
+    const result = c.var.run((ctx) => changeScope(ctx, id, input))
+    return c.json(success(result), 201)
+  })
+  .post('/engagements/:id/renew', (c) => {
+    const id = c.req.param('id')
+    const result = c.var.run((ctx) => renewCycle(ctx, id))
+    return c.json(success(result), 201)
+  })
+  .post('/engagements/:id/grace', jsonBody(extendGraceInput), (c) => {
+    const id = c.req.param('id')
+    const input = c.req.valid('json')
+    return c.json(success(c.var.run((ctx) => extendGrace(ctx, id, input))))
+  })
+  .post('/engagements/:id/stop', (c) => {
+    const id = c.req.param('id')
+    return c.json(success(c.var.run((ctx) => stopCycle(ctx, id))))
+  })
+  .post('/stages/:id/toggle', (c) => {
+    const id = c.req.param('id')
+    return c.json(success(c.var.run((ctx) => toggleStage(ctx, id))))
+  })

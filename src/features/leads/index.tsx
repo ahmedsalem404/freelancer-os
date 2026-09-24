@@ -94,7 +94,7 @@ function LeadCard({ lead }: { lead: Lead }) {
   const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: lead.id })
-  const idle = -daysFrom(today(), lead.lastContactOn)
+  const idle = lead.lastContactOn ? -daysFrom(today(), lead.lastContactOn) : 0
   const isStale = idle >= STALE_DAYS && !['won', 'lost'].includes(lead.stage)
 
   return (

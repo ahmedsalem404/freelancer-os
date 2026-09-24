@@ -156,16 +156,7 @@ export function seedDemo(db: Database) {
     insertAll(
       tx,
       attachments,
-      demo.attachments.map((a) => ({
-        id: a.id,
-        kind: a.kind,
-        fileName: a.name,
-        uploadedOn: a.uploadedOn,
-        uploadedBy: OWNER,
-        clientId: a.ownerType === 'client' ? a.ownerId : undefined,
-        engagementId: a.ownerType === 'engagement' ? a.ownerId : undefined,
-        paymentId: a.ownerType === 'payment' ? a.ownerId : undefined,
-      }))
+      demo.attachments.map((a) => ({ ...a, uploadedBy: OWNER }))
     )
     insertAll(
       tx,

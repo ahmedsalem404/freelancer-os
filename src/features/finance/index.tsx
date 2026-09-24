@@ -237,9 +237,7 @@ function PaymentsList() {
         {db.payments.map((p) => {
           const invoice = db.invoices.find((i) => i.id === p.invoiceId)
           const client = db.clients.find((c) => c.id === invoice?.clientId)
-          const hasProof = db.attachments.some(
-            (a) => a.ownerType === 'payment' && a.ownerId === p.id
-          )
+          const hasProof = db.attachments.some((a) => a.paymentId === p.id)
           return (
             <li
               key={p.id}

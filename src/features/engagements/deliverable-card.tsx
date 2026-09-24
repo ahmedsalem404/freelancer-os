@@ -85,9 +85,11 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
               </span>
             )}
           </h3>
-          <span className='text-xs text-muted-foreground'>
-            {t('engagements.dueOn', { date: fmt(deliverable.dueOn) })}
-          </span>
+          {deliverable.dueOn && (
+            <span className='text-xs text-muted-foreground'>
+              {t('engagements.dueOn', { date: fmt(deliverable.dueOn) })}
+            </span>
+          )}
         </div>
         {approval ? (
           <span className='inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-medium text-success'>

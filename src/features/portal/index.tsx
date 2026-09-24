@@ -141,7 +141,8 @@ function PortalDeliverable({ deliverable }: { deliverable: Deliverable }) {
         <div className='grid gap-0.5'>
           <span className='font-medium'>{deliverable.title}</span>
           <span className='text-xs text-muted-foreground'>
-            {t('engagements.dueOn', { date: fmt(deliverable.dueOn) })}
+            {deliverable.dueOn &&
+              t('engagements.dueOn', { date: fmt(deliverable.dueOn) })}
             {rounds.length > 0 &&
               ` · ${t('engagements.round', { n: rounds.length })}`}
           </span>

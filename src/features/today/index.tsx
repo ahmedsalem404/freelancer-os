@@ -71,7 +71,10 @@ export function Today() {
     })
 
   const myTasks = db.tasks.filter(
-    (task) => task.assigneeId === db.currentMemberId && task.dueOn <= now
+    (task) =>
+      task.assigneeId === db.currentMemberId &&
+      task.dueOn !== undefined &&
+      task.dueOn <= now
   )
   const doneCount = myTasks.filter((task) => task.completedAt).length
 

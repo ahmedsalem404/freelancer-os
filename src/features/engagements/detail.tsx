@@ -350,9 +350,7 @@ function FilesTab({ engagementId }: { engagementId: string }) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
   const attachments = useStore((s) => s.attachments)
-  const files = attachments.filter(
-    (a) => a.ownerType === 'engagement' && a.ownerId === engagementId
-  )
+  const files = attachments.filter((a) => a.engagementId === engagementId)
   return (
     <Panel
       title={t('engagements.attachments')}
@@ -384,7 +382,7 @@ function FilesTab({ engagementId }: { engagementId: string }) {
                 <FileText className='size-5 text-primary' />
               )}
               <div className='grid min-w-0 gap-0.5'>
-                <span className='truncate'>{file.name}</span>
+                <span className='truncate'>{file.fileName}</span>
                 <span className='text-xs text-muted-foreground'>
                   {t(`engagements.attachmentKind.${file.kind}`)} ·{' '}
                   {fmt(file.uploadedOn)}

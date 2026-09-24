@@ -47,13 +47,19 @@ const KIND_STYLE: Record<Kind, string> = {
 function useEvents(): CalendarEvent[] {
   const db = useStore()
   const now = today()
-  const deliverables = db.deliverables.map((d) => ({
-    id: d.id,
-    date: d.dueOn,
-    kind: 'deliverable' as const,
-    title: d.title,
-    engagementId: d.engagementId,
-  }))
+  const deliverables = db.deliverables.flatMap((d) =>
+    d.dueOn
+      ? [
+          {
+            id: d.id,
+            date: d.dueOn,
+            kind: 'deliverable' as const,
+            title: d.title,
+            engagementId: d.engagementId,
+          },
+        ]
+      : []
+  )
   const renewals = db.engagements.flatMap((e) => {
     const cycle = e.type === 'subscription' ? currentCycle(db, e.id) : undefined
     return cycle
