@@ -1,8 +1,7 @@
-import { useCloseDay } from './api/use-today-actions'
-import { useCurrentMember } from '@/app/client/use-current-member'
-import { useDb } from '@/app/client/snapshot-query'
-import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
+import { useDb } from '@/app/client/snapshot-query'
+import { useCurrentMember } from '@/app/client/use-current-member'
+import { todayIso } from '@/shared/model/dates'
 import { Check, CircleDashed } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -16,6 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { useCloseDay } from '../api/use-today-actions'
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void }
 
@@ -30,8 +30,7 @@ export function ReflectionDialog({ open, onOpenChange }: Props) {
   const mine = tasks.filter((task) => task.assigneeId === memberId)
   const done = mine.filter((task) => task.completedAt?.startsWith(now))
   const pending = mine.filter(
-    (task) =>
-      !task.completedAt && task.dueOn !== undefined && task.dueOn <= now
+    (task) => !task.completedAt && task.dueOn !== undefined && task.dueOn <= now
   )
 
   const complete = () =>

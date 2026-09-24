@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { EngagementDetail } from '@/features/engagements/detail'
+import { EngagementDetail } from '@/features/engagements/ui/engagement-detail'
 
 export const Route = createFileRoute('/_authenticated/engagements/$id')({
   component: function EngagementRoute() {
