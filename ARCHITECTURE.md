@@ -28,6 +28,9 @@ is protected by a local hook, so the budget lives in that script): tests (`*.tes
 seed / demo data (`*.seed.ts`, `src/app/server/seed/**`), generated files
 (`routeTree.gen.ts`, `drizzle/**`) and vendored shadcn primitives (`src/components/ui/**`).
 
+The shadcn primitives stay in `src/components/ui/` (not `shared/ui/`) because the ESLint
+ignore for vendored code lives in the protected `eslint.config.js`.
+
 ## 2. Target directory tree
 
 ```
@@ -41,20 +44,26 @@ freelancer-os/
    ├─ main.tsx                ← browser entry
    ├─ routes/                 ← TanStack file routes: thin, import a feature page
    ├─ app/                    ← composition root: wires features, owns no business rules
-   │  ├─ client/              ← providers, query client, snapshot hook, ui prefs
-   │  └─ server/              ← Node entry, Hono app, DB connection, migrate, seed
+   │  ├─ client/              ← snapshot query + schema, useAction, ui prefs, i18n composition
+   │  │  └─ layout/           ← app chrome: page shell, header, sidebar, command menu
+   │  └─ server/              ← Node entry, Hono app, per-request context, snapshot, seed
+   │     └─ api/              ← API integration tests (in-memory SQLite)
    ├─ features/
    │  └─ <feature>/
-   │     ├─ index.ts          ← public surface (the only import path for other features)
+   │     ├─ index.ts(x)       ← browser surface: the page(s) routes render
    │     ├─ model/            ← Zod schemas + inferred types + pure logic (+ tests)
-   │     ├─ api/              ← TanStack Query hooks (fetch → Zod parse)
+   │     ├─ api/              ← TanStack Query hooks (callApi → Zod parse)
    │     ├─ ui/               ← React components (presentation only)
-   │     ├─ server/           ← *.table.ts (Drizzle) · *.repo.ts · *.service.ts · *.routes.ts
-   │     └─ i18n/             ← ar.ts / en.ts for this feature's strings
+   │     ├─ server/           ← *.table.ts · *.repo.ts · *.service.ts · *.routes.ts
+   │     │  └─ index.ts       ← server surface (routes, loaders, services others call)
+   │     └─ i18n/             ← ar.ts / en.ts for this feature's sections
+   ├─ components/ui/          ← shadcn primitives (vendored, see §1)
    └─ shared/                 ← generic kernel (≥ 3 features, no business rules)
-      ├─ ui/                  ← shadcn primitives (vendored)
-      ├─ components/ layout/ hooks/ context/ lib/
-      └─ money/               ← money quad, formatting, currency conversion
+      ├─ components/ context/ hooks/ lib/ config/   ← generic UI + template helpers
+      ├─ db/ http/ server/    ← Database type, ids, envelope, errors, validation, Ctx
+      ├─ model/               ← isoDate, recordId, stripNulls/parseRows, date helpers
+      ├─ money/               ← money quad, formatting, currency conversion
+      └─ i18n/                ← app/nav/common/apiErrors strings, Lang helpers
 ```
 
 ### Features
@@ -77,11 +86,17 @@ freelancer-os/
 
 ## 3. Boundaries & dependency rules
 
-1. `routes/` → `features/*/index.ts` only.
-2. A feature imports another feature **only through its `index.ts`**. Type-only
-   imports may cross freely; runtime cycles are forbidden.
-3. `features/*` → `shared/*` allowed; `shared/*` → `features/*` forbidden.
-4. `app/` may import every feature (it composes them); features never import `app/`.
+1. `routes/` → a feature's `index.ts(x)` or its page in `ui/`, plus `app/client` loaders.
+2. A feature imports another feature through its `index.ts`, its `server/index.ts`
+   (server code only) or its **pure `model/` files** (the shared contract: schemas,
+   types, selectors). Type-only imports may cross freely; runtime cycles are
+   forbidden. Service dependency direction:
+   `time/today/leads → engagements → invoices → clients · settings · rates · files`
+   (e.g. billing extra retainer hours lives in `time` because it reads time entries).
+3. `features/*` → `shared/*` allowed; `shared/*` → `features/*` and `app/*` forbidden.
+4. `app/` may import every feature (it composes them). Features import from `app/`
+   only `app/client/*` — the snapshot query, `useAction`, UI prefs, current member
+   and the page shell — never `app/server/*`.
 5. Server code (`features/*/server/**`, `app/server/**`) is never imported by
    browser code. Shared between both: `model/` only (pure, no Node / DOM APIs).
 6. Pure selectors take **only the tables they read** (e.g.
@@ -106,13 +121,30 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
                                                                         one transaction per business action)
 ```
 
-- **Reads:** one `GET /api/snapshot` returns every table the UI needs; the client
-  parses it with the composed Zod schema and runs the pure selectors. Data volume
+- **Reads:** one `GET /api/snapshot` returns every table the UI needs; the route
+  loader (`_authenticated`, `/p/$token`) prefetches it, screens read it with `useDb()`
+  (`app/client/snapshot-query.ts`, Zod-validated, retries while the API boots) and run
+  the pure selectors. Data volume
   for 1–3 people is small; per-feature endpoints can replace this later without
   touching the UI (`api/` hooks are the only consumers).
 - **Writes:** one endpoint per business action (issue invoice, bill overage,
   record payment, save daily rate…). Each runs in a single SQLite transaction
   and reuses the same pure `model/` logic as the client (the guard, numbering).
+  Services receive a `Ctx` (`db` = the transaction, `today`, `now`, `memberId`) built
+  per request by `app/server/context.ts`; a thrown `DomainError` rolls back and becomes
+  a 4xx envelope. Client writes go through `useAction` (`app/client/use-action.ts`),
+  which refetches the snapshot before `onSuccess` runs; failures show a translated
+  toast (`apiErrors.<code>`).
+
+| Feature | Endpoints (all under `/api`) |
+|---|---|
+| rates | `PUT /rates/today` |
+| invoices | `POST /invoices/:id/payments` |
+| engagements | `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
+| time | `POST /time` · `POST /engagements/:id/bill-hours` |
+| leads | `POST /leads/:id/stage` (not to `won`) · `POST /leads/:id/convert` |
+| today | `POST /tasks` · `/tasks/:id/toggle` · `/tasks/carry-over` · `PUT /reflections/today` · `POST /day/close` |
+| clients | `POST /vault/:id/reveal` → 423 until phase 3 |
 - **Derived values are never stored** (invoice status, balances, meters, health) —
   see docs/database.md §5.
 
@@ -128,6 +160,10 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | IDs for new rows: prefixed ULID (`inv_01J…`); seed keeps readable ids | sortable, readable in logs |
 | 2026-09-25 | Reads through one snapshot endpoint; writes per business action | smallest change from the mock store; UI selectors reused |
 | 2026-09-25 | Temporary deviations from database.md until phase 3: `vault_entries.username` plaintext + `ciphertext` nullable; `attachments` file metadata nullable; `team_members.password_hash` nullable; `leads` money quad NOT NULL (UI requires an estimate); deferred tables: `auth_sessions`, `client_portal_links`, `tickets`, `reminder_log`, `message_templates`, `calendar_events` | ship the database now without faking security features |
+| 2026-09-25 | Client state: TanStack Query snapshot + per-action mutations; zustand only for UI prefs (display currency) | server data has one source of truth |
+| 2026-09-25 | A lead becomes `won` only through conversion (client + engagement in one transaction), enforced by CHECK `lead_won_converted`; subscriptions require `grace_days` | database.md §3 constraints deferred from phase 1 |
+| 2026-09-25 | End of day (`POST /day/close`) saves the reflection and carries tasks over atomically | both or neither |
+| 2026-09-25 | Features may import `app/client/*` (snapshot, useAction, prefs, page shell); shared code uses the global `i18next` instance instead of importing app | the composed snapshot schema needs every feature, so it lives in app |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status
@@ -136,17 +172,15 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 |---|---|---|
 | 0 | This document, line-budget check, `no-explicit-any` | **done** 2026-09-25 |
 | 1 | Database: 24 Drizzle tables in their features, migration `0000_init`, demo seed (92 rows), `GET /api/snapshot`, round-trip test | **done** 2026-09-25 — write endpoints move to phase 2 with each feature's UI |
-| 2 | Frontend on the API: replace `src/mock/store.ts`, move code into feature slices, split files > 250 lines, per-feature i18n | pending |
+| 2 | Frontend on the API: write endpoints (tested), `mock/store` removed, `domain/` `mock/` `i18n/` `components/fos/` dissolved into slices, every file ≤ 250 lines, lead conversion + grace constraints | **done** 2026-09-25 |
 | 3 | Deferred tables & security: auth + roles (`auth_sessions`), encrypted vault, client portal links, tickets, reminders log, message templates, calendar events, file uploads, backup | pending |
 
-### Known violations (to clear in phase 2)
+### Known gaps (next)
 
-Files over 250 lines at adoption time: `mock/seed.ts` (808), `mock/store.ts` (510),
-`i18n/en.ts` (431), `i18n/ar.ts` (425), `engagements/detail.tsx` (399),
-`today/index.tsx` (365), `finance/index.tsx` (348), `engagements/panels.tsx` (340),
-`invoices/detail.tsx` (327), `domain/selectors.ts` (325), `domain/types.ts` (306),
-`components/fos/daily-rate.tsx` (277). Layer folders to dissolve: `domain/`,
-`mock/`, `i18n/` (per-feature), `components/fos/` (→ features or `shared/`).
+- Browser-mode tests (`npm test`) need Playwright Chromium: `npm run test:browser:install`.
+- The client portal (`/p/$token`) still reads the full snapshot; phase 3 gives it a
+  token-scoped public endpoint.
+- No create/edit forms yet for clients, engagements, expenses, invoices (owner to prioritise).
 
 ## 7. Commands
 
@@ -157,5 +191,5 @@ Files over 250 lines at adoption time: `mock/seed.ts` (808), `mock/store.ts` (51
 | `npm run db:reset` | delete the local DB, migrate, load demo data |
 | `npm run db:studio` | browse the database in Drizzle Studio |
 | `npm run check:size` | enforce the 250-line budget |
-| `npx vitest run --browser.enabled=false src` | unit tests (node) |
+| `npx vitest run --browser.enabled=false src/app/server src/features src/shared` | unit + API tests (node) |
 | `npm run lint` · `npx tsc -b` | lint (incl. line budget) · type check |
