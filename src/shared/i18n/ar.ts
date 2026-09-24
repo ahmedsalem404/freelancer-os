@@ -76,5 +76,8 @@ export const sharedAr = {
     vault_locked: 'الخزنة مقفلة حتى يوصل التشفير (المرحلة 3)',
     no_owner: 'ما فيه حساب مالك — شغّل npm run db:reset',
     internal_error: 'خطأ في الخادم — راجع سجل الخادم',
+    lead_needs_conversion: 'الفوز يحتاج تحويل العميل المحتمل إلى عميل',
+    lead_already_won: 'هذا العميل المحتمل محوّل من قبل',
+    no_identity: 'أضف هوية فوترة أولاً',
   },
 }

@@ -68,7 +68,8 @@ export const engagements = sqliteTable(
        OR (${t.type} = 'retainer' AND ${t.allowanceUnit} IN ('hours','tickets')
            AND ${t.cyclePeriod} IS NOT NULL AND ${t.allowanceIncluded} > 0)
        OR (${t.type} = 'subscription' AND ${t.allowanceUnit} = 'days'
-           AND ${t.cyclePeriod} IS NOT NULL)`
+           AND ${t.cyclePeriod} IS NOT NULL
+           AND ${t.graceDays} IS NOT NULL AND ${t.graceDays} >= 0)`
     ),
     check(
       'engagement_dates',

@@ -3,14 +3,17 @@
  * Dates are relative to "today" so the demo always shows live states
  * (due soon, overdue, grace period...). Money is in minor units.
  */
-import type { DailyRate } from '@/features/rates/model/rates.schema'
-import { money } from '@/shared/money/money'
-import { ratesFromDaily, type LastRates } from '@/features/rates/model/rates'
+import { addDays, format } from 'date-fns'
 import type { Snapshot as Db } from '@/app/client/snapshot.schema'
 import type { Currency } from '@/shared/money/currency'
-import type { Deliverable, ReviewRound } from '@/features/engagements/model/work.schema'
+import { money } from '@/shared/money/money'
+import type {
+  Deliverable,
+  ReviewRound,
+} from '@/features/engagements/model/work.schema'
 import type { InvoiceItem } from '@/features/invoices/model/invoice.schema'
-import { addDays, format } from 'date-fns'
+import { ratesFromDaily, type LastRates } from '@/features/rates/model/rates'
+import type { DailyRate } from '@/features/rates/model/rates.schema'
 
 export const today = () => format(new Date(), 'yyyy-MM-dd')
 export const dayOffset = (offset: number) =>
@@ -265,6 +268,18 @@ export function seedDb(): Db {
         color: '#6b7fd7',
         createdAt: at(-200),
       },
+      {
+        id: 'c-omar',
+        name: 'عمر السقاف',
+        kind: 'person',
+        whatsapp: '967771234567',
+        city: 'عدن',
+        timezone: 'Asia/Aden',
+        currency: 'USD',
+        billingIdentityId: 'bi-personal',
+        color: '#3f6fb5',
+        createdAt: at(-1),
+      },
     ],
     vault: [
       {
@@ -329,6 +344,7 @@ export function seedDb(): Db {
         overageUnitPrice: 0,
         scopeAgreedDeliverables: 0,
         cyclePeriod: 'monthly',
+        graceDays: 5,
         startOn: d(-180),
         nextAction: 'إرسال فاتورة التجديد قبل نهاية الدورة',
         nextActionOn: d(2),
@@ -350,6 +366,22 @@ export function seedDb(): Db {
         nextActionOn: d(0),
       },
       {
+        id: 'e-omar',
+        clientId: 'c-omar',
+        leadId: 'l5',
+        title: 'تطبيق حجوزات',
+        type: 'project',
+        status: 'active',
+        ...m(4000, 'USD'),
+        allowanceUnit: 'revisions',
+        allowanceIncluded: 0,
+        overageUnitPrice: 5000,
+        scopeAgreedDeliverables: 0,
+        startOn: d(-1),
+        nextAction: 'اجتماع البداية وتحديد المخرجات',
+        nextActionOn: d(1),
+      },
+      {
         id: 'e-masar-saas',
         clientId: 'c-masar',
         title: 'اشتراك لوحة التحكم — مسار',
@@ -361,6 +393,7 @@ export function seedDb(): Db {
         overageUnitPrice: 0,
         scopeAgreedDeliverables: 0,
         cyclePeriod: 'monthly',
+        graceDays: 5,
         startOn: d(-95),
         nextAction: 'قرار: مهلة أو تجديد أو إيقاف',
         nextActionOn: d(0),
@@ -671,6 +704,8 @@ export function seedDb(): Db {
         service: 'تطبيق حجوزات',
         ...m(4000, 'USD'),
         stage: 'won',
+        clientId: 'c-omar',
+        engagementId: 'e-omar',
         source: 'توصية',
         lastContactOn: d(-1),
       },

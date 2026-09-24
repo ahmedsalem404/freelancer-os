@@ -81,5 +81,8 @@ export const sharedEn: Widen<typeof sharedAr> = {
     vault_locked: 'The vault stays locked until encryption ships (phase 3)',
     no_owner: 'No owner account — run npm run db:reset',
     internal_error: 'Server error — check the server log',
+    lead_needs_conversion: 'Winning a lead means converting it to a client',
+    lead_already_won: 'This lead is already converted',
+    no_identity: 'Add a billing identity first',
   },
 }

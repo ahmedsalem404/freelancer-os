@@ -1,4 +1,4 @@
-import { required } from '@/shared/http/errors'
+import { DomainError, required } from '@/shared/http/errors'
 import type { Ctx } from '@/shared/server/context'
 import { eq } from 'drizzle-orm'
 import type { MoveLeadInput } from '../model/lead.schema'
@@ -8,8 +8,20 @@ const CLOSED_STAGES = new Set(['won', 'lost'])
 
 /** Moves a lead on the board; counts as a contact today. */
 export function moveLead(ctx: Ctx, leadId: string, input: MoveLeadInput) {
+  if (input.stage === 'won') {
+    // Winning opens the client + engagement: that is `convertLead`.
+    throw new DomainError(
+      'lead_needs_conversion',
+      'Convert the lead to win it',
+      409
+    )
+  }
   required(
-    ctx.db.select({ id: leads.id }).from(leads).where(eq(leads.id, leadId)).get(),
+    ctx.db
+      .select({ id: leads.id })
+      .from(leads)
+      .where(eq(leads.id, leadId))
+      .get(),
     'lead',
     leadId
   )

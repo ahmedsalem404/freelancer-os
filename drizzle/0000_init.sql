@@ -126,7 +126,8 @@ CREATE TABLE `engagements` (
        OR ("engagements"."type" = 'retainer' AND "engagements"."allowance_unit" IN ('hours','tickets')
            AND "engagements"."cycle_period" IS NOT NULL AND "engagements"."allowance_included" > 0)
        OR ("engagements"."type" = 'subscription' AND "engagements"."allowance_unit" = 'days'
-           AND "engagements"."cycle_period" IS NOT NULL)),
+           AND "engagements"."cycle_period" IS NOT NULL
+           AND "engagements"."grace_days" IS NOT NULL AND "engagements"."grace_days" >= 0)),
 	CONSTRAINT "engagement_dates" CHECK("engagements"."end_on" IS NULL OR "engagements"."end_on" >= "engagements"."start_on"),
 	CONSTRAINT "engagement_amount" CHECK("engagements"."amount" >= 0)
 );
@@ -393,7 +394,8 @@ CREATE TABLE `leads` (
 	FOREIGN KEY (`client_id`) REFERENCES `clients`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`engagement_id`) REFERENCES `engagements`(`id`) ON UPDATE no action ON DELETE no action,
 	CONSTRAINT "lead_stage" CHECK("leads"."stage" IN ('lead', 'proposal', 'negotiation', 'won', 'lost')),
-	CONSTRAINT "lead_closed_dated" CHECK("leads"."stage" NOT IN ('won','lost') OR "leads"."closed_at" IS NOT NULL)
+	CONSTRAINT "lead_closed_dated" CHECK("leads"."stage" NOT IN ('won','lost') OR "leads"."closed_at" IS NOT NULL),
+	CONSTRAINT "lead_won_converted" CHECK("leads"."stage" <> 'won' OR ("leads"."client_id" IS NOT NULL AND "leads"."engagement_id" IS NOT NULL))
 );
 --> statement-breakpoint
 CREATE INDEX `leads_stage` ON `leads` (`stage`,`position`);--> statement-breakpoint

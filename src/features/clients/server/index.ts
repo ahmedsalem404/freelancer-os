@@ -2,3 +2,4 @@
 export { loadClients } from './clients.repo'
 export { clients } from './clients.table'
 export { vaultRoutes } from './vault.routes'
+export { createClient } from './create-client'

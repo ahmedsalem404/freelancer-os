@@ -40,7 +40,11 @@ export const leads = sqliteTable(
       'lead_closed_dated',
       sql`${t.stage} NOT IN ('won','lost') OR ${t.closedAt} IS NOT NULL`
     ),
-    // "won ⇒ client + engagement linked" lands with the conversion flow (phase 2).
+    // A won lead is always converted: it points at its client and engagement.
+    check(
+      'lead_won_converted',
+      sql`${t.stage} <> 'won' OR (${t.clientId} IS NOT NULL AND ${t.engagementId} IS NOT NULL)`
+    ),
     index('leads_stage').on(t.stage, t.position),
     index('leads_follow_up').on(t.nextFollowUpOn),
   ]

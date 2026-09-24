@@ -1,6 +1,6 @@
-import { moneyFieldsSchema } from '@/shared/money/money.schema'
-import { isoDate, recordId } from '@/shared/model/schema'
 import { z } from 'zod'
+import { isoDate, recordId } from '@/shared/model/schema'
+import { moneyFieldsSchema } from '@/shared/money/money.schema'
 import { LEAD_STAGES } from './enums'
 
 export const leadStageSchema = z.enum(LEAD_STAGES)

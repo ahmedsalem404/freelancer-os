@@ -1,8 +1,17 @@
-import { callApi } from '@/shared/http/api-client'
-import { stripNulls } from '@/shared/model/schema'
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { z } from 'zod'
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
+import { ApiError, callApi } from '@/shared/http/api-client'
+import { stripNulls } from '@/shared/model/schema'
 import { type Snapshot, snapshotSchema } from './snapshot.schema'
+
+const MAX_BOOT_RETRIES = 10
+const BOOT_RETRY_MS = 500
+const BAD_GATEWAY = 502
+
+/** Network down or proxy 5xx gateway error: the API is not up yet. */
+const isServerStarting = (error: Error) =>
+  error instanceof ApiError &&
+  (error.status === 0 || error.status >= BAD_GATEWAY)
 
 /** Accepts raw JSON (SQL NULLs) and yields the validated snapshot. */
 const snapshotResponse = z.preprocess(stripNulls, snapshotSchema)
@@ -15,6 +24,11 @@ export const snapshotQuery = queryOptions({
   queryKey: ['snapshot'] as const,
   queryFn: () => callApi('GET', '/snapshot', snapshotResponse),
   staleTime: 30_000,
+  // `npm run dev` starts web and API together: until the API listens, the
+  // Vite proxy answers 502. Keep retrying briefly instead of failing the page.
+  retry: (failures, error) =>
+    failures < MAX_BOOT_RETRIES && isServerStarting(error),
+  retryDelay: BOOT_RETRY_MS,
 })
 
 /** Every table the UI reads, validated. Must render under a route loader. */

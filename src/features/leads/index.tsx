@@ -1,10 +1,8 @@
-import { LEAD_TONE } from '@/features/leads/ui/lead-tone'
-import { BaseMoney, Money } from '@/features/rates/ui/money'
+import { useState } from 'react'
 import { PageShell } from '@/app/client/layout/page-shell'
-import type { Lead } from '@/features/leads/model/lead.schema'
-import type { LeadStage } from '@/features/leads/model/enums'
-import { useMoveLead } from './api/use-move-lead'
 import { useDb } from '@/app/client/snapshot-query'
+import { daysFrom } from '@/shared/lib/dates'
+import { cn } from '@/shared/lib/utils'
 import { todayIso } from '@/shared/model/dates'
 import {
   DndContext,
@@ -19,8 +17,12 @@ import {
 import { GripVertical } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { daysFrom } from '@/shared/lib/dates'
-import { cn } from '@/shared/lib/utils'
+import type { LeadStage } from '@/features/leads/model/enums'
+import type { Lead } from '@/features/leads/model/lead.schema'
+import { LEAD_TONE } from '@/features/leads/ui/lead-tone'
+import { BaseMoney, Money } from '@/features/rates/ui/money'
+import { useMoveLead } from './api/use-move-lead'
+import { ConvertLeadDialog } from './ui/convert-lead-dialog'
 
 const STAGES: LeadStage[] = ['lead', 'proposal', 'negotiation', 'won', 'lost']
 const STALE_DAYS = 7
@@ -29,6 +31,7 @@ export function Leads() {
   const { t } = useTranslation()
   const leads = useDb().leads
   const moveLead = useMoveLead()
+  const [converting, setConverting] = useState<Lead>()
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor)
@@ -39,6 +42,11 @@ export function Leads() {
     const stage = over.id as LeadStage
     const lead = leads.find((l) => l.id === active.id)
     if (!lead || lead.stage === stage) return
+    // Winning opens a client and an engagement — ask for them first.
+    if (stage === 'won') {
+      setConverting(lead)
+      return
+    }
     moveLead.mutate(
       { leadId: lead.id, stage },
       {
@@ -64,6 +72,12 @@ export function Leads() {
           ))}
         </div>
       </DndContext>
+      {converting && (
+        <ConvertLeadDialog
+          lead={converting}
+          onClose={() => setConverting(undefined)}
+        />
+      )}
     </PageShell>
   )
 }
@@ -102,7 +116,9 @@ function LeadCard({ lead }: { lead: Lead }) {
   const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: lead.id })
-  const idle = lead.lastContactOn ? -daysFrom(todayIso(), lead.lastContactOn) : 0
+  const idle = lead.lastContactOn
+    ? -daysFrom(todayIso(), lead.lastContactOn)
+    : 0
   const isStale = idle >= STALE_DAYS && !['won', 'lost'].includes(lead.stage)
 
   return (

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "89b953c9-8a8f-492c-8a60-f4e07112fc42",
+  "id": "59d221b0-d6b2-4b4c-b8f2-5c6a52bdc8ac",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "important_dates": {
@@ -895,7 +895,7 @@
         },
         "engagement_type_shape": {
           "name": "engagement_type_shape",
-          "value": "(\"engagements\".\"type\" = 'project' AND \"engagements\".\"allowance_unit\" = 'revisions'\n           AND \"engagements\".\"cycle_period\" IS NULL AND \"engagements\".\"allowance_included\" = 0)\n       OR (\"engagements\".\"type\" = 'retainer' AND \"engagements\".\"allowance_unit\" IN ('hours','tickets')\n           AND \"engagements\".\"cycle_period\" IS NOT NULL AND \"engagements\".\"allowance_included\" > 0)\n       OR (\"engagements\".\"type\" = 'subscription' AND \"engagements\".\"allowance_unit\" = 'days'\n           AND \"engagements\".\"cycle_period\" IS NOT NULL)"
+          "value": "(\"engagements\".\"type\" = 'project' AND \"engagements\".\"allowance_unit\" = 'revisions'\n           AND \"engagements\".\"cycle_period\" IS NULL AND \"engagements\".\"allowance_included\" = 0)\n       OR (\"engagements\".\"type\" = 'retainer' AND \"engagements\".\"allowance_unit\" IN ('hours','tickets')\n           AND \"engagements\".\"cycle_period\" IS NOT NULL AND \"engagements\".\"allowance_included\" > 0)\n       OR (\"engagements\".\"type\" = 'subscription' AND \"engagements\".\"allowance_unit\" = 'days'\n           AND \"engagements\".\"cycle_period\" IS NOT NULL\n           AND \"engagements\".\"grace_days\" IS NOT NULL AND \"engagements\".\"grace_days\" >= 0)"
         },
         "engagement_dates": {
           "name": "engagement_dates",
@@ -2751,6 +2751,10 @@
         "lead_closed_dated": {
           "name": "lead_closed_dated",
           "value": "\"leads\".\"stage\" NOT IN ('won','lost') OR \"leads\".\"closed_at\" IS NOT NULL"
+        },
+        "lead_won_converted": {
+          "name": "lead_won_converted",
+          "value": "\"leads\".\"stage\" <> 'won' OR (\"leads\".\"client_id\" IS NOT NULL AND \"leads\".\"engagement_id\" IS NOT NULL)"
         }
       }
     },
