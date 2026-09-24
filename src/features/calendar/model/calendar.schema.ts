@@ -1,5 +1,5 @@
-import { isoDate, recordId } from '@/shared/model/schema'
 import { z } from 'zod'
+import { isoDate, recordId } from '@/shared/model/schema'
 import { DATE_KINDS } from './enums'
 
 export const importantDateSchema = z.object({

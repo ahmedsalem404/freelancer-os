@@ -1,3 +1,5 @@
+import { z } from 'zod'
+import { stripNulls } from '@/shared/model/schema'
 import { importantDateSchema } from '@/features/calendar/model/calendar.schema'
 import {
   clientSchema,
@@ -36,8 +38,6 @@ import {
   reflectionSchema,
   taskSchema,
 } from '@/features/today/model/today.schema'
-import { stripNulls } from '@/shared/model/schema'
-import { z } from 'zod'
 
 /**
  * Everything `GET /api/snapshot` returns, composed from each feature's

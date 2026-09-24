@@ -1,5 +1,5 @@
-import { isoDate, recordId } from '@/shared/model/schema'
 import { z } from 'zod'
+import { isoDate, recordId } from '@/shared/model/schema'
 import { ATTACHMENT_KINDS } from './enums'
 
 /** File metadata only — contents never travel in the snapshot. */

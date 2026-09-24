@@ -1,3 +1,4 @@
+import type { Database } from '@/shared/db/database'
 import { loadCalendar } from '@/features/calendar/server'
 import { loadClients } from '@/features/clients/server'
 import { loadEngagements } from '@/features/engagements/server'
@@ -9,7 +10,6 @@ import { loadRates } from '@/features/rates/server'
 import { loadSettings } from '@/features/settings/server'
 import { loadTime } from '@/features/time/server'
 import { loadToday } from '@/features/today/server'
-import type { Database } from '@/shared/db/database'
 
 /**
  * Composes every feature's read slice into the one snapshot the UI parses

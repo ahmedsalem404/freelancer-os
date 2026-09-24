@@ -47,7 +47,11 @@ export async function callApi<T>(
   const json: unknown = await response.json().catch(() => null)
   const envelope = envelopeSchema.safeParse(json)
   if (!envelope.success) {
-    throw new ApiError('bad_response', `Unexpected ${response.status}`, response.status)
+    throw new ApiError(
+      'bad_response',
+      `Unexpected ${response.status}`,
+      response.status
+    )
   }
   if (!envelope.data.ok) {
     const { code, message } = envelope.data.error

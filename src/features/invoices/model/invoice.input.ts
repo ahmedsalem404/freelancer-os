@@ -1,5 +1,5 @@
-import { paymentMethodKindSchema } from '@/features/settings/model/settings.schema'
 import { z } from 'zod'
+import { paymentMethodKindSchema } from '@/features/settings/model/settings.schema'
 
 /** Body of `POST /api/invoices/:id/payments`. The server sets the date. */
 export const recordPaymentInput = z.object({

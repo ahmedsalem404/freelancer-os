@@ -1,10 +1,10 @@
+import { daysBetween } from '@/shared/model/dates'
 import type {
   Invoice,
   InvoiceItem,
 } from '@/features/invoices/model/invoice.schema'
 import type { Settings } from '@/features/settings/model/settings.schema'
 import type { TimeEntry } from '@/features/time/model/time.schema'
-import { daysBetween } from '@/shared/model/dates'
 import { currentCycle, retainerOverage } from './cycles'
 import type { Engagement, EngagementCycle } from './engagement.schema'
 import type { AllowanceUnit } from './enums'
@@ -41,7 +41,11 @@ export type MeterDb = {
 const EMPTY = { used: 0, included: 0, overage: 0, unbilled: 0 } as const
 
 /** One comparable meter per engagement, whatever its type. */
-export function engagementMeter(db: MeterDb, e: Engagement, today: string): Meter {
+export function engagementMeter(
+  db: MeterDb,
+  e: Engagement,
+  today: string
+): Meter {
   const near = db.settings.meterNearRatio
 
   if (e.type === 'project') {

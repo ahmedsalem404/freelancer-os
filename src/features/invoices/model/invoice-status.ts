@@ -6,8 +6,10 @@ export type InvoiceStatus =
 
 type PaymentsDb = { payments: Payment[] }
 
-export const itemsOf = (db: { invoiceItems: InvoiceItem[] }, invoiceId: string) =>
-  db.invoiceItems.filter((i) => i.invoiceId === invoiceId)
+export const itemsOf = (
+  db: { invoiceItems: InvoiceItem[] },
+  invoiceId: string
+) => db.invoiceItems.filter((i) => i.invoiceId === invoiceId)
 
 export const invoicePaid = (db: PaymentsDb, invoiceId: string) =>
   db.payments
@@ -32,5 +34,9 @@ export function invoiceStatus(
 }
 
 /** Issued, not void, not fully paid. */
-export const isOpenInvoice = (db: PaymentsDb, invoice: Invoice, today: string) =>
+export const isOpenInvoice = (
+  db: PaymentsDb,
+  invoice: Invoice,
+  today: string
+) =>
   ['unpaid', 'partial', 'overdue'].includes(invoiceStatus(db, invoice, today))

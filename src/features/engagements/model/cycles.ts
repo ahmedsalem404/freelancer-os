@@ -1,10 +1,10 @@
 /** Retainer / subscription cycles: usage windows and renewal state. */
+import { daysBetween } from '@/shared/model/dates'
 import type {
   Invoice,
   InvoiceItem,
 } from '@/features/invoices/model/invoice.schema'
 import type { TimeEntry } from '@/features/time/model/time.schema'
-import { daysBetween } from '@/shared/model/dates'
 import type { EngagementCycle } from './engagement.schema'
 import type { EngagementStatus } from './enums'
 
@@ -68,11 +68,7 @@ export function retainerOverage(
 }
 
 export type SubscriptionState =
-  | 'active'
-  | 'due'
-  | 'grace'
-  | 'lapsed'
-  | Exclude<EngagementStatus, 'active'>
+  'active' | 'due' | 'grace' | 'lapsed' | Exclude<EngagementStatus, 'active'>
 
 export function subscriptionState(
   cycle: EngagementCycle,

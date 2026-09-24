@@ -1,22 +1,22 @@
-import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
-import { useMoneyText } from '@/features/rates/ui/money'
-import { Panel } from '@/shared/components/panel'
-import { engagementMeter } from '@/features/engagements/model/meter'
-import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import { useState } from 'react'
+import { useDb } from '@/app/client/snapshot-query'
+import { Panel } from '@/shared/components/panel'
+import { cn } from '@/shared/lib/utils'
+import { todayIso } from '@/shared/model/dates'
 import { AlertTriangle, Receipt } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { useDb } from '@/app/client/snapshot-query'
-import { cn } from '@/shared/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import type { Engagement } from '@/features/engagements/model/engagement.schema'
+import { engagementMeter } from '@/features/engagements/model/meter'
+import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
 import { useInvoiceToast } from '@/features/invoices/ui/use-invoice-toast'
+import { useMoneyText } from '@/features/rates/ui/money'
 import {
   useBillExtraHours,
   useLogTime,
 } from '@/features/time/api/use-time-actions'
-import { todayIso } from '@/shared/model/dates'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 
 const MINUTES_PER_HOUR = 60
 

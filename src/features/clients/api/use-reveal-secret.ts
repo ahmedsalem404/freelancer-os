@@ -1,6 +1,6 @@
-import { callApi, seg } from '@/shared/http/api-client'
-import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
+import { useMutation } from '@tanstack/react-query'
+import { callApi, seg } from '@/shared/http/api-client'
 
 /** Reveals one vault secret; the API keeps it locked until phase 3. */
 export const useRevealSecret = () =>

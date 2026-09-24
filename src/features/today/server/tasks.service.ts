@@ -8,7 +8,10 @@ import { tasks } from './today.table'
 
 /** Adds a task for today, assigned to the acting member, at the end. */
 export function addTask(ctx: Ctx, input: AddTaskInput) {
-  const last = ctx.db.select({ position: max(tasks.position) }).from(tasks).get()
+  const last = ctx.db
+    .select({ position: max(tasks.position) })
+    .from(tasks)
+    .get()
   const id = newId('task')
   ctx.db
     .insert(tasks)

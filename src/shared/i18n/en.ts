@@ -83,6 +83,7 @@ export const sharedEn: Widen<typeof sharedAr> = {
     internal_error: 'Server error — check the server log',
     lead_needs_conversion: 'Winning a lead means converting it to a client',
     lead_already_won: 'This lead is already converted',
+    overpayment: 'The amount is more than the invoice balance',
     no_identity: 'Add a billing identity first',
   },
 }

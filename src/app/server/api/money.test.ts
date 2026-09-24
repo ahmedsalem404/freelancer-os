@@ -1,6 +1,9 @@
-import { invoiceBalance, invoiceStatus } from '@/features/invoices/model/invoice-status'
 import { isoDay } from '@/shared/model/dates'
 import { afterEach, describe, expect, it } from 'vitest'
+import {
+  invoiceBalance,
+  invoiceStatus,
+} from '@/features/invoices/model/invoice-status'
 import { createTestApp } from './test-app'
 
 let t: ReturnType<typeof createTestApp>
@@ -30,7 +33,10 @@ describe('PUT /api/rates/today', () => {
       usdInYer: 1600,
     })
     expect(res.status).toBe(400)
-    expect(res.json).toMatchObject({ ok: false, error: { code: 'invalid_input' } })
+    expect(res.json).toMatchObject({
+      ok: false,
+      error: { code: 'invalid_input' },
+    })
   })
 })
 
@@ -59,6 +65,19 @@ describe('POST /api/invoices/:id/payments', () => {
         paymentId,
       })
     )
+  })
+
+  it('refuses a payment above the remaining balance', async () => {
+    t = createTestApp()
+    const db = await t.snapshot()
+    const invoice = db.invoices.find((i) => invoiceBalance(db, i) > 0)!
+    const res = await t.call('POST', `/invoices/${invoice.id}/payments`, {
+      amountMinor: invoiceBalance(db, invoice) + 1,
+      rateToBase: invoice.rateToBase,
+      method: 'bank',
+    })
+    expect(res.status).toBe(422)
+    expect(res.json.error?.code).toBe('overpayment')
   })
 
   it('answers 404 for an unknown invoice and 400 for a zero amount', async () => {

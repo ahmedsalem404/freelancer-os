@@ -1,14 +1,14 @@
-import { type MeterDb, engagementMeter } from '@/features/engagements/model/meter'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
+import {
+  type MeterDb,
+  engagementMeter,
+} from '@/features/engagements/model/meter'
 import {
   invoiceBalance,
   invoiceStatus,
   isOpenInvoice,
 } from '@/features/invoices/model/invoice-status'
-import type {
-  Invoice,
-  Payment,
-} from '@/features/invoices/model/invoice.schema'
+import type { Invoice, Payment } from '@/features/invoices/model/invoice.schema'
 
 export type ClientHealth = 'good' | 'watch' | 'risk'
 
@@ -23,8 +23,7 @@ export function clientHealth(
   today: string
 ): ClientHealth {
   const overdue = db.invoices.filter(
-    (i) =>
-      i.clientId === clientId && invoiceStatus(db, i, today) === 'overdue'
+    (i) => i.clientId === clientId && invoiceStatus(db, i, today) === 'overdue'
   ).length
   const outOfScope = db.engagements
     .filter((e) => e.clientId === clientId)

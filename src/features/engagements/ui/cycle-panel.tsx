@@ -1,19 +1,22 @@
-import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
-import { SubStateBadge } from '@/features/engagements/ui/badges'
-import { useMoneyText } from '@/features/rates/ui/money'
+import { useDb } from '@/app/client/snapshot-query'
 import { Panel } from '@/shared/components/panel'
-import { currentCycle, subscriptionState } from '@/features/engagements/model/cycles'
-import { engagementMeter } from '@/features/engagements/model/meter'
-import type { Engagement } from '@/features/engagements/model/engagement.schema'
+import { useDateFormat } from '@/shared/lib/dates'
+import { cn } from '@/shared/lib/utils'
+import { todayIso } from '@/shared/model/dates'
 import { CalendarClock, Pause, Receipt, TimerReset } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { useDb } from '@/app/client/snapshot-query'
-import { cn } from '@/shared/lib/utils'
-import { useDateFormat } from '@/shared/lib/dates'
-import { useInvoiceToast } from '@/features/invoices/ui/use-invoice-toast'
-import { todayIso } from '@/shared/model/dates'
 import { Button } from '@/components/ui/button'
+import {
+  currentCycle,
+  subscriptionState,
+} from '@/features/engagements/model/cycles'
+import type { Engagement } from '@/features/engagements/model/engagement.schema'
+import { engagementMeter } from '@/features/engagements/model/meter'
+import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
+import { SubStateBadge } from '@/features/engagements/ui/badges'
+import { useInvoiceToast } from '@/features/invoices/ui/use-invoice-toast'
+import { useMoneyText } from '@/features/rates/ui/money'
 import {
   useExtendGrace,
   useRenewCycle,
@@ -95,7 +98,10 @@ export function CyclePanel({ engagement }: { engagement: Engagement }) {
             onClick={() =>
               extendGrace.mutate(
                 { engagementId: engagement.id, days: GRACE_STEP_DAYS },
-                { onSuccess: () => toast.success(t('engagements.graceExtended')) }
+                {
+                  onSuccess: () =>
+                    toast.success(t('engagements.graceExtended')),
+                }
               )
             }
           >

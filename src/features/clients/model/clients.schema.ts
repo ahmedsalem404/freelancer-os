@@ -1,6 +1,6 @@
-import { currencySchema } from '@/shared/money/money.schema'
-import { isoDateTime, recordId } from '@/shared/model/schema'
 import { z } from 'zod'
+import { isoDateTime, recordId } from '@/shared/model/schema'
+import { currencySchema } from '@/shared/money/money.schema'
 import { CLIENT_KINDS } from './enums'
 
 export const clientSchema = z.object({

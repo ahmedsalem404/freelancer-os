@@ -1,10 +1,10 @@
-import { ratesFromDaily } from '@/features/rates/model/rates'
 import type { Database } from '@/shared/db/database'
 import { newId } from '@/shared/db/new-id'
 import { DomainError } from '@/shared/http/errors'
 import type { Currency } from '@/shared/money/currency'
 import type { Ctx } from '@/shared/server/context'
 import { desc } from 'drizzle-orm'
+import { ratesFromDaily } from '@/features/rates/model/rates'
 import type { SaveDailyRateInput } from '../model/rates.schema'
 import { exchangeRates } from './rates.table'
 

@@ -1,20 +1,24 @@
-import { deliverableApproval, deliverablesOf, roundsOf } from '@/features/engagements/model/guard'
-import type { Deliverable } from '@/features/engagements/model/work.schema'
-import {
-  useAddFeedback,
-  useApproveDeliverable,
-} from '@/features/engagements/api/use-deliverable-actions'
-import { useDb } from '@/app/client/snapshot-query'
 import { useState } from 'react'
+import { useDb } from '@/app/client/snapshot-query'
+import { useLocale } from '@/shared/context/direction-provider'
+import { useDateFormat } from '@/shared/lib/dates'
+import { cn } from '@/shared/lib/utils'
 import { Check, Languages, MessageSquare } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { useDateFormat } from '@/shared/lib/dates'
-import { cn } from '@/shared/lib/utils'
-import { useLocale } from '@/shared/context/direction-provider'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  useAddFeedback,
+  useApproveDeliverable,
+} from '@/features/engagements/api/use-deliverable-actions'
+import {
+  deliverableApproval,
+  deliverablesOf,
+  roundsOf,
+} from '@/features/engagements/model/guard'
+import type { Deliverable } from '@/features/engagements/model/work.schema'
 
 /** Public status + approval page. The token maps to an engagement (mock). */
 export function Portal({ token }: { token: string }) {
@@ -130,7 +134,11 @@ function PortalDeliverable({ deliverable }: { deliverable: Deliverable }) {
     if (!note.trim() || addFeedback.isPending) return
     // Owner decision: a client change request is a real revision round.
     addFeedback.mutate(
-      { deliverableId: deliverable.id, note: note.trim(), source: 'client_link' },
+      {
+        deliverableId: deliverable.id,
+        note: note.trim(),
+        source: 'client_link',
+      },
       {
         onSuccess: ({ roundNo }) => {
           toast.success(t('engagements.feedbackSaved', { n: roundNo }))

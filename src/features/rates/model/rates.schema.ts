@@ -1,5 +1,5 @@
-import { isoDate } from '@/shared/model/schema'
 import { z } from 'zod'
+import { isoDate } from '@/shared/model/schema'
 
 /** Upper bound that still accepts any realistic YER quote. */
 const MAX_QUOTE = 1_000_000

@@ -1,5 +1,5 @@
-import { isoDate, recordId } from '@/shared/model/schema'
 import { z } from 'zod'
+import { isoDate, recordId } from '@/shared/model/schema'
 
 /** A day has 1440 minutes; one entry never spans more. */
 const MAX_MINUTES = 24 * 60

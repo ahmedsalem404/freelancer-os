@@ -1,3 +1,7 @@
+import { DomainError } from '@/shared/http/errors'
+import { parseRows } from '@/shared/model/schema'
+import type { Ctx } from '@/shared/server/context'
+import { eq } from 'drizzle-orm'
 import { retainerOverage } from '@/features/engagements/model/cycles'
 import {
   billingOf,
@@ -5,10 +9,6 @@ import {
   openCycle,
 } from '@/features/engagements/server'
 import { engagementInvoices, issueInvoice } from '@/features/invoices/server'
-import { DomainError } from '@/shared/http/errors'
-import { parseRows } from '@/shared/model/schema'
-import type { Ctx } from '@/shared/server/context'
-import { eq } from 'drizzle-orm'
 import { timeEntrySchema } from '../model/time.schema'
 import { timeEntries } from './time.table'
 

@@ -1,15 +1,16 @@
-import { useAction } from '@/app/client/use-action'
-import { issuedInvoiceSchema } from '@/features/invoices/model/invoice.input'
-import { callApi, seg } from '@/shared/http/api-client'
 import { z } from 'zod'
+import { useAction } from '@/app/client/use-action'
+import { callApi, seg } from '@/shared/http/api-client'
+import { issuedInvoiceSchema } from '@/features/invoices/model/invoice.input'
 import type { ChangeScopeInput } from '../model/engagement.input'
 
 const path = (engagementId: string, action: string) =>
   `/engagements/${seg(engagementId)}/${action}`
 
 export const useChangeScope = () =>
-  useAction(({ engagementId, ...body }: ChangeScopeInput & { engagementId: string }) =>
-    callApi('POST', path(engagementId, 'scope'), issuedInvoiceSchema, body)
+  useAction(
+    ({ engagementId, ...body }: ChangeScopeInput & { engagementId: string }) =>
+      callApi('POST', path(engagementId, 'scope'), issuedInvoiceSchema, body)
   )
 
 export const useRenewCycle = () =>
@@ -29,7 +30,11 @@ export const useExtendGrace = () =>
 
 export const useStopCycle = () =>
   useAction((engagementId: string) =>
-    callApi('POST', path(engagementId, 'stop'), z.object({ status: z.string() }))
+    callApi(
+      'POST',
+      path(engagementId, 'stop'),
+      z.object({ status: z.string() })
+    )
   )
 
 export const useToggleStage = () =>

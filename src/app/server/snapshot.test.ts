@@ -1,14 +1,17 @@
 import type { Snapshot as Db } from '@/app/client/snapshot.schema'
+import { sql } from 'drizzle-orm'
+import { describe, expect, it } from 'vitest'
 import { clientHealth } from '@/features/clients/model/client-health'
 import { engagementCurrentValue } from '@/features/engagements/model/guard'
 import { engagementMeter } from '@/features/engagements/model/meter'
-import { invoiceBalance, invoiceStatus } from '@/features/invoices/model/invoice-status'
-import { seedDb, today } from './seed/demo-data'
-import { sql } from 'drizzle-orm'
-import { describe, expect, it } from 'vitest'
+import {
+  invoiceBalance,
+  invoiceStatus,
+} from '@/features/invoices/model/invoice-status'
 import { parseSnapshot } from '../client/snapshot.schema'
 import { openDatabase, runMigrations } from './db'
 import { seedDemo } from './seed/demo'
+import { seedDb, today } from './seed/demo-data'
 import { loadSnapshot } from './snapshot'
 
 function seededSnapshot() {

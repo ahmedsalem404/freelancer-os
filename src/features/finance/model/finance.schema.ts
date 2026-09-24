@@ -1,6 +1,6 @@
-import { moneyFieldsSchema } from '@/shared/money/money.schema'
-import { isoDate, recordId } from '@/shared/model/schema'
 import { z } from 'zod'
+import { isoDate, recordId } from '@/shared/model/schema'
+import { moneyFieldsSchema } from '@/shared/money/money.schema'
 import { EXPENSE_CATEGORIES, SUBSCRIPTION_PERIODS } from './enums'
 
 export const expenseSchema = moneyFieldsSchema.extend({

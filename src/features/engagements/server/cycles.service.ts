@@ -1,15 +1,15 @@
-import { issueInvoice } from '@/features/invoices/server'
-import { settings } from '@/features/settings/server'
 import { newId } from '@/shared/db/new-id'
 import { DomainError, required } from '@/shared/http/errors'
 import { addMonthsIso } from '@/shared/model/dates'
 import type { Ctx } from '@/shared/server/context'
 import { eq } from 'drizzle-orm'
+import { issueInvoice } from '@/features/invoices/server'
+import { settings } from '@/features/settings/server'
 import type { ExtendGraceInput } from '../model/engagement.input'
 import type { CyclePeriod } from '../model/enums'
-import { billingOf, findEngagement, openCycle } from './lookup'
 import { engagementCycles } from './cycles.table'
 import { engagements } from './engagements.table'
+import { billingOf, findEngagement, openCycle } from './lookup'
 
 const PERIOD_MONTHS: Record<CyclePeriod, number> = {
   monthly: 1,
@@ -20,7 +20,11 @@ const PERIOD_MONTHS: Record<CyclePeriod, number> = {
 function requireOpenCycle(ctx: Ctx, engagementId: string) {
   const cycle = openCycle(ctx, engagementId)
   if (!cycle) {
-    throw new DomainError('no_open_cycle', 'This engagement has no open cycle', 409)
+    throw new DomainError(
+      'no_open_cycle',
+      'This engagement has no open cycle',
+      409
+    )
   }
   return cycle
 }
@@ -33,10 +37,17 @@ export function renewCycle(ctx: Ctx, engagementId: string) {
   const e = findEngagement(ctx, engagementId)
   const cycle = requireOpenCycle(ctx, engagementId)
   if (!e.cyclePeriod) {
-    throw new DomainError('no_cycle_period', 'Engagement has no billing period', 409)
+    throw new DomainError(
+      'no_cycle_period',
+      'Engagement has no billing period',
+      409
+    )
   }
   const setup = required(
-    ctx.db.select({ graceDays: settings.defaultGraceDays }).from(settings).get(),
+    ctx.db
+      .select({ graceDays: settings.defaultGraceDays })
+      .from(settings)
+      .get(),
     'settings',
     '1'
   )

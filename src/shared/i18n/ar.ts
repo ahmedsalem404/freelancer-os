@@ -78,6 +78,7 @@ export const sharedAr = {
     internal_error: 'خطأ في الخادم — راجع سجل الخادم',
     lead_needs_conversion: 'الفوز يحتاج تحويل العميل المحتمل إلى عميل',
     lead_already_won: 'هذا العميل المحتمل محوّل من قبل',
+    overpayment: 'المبلغ أكبر من المتبقي على الفاتورة',
     no_identity: 'أضف هوية فوترة أولاً',
   },
 }

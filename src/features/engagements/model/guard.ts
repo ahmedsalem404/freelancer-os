@@ -21,7 +21,10 @@ export function allowanceState(
   return 'ok'
 }
 
-export const roundsOf = (db: { rounds: ReviewRound[] }, deliverableId: string) =>
+export const roundsOf = (
+  db: { rounds: ReviewRound[] },
+  deliverableId: string
+) =>
   db.rounds
     .filter((r) => r.deliverableId === deliverableId)
     .sort((a, b) => a.roundNo - b.roundNo)

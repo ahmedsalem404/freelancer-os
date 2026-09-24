@@ -1,12 +1,12 @@
-import { money } from '@/shared/money/money'
-import { clients } from '@/features/clients/server'
-import { settings } from '@/features/settings/server'
 import { newId } from '@/shared/db/new-id'
 import { required } from '@/shared/http/errors'
 import { addDaysIso } from '@/shared/model/dates'
 import type { Currency } from '@/shared/money/currency'
+import { money } from '@/shared/money/money'
 import type { Ctx } from '@/shared/server/context'
 import { eq } from 'drizzle-orm'
+import { clients } from '@/features/clients/server'
+import { settings } from '@/features/settings/server'
 import type { InvoiceItemSource, InvoiceKind } from '../model/enums'
 import { nextInvoiceNumber } from '../model/numbering'
 import { invoiceItems, invoices } from './invoices.table'
@@ -82,7 +82,10 @@ export function issueInvoice(ctx: Ctx, draft: DraftInvoice): IssuedInvoice {
   if (lines.length > 0) ctx.db.insert(invoiceItems).values(lines).run()
   ctx.db
     .update(settings)
-    .set({ invoiceSeqYear: seq.invoiceSeqYear, invoiceSeqNext: seq.invoiceSeqNext })
+    .set({
+      invoiceSeqYear: seq.invoiceSeqYear,
+      invoiceSeqNext: seq.invoiceSeqNext,
+    })
     .run()
 
   return { id, number: seq.number, itemIds: lines.map((line) => line.id) }

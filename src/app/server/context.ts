@@ -1,9 +1,9 @@
-import { teamMembers } from '@/features/settings/server'
 import type { Database } from '@/shared/db/database'
 import { DomainError } from '@/shared/http/errors'
 import { isoDay } from '@/shared/model/dates'
 import type { Ctx, RunInTx } from '@/shared/server/context'
 import { and, asc, eq, isNull } from 'drizzle-orm'
+import { teamMembers } from '@/features/settings/server'
 
 export type Clock = () => Date
 

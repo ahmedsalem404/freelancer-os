@@ -1,5 +1,5 @@
-import { isoDate, isoDateTime, recordId } from '@/shared/model/schema'
 import { z } from 'zod'
+import { isoDate, isoDateTime, recordId } from '@/shared/model/schema'
 
 export const taskSchema = z.object({
   id: recordId,

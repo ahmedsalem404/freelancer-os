@@ -1,6 +1,6 @@
+import { afterEach, describe, expect, it } from 'vitest'
 import { engagementCurrentValue } from '@/features/engagements/model/guard'
 import { exchangeRates } from '@/features/rates/server/rates.table'
-import { afterEach, describe, expect, it } from 'vitest'
 import { createTestApp } from './test-app'
 
 let t: ReturnType<typeof createTestApp>
@@ -60,8 +60,9 @@ describe('change scope', () => {
     const after = await t.snapshot()
     const added = after.deliverables.find((d) => d.title === 'Menu design')
     expect(added).toMatchObject({ origin: 'change_scope', dueOn: '2030-01-10' })
-    expect(after.invoiceItems.find((i) => i.id === added?.invoiceItemId))
-      .toMatchObject({ sourceKind: 'scope_change', deliverableId: added?.id })
+    expect(
+      after.invoiceItems.find((i) => i.id === added?.invoiceItemId)
+    ).toMatchObject({ sourceKind: 'scope_change', deliverableId: added?.id })
     expect(engagementCurrentValue(after, e)).toBe(
       engagementCurrentValue(before, e) + 80000
     )
@@ -106,16 +107,18 @@ describe('subscription cycles', () => {
     expect(bad.status).toBe(400)
     await t.call('POST', '/engagements/e-masar-saas/grace', { days: 5 })
     let db = await t.snapshot()
-    expect(db.cycles.find((c) => c.engagementId === 'e-masar-saas'))
-      .toMatchObject({ decision: 'grace', graceExtendedDays: 5 })
+    expect(
+      db.cycles.find((c) => c.engagementId === 'e-masar-saas')
+    ).toMatchObject({ decision: 'grace', graceExtendedDays: 5 })
 
     await t.call('POST', '/engagements/e-masar-saas/stop')
     db = await t.snapshot()
     expect(db.engagements.find((e) => e.id === 'e-masar-saas')?.status).toBe(
       'paused'
     )
-    expect(db.cycles.find((c) => c.engagementId === 'e-masar-saas')?.decision)
-      .toBe('stopped')
+    expect(
+      db.cycles.find((c) => c.engagementId === 'e-masar-saas')?.decision
+    ).toBe('stopped')
   })
 })
 

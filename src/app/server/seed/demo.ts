@@ -4,7 +4,6 @@
  * is visible right after a reset. Seed ids stay readable ('c-nakhla').
  */
 import { subMonths, subYears, parseISO, format } from 'date-fns'
-import { dailyRates, seedDb } from './demo-data'
 import type { Database } from '@/shared/db/database'
 import type { SQLiteTable } from 'drizzle-orm/sqlite-core'
 import { importantDates } from '@/features/calendar/server/calendar.table'
@@ -39,6 +38,7 @@ import { settings } from '@/features/settings/server/settings.table'
 import { teamMembers } from '@/features/settings/server/team.table'
 import { timeEntries } from '@/features/time/server/time.table'
 import { dailyReflections, tasks } from '@/features/today/server/today.table'
+import { dailyRates, seedDb } from './demo-data'
 
 const OWNER = 'm-owner'
 

@@ -3,6 +3,9 @@
  * initialises i18next (the global instance). Keys stay global — a feature
  * owns the files its sections live in, not a separate namespace.
  */
+import { sharedAr } from '@/shared/i18n/ar'
+import { sharedEn } from '@/shared/i18n/en'
+import { initialLang } from '@/shared/i18n/lang'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { calendarAr } from '@/features/calendar/i18n/ar'
@@ -29,9 +32,6 @@ import { timeAr } from '@/features/time/i18n/ar'
 import { timeEn } from '@/features/time/i18n/en'
 import { todayAr } from '@/features/today/i18n/ar'
 import { todayEn } from '@/features/today/i18n/en'
-import { sharedAr } from '@/shared/i18n/ar'
-import { sharedEn } from '@/shared/i18n/en'
-import { initialLang } from '@/shared/i18n/lang'
 
 const ar = {
   ...sharedAr,

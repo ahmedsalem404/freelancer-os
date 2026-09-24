@@ -1,9 +1,9 @@
-import { money } from '@/shared/money/money'
-import { addAttachment } from '@/features/files/server'
 import { newId } from '@/shared/db/new-id'
 import { DomainError, required } from '@/shared/http/errors'
+import { money } from '@/shared/money/money'
 import type { Ctx } from '@/shared/server/context'
-import { eq } from 'drizzle-orm'
+import { and, eq, sum } from 'drizzle-orm'
+import { addAttachment } from '@/features/files/server'
 import type { RecordPaymentInput } from '../model/invoice.input'
 import { invoices } from './invoices.table'
 import { payments } from './payments.table'
@@ -16,7 +16,11 @@ export function recordPayment(
 ) {
   const invoice = required(
     ctx.db
-      .select({ state: invoices.state, currency: invoices.currency })
+      .select({
+        state: invoices.state,
+        currency: invoices.currency,
+        amount: invoices.amount,
+      })
       .from(invoices)
       .where(eq(invoices.id, invoiceId))
       .get(),
@@ -28,6 +32,22 @@ export function recordPayment(
       'invoice_not_open',
       `Invoice ${invoiceId} is ${invoice.state}`,
       409
+    )
+  }
+
+  const paid = ctx.db
+    .select({ total: sum(payments.appliedAmount) })
+    .from(payments)
+    .where(
+      and(eq(payments.invoiceId, invoiceId), eq(payments.status, 'confirmed'))
+    )
+    .get()
+  const balance = invoice.amount - Number(paid?.total ?? 0)
+  if (input.amountMinor > balance) {
+    throw new DomainError(
+      'overpayment',
+      `Payment exceeds the remaining balance (${balance})`,
+      422
     )
   }
 

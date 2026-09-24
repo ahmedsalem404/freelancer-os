@@ -1,5 +1,5 @@
-import { zValidator } from '@hono/zod-validator'
 import type { ZodType } from 'zod'
+import { zValidator } from '@hono/zod-validator'
 import { failure } from './envelope'
 
 /** JSON body validator that answers bad input with the standard envelope. */
