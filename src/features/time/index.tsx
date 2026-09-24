@@ -5,7 +5,7 @@ import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
-import { daysFrom, useDateFormat } from '@/lib/dates'
+import { daysFrom, useDateFormat } from '@/shared/lib/dates'
 
 const WINDOW_DAYS = 7
 const hours = (minutes: number) => Math.round((minutes / 60) * 10) / 10

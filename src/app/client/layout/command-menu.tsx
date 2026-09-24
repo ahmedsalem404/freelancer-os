@@ -3,8 +3,8 @@ import React from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Handshake, Moon, Sun, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useSearch } from '@/context/search-provider'
-import { useTheme } from '@/context/theme-provider'
+import { useSearch } from '@/shared/context/search-provider'
+import { useTheme } from '@/shared/context/theme-provider'
 import {
   CommandDialog,
   CommandEmpty,
@@ -14,8 +14,8 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import { navSections } from './layout/nav'
-import { ScrollArea } from './ui/scroll-area'
+import { navSections } from './nav'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export function CommandMenu() {
   const navigate = useNavigate()

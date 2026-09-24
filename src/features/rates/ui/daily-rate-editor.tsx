@@ -5,7 +5,7 @@ import { useCurrentRate, useSaveDailyRate } from '@/features/rates/api/use-rates
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { useLang } from '@/lib/dates'
+import { useLang } from '@/shared/lib/dates'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'

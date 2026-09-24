@@ -6,7 +6,7 @@
 import type { Meter } from '@/features/engagements/model/meter'
 import { motion, useReducedMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 
 const MAX_DISCRETE = 40
 

@@ -5,7 +5,7 @@ import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { ArrowLeftRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 

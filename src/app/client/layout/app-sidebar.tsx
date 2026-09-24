@@ -3,7 +3,7 @@ import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { Link, useLocation } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { useLayout } from '@/context/layout-provider'
+import { useLayout } from '@/shared/context/layout-provider'
 import {
   Sidebar,
   SidebarContent,

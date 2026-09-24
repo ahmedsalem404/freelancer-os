@@ -9,7 +9,7 @@ import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { useDateFormat } from '@/lib/dates'
+import { useDateFormat } from '@/shared/lib/dates'
 import { Button } from '@/components/ui/button'
 
 type Props = { invoices: Invoice[]; showClient?: boolean }

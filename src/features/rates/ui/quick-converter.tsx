@@ -4,8 +4,8 @@ import { useLastRates } from '@/features/rates/api/use-rates'
 import { useState } from 'react'
 import { ArrowLeftRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useLang } from '@/lib/dates'
-import { cn } from '@/lib/utils'
+import { useLang } from '@/shared/lib/dates'
+import { cn } from '@/shared/lib/utils'
 import { Input } from '@/components/ui/input'
 
 export function QuickConverter() {

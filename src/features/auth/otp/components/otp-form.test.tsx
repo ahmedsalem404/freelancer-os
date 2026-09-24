@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, type RenderResult } from 'vitest-browser-react'
 import { type Locator, userEvent } from 'vitest/browser'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { showSubmittedData } from '@/shared/lib/show-submitted-data'
 import { OtpForm } from './otp-form'
 
 const navigate = vi.fn()
@@ -11,7 +11,7 @@ vi.mock('@tanstack/react-router', async (orig) => {
   return { ...actual, useNavigate: () => navigate }
 })
 
-vi.mock('@/lib/show-submitted-data', () => ({ showSubmittedData: vi.fn() }))
+vi.mock('@/shared/lib/show-submitted-data', () => ({ showSubmittedData: vi.fn() }))
 
 describe('OtpForm', () => {
   let screen: RenderResult

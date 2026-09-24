@@ -12,9 +12,9 @@ import { useState } from 'react'
 import { addDays, format, parseISO } from 'date-fns'
 import { BellRing, MessageCircle, Printer, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useDateFormat } from '@/lib/dates'
-import { cn } from '@/lib/utils'
-import { waLink } from '@/lib/whatsapp'
+import { useDateFormat } from '@/shared/lib/dates'
+import { cn } from '@/shared/lib/utils'
+import { waLink } from '@/shared/lib/whatsapp'
 import { Button } from '@/components/ui/button'
 
 export function InvoiceDetail({ id }: { id: string }) {

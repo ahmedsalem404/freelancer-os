@@ -17,8 +17,8 @@ import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Eye, EyeOff, KeyRound, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useDateFormat } from '@/lib/dates'
-import { waLink } from '@/lib/whatsapp'
+import { useDateFormat } from '@/shared/lib/dates'
+import { waLink } from '@/shared/lib/whatsapp'
 import { Button } from '@/components/ui/button'
 
 const REVEAL_MS = 10_000

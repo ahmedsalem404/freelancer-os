@@ -7,7 +7,7 @@ import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { useAuthStore } from '@/stores/auth-store'
-import { sleep, cn } from '@/lib/utils'
+import { sleep, cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { PasswordInput } from '@/components/password-input'
+import { PasswordInput } from '@/shared/components/password-input'
 
 const formSchema = z.object({
   email: z.email({

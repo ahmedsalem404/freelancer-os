@@ -2,7 +2,7 @@ import { pill } from '@/shared/components/pill'
 import type { SubscriptionState } from '@/features/engagements/model/cycles'
 import type { EngagementType } from '@/features/engagements/model/enums'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 
 const TYPE_STYLE: Record<EngagementType, string> = {
   project: 'bg-accent text-accent-foreground',

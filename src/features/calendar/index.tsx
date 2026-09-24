@@ -21,8 +21,8 @@ import { Link } from '@tanstack/react-router'
 import { ar as arLocale, enUS } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useLang } from '@/lib/dates'
-import { cn } from '@/lib/utils'
+import { useLang } from '@/shared/lib/dates'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 
 type Kind =

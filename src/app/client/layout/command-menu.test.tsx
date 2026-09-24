@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, type RenderResult } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
-import { SearchProvider } from '@/context/search-provider'
+import { SearchProvider } from '@/shared/context/search-provider'
+import { CommandMenu } from './command-menu'
 
 const COMMAND_MENU_PLACEHOLDER = 'Type a command or search...'
 
@@ -18,14 +19,21 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   }
 })
 
-vi.mock('@/context/theme-provider', () => ({
+// The menu lists clients and engagements from the snapshot.
+vi.mock('@/app/client/snapshot-query', () => ({
+  useDb: () => ({ clients: [], engagements: [] }),
+}))
+
+vi.mock('@/shared/context/theme-provider', () => ({
   useTheme: () => ({ setTheme: mocks.setTheme }),
 }))
 
 type ShortcutModifier = 'Control' | 'Meta'
 
 async function renderWithSearchProvider() {
-  return await render(<SearchProvider>{null}</SearchProvider>)
+  return await render(<SearchProvider>
+      <CommandMenu />
+    </SearchProvider>)
 }
 
 /**

@@ -5,9 +5,9 @@ import { useDb } from '@/app/client/snapshot-query'
 import { Download, Languages, Moon, Sun, Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
-import { useLocale } from '@/context/direction-provider'
-import { useTheme } from '@/context/theme-provider'
+import { cn } from '@/shared/lib/utils'
+import { useLocale } from '@/shared/context/direction-provider'
+import { useTheme } from '@/shared/context/theme-provider'
 import { Button } from '@/components/ui/button'
 
 export function SettingsPage() {

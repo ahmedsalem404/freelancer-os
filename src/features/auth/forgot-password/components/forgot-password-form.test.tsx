@@ -10,7 +10,7 @@ vi.mock('@tanstack/react-router', async (orig) => {
   return { ...actual, useNavigate: () => navigateMock }
 })
 
-vi.mock('@/lib/utils', async (orig) => ({
+vi.mock('@/shared/lib/utils', async (orig) => ({
   ...(await orig()),
   sleep: vi.fn(() => Promise.resolve()),
 }))

@@ -8,7 +8,7 @@ import { AlertTriangle, Receipt } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useDb } from '@/app/client/snapshot-query'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { useInvoiceToast } from '@/features/invoices/ui/use-invoice-toast'
 import {
   useBillExtraHours,

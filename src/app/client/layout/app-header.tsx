@@ -3,12 +3,12 @@ import { CURRENCIES } from '@/shared/money/currency'
 import { useUiPrefs } from '@/app/client/ui-prefs'
 import { Languages, Moon, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
-import { useLocale } from '@/context/direction-provider'
-import { useTheme } from '@/context/theme-provider'
+import { cn } from '@/shared/lib/utils'
+import { useLocale } from '@/shared/context/direction-provider'
+import { useTheme } from '@/shared/context/theme-provider'
 import { Button } from '@/components/ui/button'
-import { Header } from '@/components/layout/header'
-import { Search } from '@/components/search'
+import { Header } from '@/app/client/layout/header'
+import { Search } from '@/shared/components/search'
 
 function CurrencyToggle() {
   const { t } = useTranslation()

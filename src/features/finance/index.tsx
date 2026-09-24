@@ -22,7 +22,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { useDateFormat, useLang } from '@/lib/dates'
+import { useDateFormat, useLang } from '@/shared/lib/dates'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const FORECAST_WEEKS = 8

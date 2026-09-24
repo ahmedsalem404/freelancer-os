@@ -1,6 +1,6 @@
 import { type Root, type Content, type Trigger } from '@radix-ui/react-popover'
 import { CircleQuestionMark } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Popover,

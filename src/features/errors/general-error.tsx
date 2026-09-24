@@ -1,5 +1,5 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 
 type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {

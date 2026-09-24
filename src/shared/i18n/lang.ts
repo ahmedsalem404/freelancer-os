@@ -1,4 +1,4 @@
-import { getCookie } from '@/lib/cookies'
+import { getCookie } from '@/shared/lib/cookies'
 
 export type Lang = 'ar' | 'en'
 

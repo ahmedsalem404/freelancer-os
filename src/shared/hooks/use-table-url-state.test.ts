@@ -1,6 +1,6 @@
 import { type Mock, describe, expect, it, vi } from 'vitest'
 import { renderHook } from 'vitest-browser-react'
-import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 
 function lastNavigateOpts(navigate: Mock<NavigateFn>) {
   const calls = navigate.mock.calls

@@ -9,10 +9,10 @@ import {
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
-import { handleServerError } from '@/lib/handle-server-error'
-import { DirectionProvider } from './context/direction-provider'
-import { FontProvider } from './context/font-provider'
-import { ThemeProvider } from './context/theme-provider'
+import { handleServerError } from '@/shared/lib/handle-server-error'
+import { DirectionProvider } from '@/shared/context/direction-provider'
+import { FontProvider } from '@/shared/context/font-provider'
+import { ThemeProvider } from '@/shared/context/theme-provider'
 // i18n must initialize before the first render
 import '@/app/client/i18n'
 // Generated Routes

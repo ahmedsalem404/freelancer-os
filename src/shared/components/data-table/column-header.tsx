@@ -5,7 +5,7 @@ import {
   EyeNoneIcon,
 } from '@radix-ui/react-icons'
 import { type Column } from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,

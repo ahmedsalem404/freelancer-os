@@ -12,7 +12,7 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 
 type Filter = 'all' | EngagementType
 

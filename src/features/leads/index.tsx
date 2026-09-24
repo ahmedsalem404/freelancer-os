@@ -19,8 +19,8 @@ import {
 import { GripVertical } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { daysFrom } from '@/lib/dates'
-import { cn } from '@/lib/utils'
+import { daysFrom } from '@/shared/lib/dates'
+import { cn } from '@/shared/lib/utils'
 
 const STAGES: LeadStage[] = ['lead', 'proposal', 'negotiation', 'won', 'lost']
 const STALE_DAYS = 7

@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import useDialogState from '@/hooks/use-dialog-state'
+import useDialogState from '@/shared/hooks/use-dialog-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,7 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { SignOutDialog } from '@/components/sign-out-dialog'
+import { SignOutDialog } from '@/shared/components/sign-out-dialog'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
