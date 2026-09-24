@@ -1,0 +1,143 @@
+/*
+ * Freelancer OS — design tokens
+ * Ink:      petrol ink for text + primary actions (the ledger)
+ * Paper:    cool neutral surfaces
+ * Saffron:  "billable" — work beyond the agreement. Not an error: it's money.
+ * Rust:     only for overdue / destructive
+ */
+:root {
+  --radius: 0.75rem;
+  --background: #f5f6f4;
+  --foreground: #0d1f24;
+  --card: #ffffff;
+  --card-foreground: #0d1f24;
+  --popover: #ffffff;
+  --popover-foreground: #0d1f24;
+  --primary: #0f4c5c;
+  --primary-foreground: #f2fbfa;
+  --secondary: #e8eeec;
+  --secondary-foreground: #0d1f24;
+  --muted: #eceeeb;
+  --muted-foreground: #5b6b6f;
+  --accent: #e3ecea;
+  --accent-foreground: #0f4c5c;
+  --destructive: #b4401f;
+  --border: #dde3e1;
+  --input: #d5dcda;
+  --ring: #0f4c5c;
+
+  --billable: #d99100;
+  --billable-soft: #fbf0d6;
+  --billable-foreground: #6b4700;
+  --success: #1f8a5b;
+  --success-soft: #dcf1e6;
+  --overdue: #b4401f;
+  --overdue-soft: #f7e3dc;
+
+  --chart-1: #0f4c5c;
+  --chart-2: #d99100;
+  --chart-3: #3f8f86;
+  --chart-4: #9bb8b2;
+  --chart-5: #b4401f;
+
+  --duration-fast: 150ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --sidebar: #eef1ef;
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: #e1e8e6;
+  --sidebar-accent-foreground: var(--primary);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+.dark {
+  --background: #0b1417;
+  --foreground: #e6efed;
+  --card: #111d21;
+  --card-foreground: #e6efed;
+  --popover: #132126;
+  --popover-foreground: #e6efed;
+  --primary: #5cc2b3;
+  --primary-foreground: #06201d;
+  --secondary: #1a2a2f;
+  --secondary-foreground: #e6efed;
+  --muted: #17252a;
+  --muted-foreground: #8ea3a6;
+  --accent: #1a2d31;
+  --accent-foreground: #7fd6c9;
+  --destructive: #e0714f;
+  --border: #1f3035;
+  --input: #26393e;
+  --ring: #5cc2b3;
+
+  --billable: #f2b53a;
+  --billable-soft: #33280f;
+  --billable-foreground: #f8d58a;
+  --success: #4cc28a;
+  --success-soft: #11291f;
+  --overdue: #e0714f;
+  --overdue-soft: #331a12;
+
+  --chart-1: #5cc2b3;
+  --chart-2: #f2b53a;
+  --chart-3: #3f8f86;
+  --chart-4: #2f4a4f;
+  --chart-5: #e0714f;
+
+  --sidebar: #0e191c;
+  --sidebar-accent: #172629;
+  --sidebar-accent-foreground: #7fd6c9;
+}
+
+@theme inline {
+  --font-plex: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-system: system-ui, sans-serif;
+  --font-display: 'Readex Pro', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-billable: var(--billable);
+  --color-billable-soft: var(--billable-soft);
+  --color-billable-foreground: var(--billable-foreground);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-overdue: var(--overdue);
+  --color-overdue-soft: var(--overdue-soft);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
