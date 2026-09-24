@@ -1,3 +1,5 @@
+import { CURRENCIES, type Currency } from '@/shared/money/currency'
+import { convert, currencySymbol, formatAmount, toMinor } from '@/shared/money/money'
 import {
   useCurrentRate,
   useLastRates,
@@ -6,14 +8,6 @@ import {
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
-import {
-  CURRENCIES,
-  convert,
-  currencySymbol,
-  formatAmount,
-  toMinor,
-} from '@/domain/money'
-import type { Currency } from '@/domain/types'
 import { ArrowLeftRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'

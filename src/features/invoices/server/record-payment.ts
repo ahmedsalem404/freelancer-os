@@ -1,4 +1,4 @@
-import { money } from '@/domain/money'
+import { money } from '@/shared/money/money'
 import { addAttachment } from '@/features/files/server'
 import { newId } from '@/shared/db/new-id'
 import { DomainError, required } from '@/shared/http/errors'

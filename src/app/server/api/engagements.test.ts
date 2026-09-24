@@ -1,5 +1,5 @@
+import { engagementCurrentValue } from '@/features/engagements/model/guard'
 import { exchangeRates } from '@/features/rates/server/rates.table'
-import { engagementCurrentValue } from '@/domain/selectors'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createTestApp } from './test-app'
 

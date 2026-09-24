@@ -1,11 +1,7 @@
+import { clientCollectedBase, clientHealth, clientOutstandingBase } from '@/features/clients/model/client-health'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { Link } from '@tanstack/react-router'
-import {
-  clientCollectedBase,
-  clientHealth,
-  clientOutstandingBase,
-} from '@/domain/selectors'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { HealthBadge } from '@/components/fos/badges'

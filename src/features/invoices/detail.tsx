@@ -1,14 +1,9 @@
+import { invoiceBalance, invoicePaid, invoiceStatus, itemsOf } from '@/features/invoices/model/invoice-status'
+import type { Invoice } from '@/features/invoices/model/invoice.schema'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { addDays, format, parseISO } from 'date-fns'
-import {
-  invoiceBalance,
-  invoicePaid,
-  invoiceStatus,
-  itemsOf,
-} from '@/domain/selectors'
-import type { Invoice } from '@/domain/types'
 import { BellRing, MessageCircle, Printer, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateFormat } from '@/lib/dates'

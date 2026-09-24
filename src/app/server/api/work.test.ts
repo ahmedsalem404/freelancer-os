@@ -1,4 +1,4 @@
-import { engagementMeter } from '@/domain/selectors'
+import { engagementMeter } from '@/features/engagements/model/meter'
 import { addDaysIso, isoDay } from '@/shared/model/dates'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createTestApp } from './test-app'

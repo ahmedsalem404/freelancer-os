@@ -3,16 +3,14 @@
  * Dates are relative to "today" so the demo always shows live states
  * (due soon, overdue, grace period...). Money is in minor units.
  */
+import type { DailyRate } from '@/features/rates/model/rates.schema'
+import { money } from '@/shared/money/money'
+import { ratesFromDaily, type LastRates } from '@/features/rates/model/rates'
+import type { Snapshot as Db } from '@/app/client/snapshot.schema'
+import type { Currency } from '@/shared/money/currency'
+import type { Deliverable, ReviewRound } from '@/features/engagements/model/work.schema'
+import type { InvoiceItem } from '@/features/invoices/model/invoice.schema'
 import { addDays, format } from 'date-fns'
-import { type DailyRate, money, ratesFromDaily } from '@/domain/money'
-import type { Db } from '@/domain/selectors'
-import type {
-  Currency,
-  Deliverable,
-  InvoiceItem,
-  LastRates,
-  ReviewRound,
-} from '@/domain/types'
 
 export const today = () => format(new Date(), 'yyyy-MM-dd')
 export const dayOffset = (offset: number) =>
@@ -142,6 +140,7 @@ const invoiceItems: InvoiceItem[] = [
 
 export function seedDb(): Db {
   return {
+    dailyRates,
     settings: {
       invoicePrefix: 'INV',
       invoiceSeqYear: new Date().getFullYear(),

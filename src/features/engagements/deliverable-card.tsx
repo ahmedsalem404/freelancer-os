@@ -1,3 +1,6 @@
+import { deliverableApproval, revisionGuard, roundsOf } from '@/features/engagements/model/guard'
+import type { Deliverable } from '@/features/engagements/model/work.schema'
+import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import { useDb } from '@/app/client/snapshot-query'
 import {
   useAddFeedback,
@@ -12,12 +15,6 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useDateFormat } from '@/lib/dates'
-import {
-  deliverableApproval,
-  revisionGuard,
-  roundsOf,
-} from '@/domain/selectors'
-import type { Deliverable, Engagement } from '@/domain/types'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { AllowanceMeter } from '@/components/fos/allowance-meter'

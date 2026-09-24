@@ -1,5 +1,8 @@
-import type { ClientHealth, SubscriptionState } from '@/domain/selectors'
-import type { EngagementType, InvoiceStatus, LeadStage } from '@/domain/types'
+import type { ClientHealth } from '@/features/clients/model/client-health'
+import type { SubscriptionState } from '@/features/engagements/model/cycles'
+import type { EngagementType } from '@/features/engagements/model/enums'
+import type { InvoiceStatus } from '@/features/invoices/model/invoice-status'
+import type { LeadStage } from '@/features/leads/model/enums'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 

@@ -1,15 +1,11 @@
+import { clientCollectedBase, clientHealth, clientOutstandingBase } from '@/features/clients/model/client-health'
+import { engagementMeter } from '@/features/engagements/model/meter'
+import type { Client } from '@/features/clients/model/clients.schema'
 import { useRevealSecret } from './api/use-reveal-secret'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import {
-  clientCollectedBase,
-  clientHealth,
-  clientOutstandingBase,
-  engagementMeter,
-} from '@/domain/selectors'
-import type { Client } from '@/domain/types'
 import { Eye, EyeOff, KeyRound, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateFormat } from '@/lib/dates'

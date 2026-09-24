@@ -1,3 +1,7 @@
+import { currentCycle, subscriptionState } from '@/features/engagements/model/cycles'
+import { engagementCurrentValue } from '@/features/engagements/model/guard'
+import { engagementMeter } from '@/features/engagements/model/meter'
+import type { EngagementType } from '@/features/engagements/model/enums'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
@@ -5,13 +9,6 @@ import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import {
-  currentCycle,
-  engagementCurrentValue,
-  engagementMeter,
-  subscriptionState,
-} from '@/domain/selectors'
-import type { EngagementType } from '@/domain/types'
 import { AllowanceMeter } from '@/components/fos/allowance-meter'
 import { SubStateBadge, TypeBadge } from '@/components/fos/badges'
 import { Money } from '@/components/fos/money'

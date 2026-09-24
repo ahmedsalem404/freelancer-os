@@ -1,4 +1,4 @@
-import { money } from '@/domain/money'
+import { money } from '@/shared/money/money'
 import { clients } from '@/features/clients/server'
 import { settings } from '@/features/settings/server'
 import { newId } from '@/shared/db/new-id'

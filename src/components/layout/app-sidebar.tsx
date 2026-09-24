@@ -1,7 +1,7 @@
+import { engagementMeter } from '@/features/engagements/model/meter'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { Link, useLocation } from '@tanstack/react-router'
-import { engagementMeter } from '@/domain/selectors'
 import { useTranslation } from 'react-i18next'
 import { useLayout } from '@/context/layout-provider'
 import {

@@ -1,3 +1,5 @@
+import { currentCycle } from '@/features/engagements/model/cycles'
+import { isOpenInvoice } from '@/features/invoices/model/invoice-status'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
@@ -13,7 +15,6 @@ import {
   startOfWeek,
 } from 'date-fns'
 import { Link } from '@tanstack/react-router'
-import { currentCycle, isOpenInvoice } from '@/domain/selectors'
 import { ar as arLocale, enUS } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'

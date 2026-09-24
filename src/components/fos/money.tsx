@@ -1,7 +1,7 @@
+import { currencySymbol, formatAmount, fromBase } from '@/shared/money/money'
+import type { Currency } from '@/shared/money/currency'
 import { useUiPrefs } from '@/app/client/ui-prefs'
 import { useLastRates } from '@/features/rates/api/use-rates'
-import { currencySymbol, formatAmount, fromBase } from '@/domain/money'
-import type { Currency } from '@/domain/types'
 import { useLang } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 

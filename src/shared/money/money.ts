@@ -1,9 +1,5 @@
-import type { Currency, MoneyFields } from './types'
-
-/** Base currency for every report. Rates = SAR per 1 unit of a currency. */
-export const BASE_CURRENCY: Currency = 'SAR'
-
-export const CURRENCIES: Currency[] = ['SAR', 'USD', 'YER']
+import { BASE_CURRENCY, type Currency } from './currency'
+import type { MoneyFields } from './money.schema'
 
 /** Every supported currency has exponent 2 (halala / cent / fils). */
 const MINOR_PER_MAJOR = 100
@@ -24,21 +20,6 @@ export function money(
     rateToBase: rate,
     baseAmount: Math.round(amount * rate),
   }
-}
-
-/**
- * Today's exchange rate as the owner types it: both quotes in YER
- * (1 SAR = sarInYer YER, 1 USD = usdInYer YER). Only a prefill for new
- * records — every record still snapshots its own rate.
- */
-export type DailyRate = { day: string; sarInYer: number; usdInYer: number }
-
-/** YER quotes → rates to base (SAR per 1 unit of each currency). */
-export function ratesFromDaily({
-  sarInYer,
-  usdInYer,
-}: DailyRate): Record<Currency, number> {
-  return { SAR: 1, YER: 1 / sarInYer, USD: usdInYer / sarInYer }
 }
 
 /** Minor units of `from` → minor units of `to`, through SAR. */

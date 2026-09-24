@@ -1,6 +1,6 @@
+import { ratesFromDaily } from '@/features/rates/model/rates'
 import { useAction } from '@/app/client/use-action'
 import { useDb } from '@/app/client/snapshot-query'
-import { ratesFromDaily } from '@/domain/money'
 import { callApi } from '@/shared/http/api-client'
 import type { Currency } from '@/shared/money/currency'
 import {

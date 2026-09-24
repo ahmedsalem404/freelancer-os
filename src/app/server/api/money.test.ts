@@ -1,4 +1,4 @@
-import { invoiceBalance, invoiceStatus } from '@/domain/selectors'
+import { invoiceBalance, invoiceStatus } from '@/features/invoices/model/invoice-status'
 import { isoDay } from '@/shared/model/dates'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createTestApp } from './test-app'

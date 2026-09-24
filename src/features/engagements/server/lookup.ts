@@ -1,4 +1,4 @@
-import { currentCycle } from '@/domain/selectors'
+import { currentCycle } from '@/features/engagements/model/cycles'
 import { latestRates } from '@/features/rates/server'
 import { required } from '@/shared/http/errors'
 import { parseRows, stripNulls } from '@/shared/model/schema'

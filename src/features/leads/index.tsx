@@ -1,7 +1,8 @@
+import type { Lead } from '@/features/leads/model/lead.schema'
+import type { LeadStage } from '@/features/leads/model/enums'
 import { useMoveLead } from './api/use-move-lead'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
-import type { Lead, LeadStage } from '@/domain/types'
 import {
   DndContext,
   type DragEndEvent,

@@ -1,11 +1,11 @@
+import { engagementMeter } from '@/features/engagements/model/meter'
+import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import { useState } from 'react'
 import { AlertTriangle, Receipt } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useDb } from '@/app/client/snapshot-query'
 import { cn } from '@/lib/utils'
-import { engagementMeter } from '@/domain/selectors'
-import type { Engagement } from '@/domain/types'
 import { useInvoiceToast } from '@/features/invoices/ui/use-invoice-toast'
 import {
   useBillExtraHours,

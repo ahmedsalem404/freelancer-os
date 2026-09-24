@@ -1,3 +1,7 @@
+import { deliverablesOf, engagementCurrentValue, scopeGuard } from '@/features/engagements/model/guard'
+import { engagementMeter } from '@/features/engagements/model/meter'
+import { invoicePaid } from '@/features/invoices/model/invoice-status'
+import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { useToggleStage } from './api/use-engagement-actions'
@@ -16,14 +20,6 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useDateFormat } from '@/lib/dates'
-import {
-  deliverablesOf,
-  engagementCurrentValue,
-  engagementMeter,
-  invoicePaid,
-  scopeGuard,
-} from '@/domain/selectors'
-import type { Engagement } from '@/domain/types'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AllowanceMeter } from '@/components/fos/allowance-meter'

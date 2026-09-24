@@ -1,12 +1,9 @@
-import {
-  type Db,
-  clientHealth,
-  engagementCurrentValue,
-  engagementMeter,
-  invoiceBalance,
-  invoiceStatus,
-} from '@/domain/selectors'
-import { seedDb, today } from '@/mock/seed'
+import type { Snapshot as Db } from '@/app/client/snapshot.schema'
+import { clientHealth } from '@/features/clients/model/client-health'
+import { engagementCurrentValue } from '@/features/engagements/model/guard'
+import { engagementMeter } from '@/features/engagements/model/meter'
+import { invoiceBalance, invoiceStatus } from '@/features/invoices/model/invoice-status'
+import { seedDb, today } from './seed/demo-data'
 import { sql } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
 import { parseSnapshot } from '../client/snapshot.schema'

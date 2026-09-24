@@ -1,6 +1,6 @@
+import { CURRENCIES } from '@/shared/money/currency'
 import { useUiPrefs } from '@/app/client/ui-prefs'
 import type { ReactNode } from 'react'
-import { CURRENCIES } from '@/domain/money'
 import { Languages, Moon, Sun } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'

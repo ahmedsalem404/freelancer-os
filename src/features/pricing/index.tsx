@@ -1,10 +1,10 @@
+import { toMinor } from '@/shared/money/money'
 import { useState } from 'react'
-import { toMinor } from '@/domain/money'
 import {
   annualBaseline,
   shouldAccept,
   type BaselineInput,
-} from '@/domain/pricing'
+} from './model/pricing'
 import { AnimatePresence, motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'

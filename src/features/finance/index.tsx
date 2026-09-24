@@ -1,10 +1,11 @@
+import { formatAmount, fromBase, toMajor } from '@/shared/money/money'
+import { currentCycle } from '@/features/engagements/model/cycles'
+import { invoiceBalance, isOpenInvoice } from '@/features/invoices/model/invoice-status'
 import { useUiPrefs } from '@/app/client/ui-prefs'
 import { useLastRates } from '@/features/rates/api/use-rates'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { addDays, differenceInCalendarWeeks, format, parseISO } from 'date-fns'
-import { formatAmount, fromBase, toMajor } from '@/domain/money'
-import { currentCycle, invoiceBalance, isOpenInvoice } from '@/domain/selectors'
 import { Paperclip } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {

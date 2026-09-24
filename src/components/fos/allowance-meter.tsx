@@ -3,7 +3,7 @@
  * Solid ticks = consumed within the agreement. A hard boundary marks the
  * limit. Anything beyond it is drawn in hatched saffron — billable work.
  */
-import type { Meter } from '@/domain/selectors'
+import type { Meter } from '@/features/engagements/model/meter'
 import { motion, useReducedMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'

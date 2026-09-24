@@ -1,3 +1,7 @@
+import { currentCycle, subscriptionState } from '@/features/engagements/model/cycles'
+import { engagementMeter } from '@/features/engagements/model/meter'
+import { invoiceBalance, invoiceStatus } from '@/features/invoices/model/invoice-status'
+import type { Task } from '@/features/today/model/today.schema'
 import { useCurrentMember } from '@/app/client/use-current-member'
 import { useAddTask, useToggleTask } from './api/use-today-actions'
 import { useDb } from '@/app/client/snapshot-query'
@@ -5,14 +9,6 @@ import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
-import {
-  currentCycle,
-  engagementMeter,
-  invoiceBalance,
-  invoiceStatus,
-  subscriptionState,
-} from '@/domain/selectors'
-import type { Task } from '@/domain/types'
 import { ar as arLocale, enUS } from 'date-fns/locale'
 import { ArrowUpLeft, Moon, Plus } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'

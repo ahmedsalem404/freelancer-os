@@ -1,15 +1,11 @@
+import { deliverableApproval, deliverablesOf, roundsOf } from '@/features/engagements/model/guard'
+import type { Deliverable } from '@/features/engagements/model/work.schema'
 import {
   useAddFeedback,
   useApproveDeliverable,
 } from '@/features/engagements/api/use-deliverable-actions'
 import { useDb } from '@/app/client/snapshot-query'
 import { useState } from 'react'
-import {
-  deliverableApproval,
-  deliverablesOf,
-  roundsOf,
-} from '@/domain/selectors'
-import type { Deliverable } from '@/domain/types'
 import { Check, Languages, MessageSquare } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'

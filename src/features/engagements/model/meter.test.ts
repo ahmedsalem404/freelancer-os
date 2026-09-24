@@ -1,22 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import {
-  type Db,
-  engagementCurrentValue,
-  engagementMeter,
-  invoiceStatus,
-  revisionGuard,
-  scopeGuard,
-  subscriptionState,
-} from './selectors'
-import type {
-  Deliverable,
-  Engagement,
-  EngagementCycle,
-  Invoice,
-  ReviewRound,
-} from './types'
+import type { Snapshot as Db } from '@/app/client/snapshot.schema'
+import { invoiceStatus } from '@/features/invoices/model/invoice-status'
+import type { Invoice } from '@/features/invoices/model/invoice.schema'
+import { subscriptionState } from './cycles'
+import type { Engagement, EngagementCycle } from './engagement.schema'
+import { engagementCurrentValue, revisionGuard, scopeGuard } from './guard'
+import { engagementMeter } from './meter'
+import type { Deliverable, ReviewRound } from './work.schema'
 
 const emptyDb = (): Db => ({
+  dailyRates: [],
   identities: [],
   paymentMethods: [],
   clients: [],
