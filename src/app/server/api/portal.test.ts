@@ -108,6 +108,19 @@ describe('client portal', () => {
     expect(round).toMatchObject({ source: 'client_link' })
   })
 
+  it('refuses change requests on an approved deliverable', async () => {
+    t = createTestApp()
+    const token = await linkFor('e-nakhla')
+    await t.call('POST', `/portal/${token}/deliverables/dl-2/approval`, {})
+    const res = await t.call(
+      'POST',
+      `/portal/${token}/deliverables/dl-2/rounds`,
+      { note: 'One more change' }
+    )
+    expect(res.status).toBe(409)
+    expect(res.json.error?.code).toBe('already_approved')
+  })
+
   it('refuses deliverables of another engagement', async () => {
     t = createTestApp()
     const token = await linkFor('e-masar')

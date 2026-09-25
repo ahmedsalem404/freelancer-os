@@ -68,12 +68,22 @@ export function loadPortalView(ctx: Ctx, token: string): PortalView {
   }
 }
 
-/** A deliverable the link may act on: same engagement, else a plain 404. */
-function scopedDeliverable(ctx: Ctx, token: string, deliverableId: string) {
+/**
+ * A deliverable the link may still act on: same engagement (else a plain
+ * 404) and not yet approved — after approval the client can neither approve
+ * again nor open new rounds, which would be billable as extras.
+ */
+function openDeliverable(ctx: Ctx, token: string, deliverableId: string) {
   const link = resolvePortalToken(ctx, token)
   const deliverable = findDeliverable(ctx, deliverableId)
   if (deliverable.engagementId !== link.engagementId) {
     throw notFound('deliverable', deliverableId)
+  }
+  const isApproved = engagementWork(ctx, link.engagementId).approvals.some(
+    (a) => a.deliverableId === deliverable.id && a.decision === 'approved'
+  )
+  if (isApproved) {
+    throw new DomainError('already_approved', 'Already approved', 409)
   }
   return { link, deliverable }
 }
@@ -84,13 +94,7 @@ export function approveViaPortal(
   deliverableId: string,
   input: PortalApproveInput
 ) {
-  const { link, deliverable } = scopedDeliverable(ctx, token, deliverableId)
-  const isApproved = engagementWork(ctx, link.engagementId).approvals.some(
-    (a) => a.deliverableId === deliverable.id && a.decision === 'approved'
-  )
-  if (isApproved) {
-    throw new DomainError('already_approved', 'Already approved', 409)
-  }
+  const { link, deliverable } = openDeliverable(ctx, token, deliverableId)
   return approveDeliverable(
     ctx,
     deliverable.id,
@@ -105,7 +109,7 @@ export function requestChangesViaPortal(
   deliverableId: string,
   input: PortalFeedbackInput
 ) {
-  const { link, deliverable } = scopedDeliverable(ctx, token, deliverableId)
+  const { link, deliverable } = openDeliverable(ctx, token, deliverableId)
   return addFeedback(
     ctx,
     deliverable.id,
