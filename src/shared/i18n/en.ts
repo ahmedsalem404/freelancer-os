@@ -104,12 +104,14 @@ export const sharedEn: Widen<typeof sharedAr> = {
     invoice_has_payments: 'This invoice has payments and cannot be voided',
     already_approved: 'This deliverable is already approved',
     rate_limited: 'Too many requests — try again in a minute',
-    invoice_is_renewal: 'A renewal invoice can’t be voided — its new cycle is open',
+    invoice_is_renewal:
+      'A renewal invoice can’t be voided — its new cycle is open',
     client_has_engagements: 'Archive the client’s engagements first',
     client_in_use: 'This client has records — archive it instead',
     engagement_running: 'Stop the open cycle before archiving',
     engagement_in_use: 'This engagement has records — archive it instead',
-    subscription_in_use: 'This subscription has recorded charges — stop it instead',
+    subscription_in_use:
+      'This subscription has recorded charges — stop it instead',
     type_locked: 'The engagement type is fixed once opened',
   },
 }
