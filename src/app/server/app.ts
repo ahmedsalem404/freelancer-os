@@ -4,6 +4,11 @@ import { DomainError } from '@/shared/http/errors'
 import type { AppEnv } from '@/shared/server/context'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import {
+  authGate,
+  createAuthRoutes,
+  sessionMember,
+} from '@/features/auth/server'
 import { clientsRoutes, vaultRoutes } from '@/features/clients/server'
 import { engagementsRoutes } from '@/features/engagements/server'
 import {
@@ -20,6 +25,17 @@ import { type Clock, createRunner } from './context'
 import { loadSnapshot } from './snapshot'
 
 export type AppOptions = { clock?: Clock }
+
+/** Reachable without a session: health, sign-in/out and the client portal. */
+const PUBLIC_PATHS = new Set([
+  '/api/health',
+  '/api/auth/sign-in',
+  '/api/auth/sign-out',
+])
+const isPublic = (path: string) =>
+  PUBLIC_PATHS.has(path) || path.startsWith('/api/portal/')
+/** Every signed-in member may call these; the rest is owner-only. */
+const ANY_MEMBER = new Set(['/api/auth/me'])
 
 const FEATURE_ROUTES = [
   ratesRoutes,
@@ -40,14 +56,15 @@ export function createApp(
   { clock = () => new Date() }: AppOptions = {}
 ) {
   const app = new Hono<AppEnv>().basePath('/api')
-  const run = createRunner(db, clock)
-
+  app.use('*', sessionMember(db, clock))
   app.use('*', async (c, next) => {
-    c.set('run', run)
+    c.set('run', createRunner(db, clock, c.var.member?.id))
     await next()
   })
+  app.use('*', authGate({ isPublic, anyMember: ANY_MEMBER }))
   app.get('/health', (c) => c.json(success({ status: 'up' })))
   app.get('/snapshot', (c) => c.json(success(loadSnapshot(db))))
+  app.route('/', createAuthRoutes())
   for (const routes of FEATURE_ROUTES) app.route('/', routes)
   app.route('/', createPortalRoutes())
 

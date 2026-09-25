@@ -7,7 +7,7 @@ import { teamMembers } from '@/features/settings/server'
 
 export type Clock = () => Date
 
-/** The acting member until authentication exists (phase 3): the owner. */
+/** Public requests (the client portal) are recorded against the owner. */
 function ownerId(db: Database) {
   const owner = db
     .select({ id: teamMembers.id })
@@ -27,7 +27,11 @@ function ownerId(db: Database) {
 }
 
 /** One SQLite transaction per business action; a throw rolls it back. */
-export function createRunner(db: Database, clock: Clock): RunInTx {
+export function createRunner(
+  db: Database,
+  clock: Clock,
+  memberId?: string
+): RunInTx {
   return <T>(fn: (ctx: Ctx) => T): T =>
     db.transaction((tx) => {
       const at = clock()
@@ -35,7 +39,7 @@ export function createRunner(db: Database, clock: Clock): RunInTx {
         db: tx,
         today: isoDay(at),
         now: at.toISOString(),
-        memberId: ownerId(tx),
+        memberId: memberId ?? ownerId(tx),
       })
     })
 }

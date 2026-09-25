@@ -11,12 +11,20 @@ export type Ctx = {
   today: string
   /** Instant, ISO-8601 UTC. */
   now: string
-  /** Acting member — the owner until authentication exists (phase 3). */
+  /** Acting member: the signed-in one, or the owner for public requests. */
   memberId: string
 }
 
 /** Runs `fn` in one SQLite transaction with a fresh context. */
 export type RunInTx = <T>(fn: (ctx: Ctx) => T) => T
 
+/** The signed-in team member behind a request (no password data). */
+export type Actor = {
+  id: string
+  name: string
+  email: string
+  role: 'owner' | 'assistant'
+}
+
 /** Hono environment shared by every feature router. */
-export type AppEnv = { Variables: { run: RunInTx } }
+export type AppEnv = { Variables: { run: RunInTx; member: Actor | null } }

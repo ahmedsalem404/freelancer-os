@@ -1,11 +1,9 @@
 import { serve } from '@hono/node-server'
-import { settings } from '@/features/settings/server/settings.table'
+import { and, eq, isNull } from 'drizzle-orm'
+import { settings, teamMembers } from '@/features/settings/server'
 import { createApp } from './app'
 import { openDatabase, runMigrations } from './db'
 import { readEnv } from './env'
-
-// No authentication yet (phase 3) → listen on this machine only.
-const HOSTNAME = '127.0.0.1'
 
 const env = readEnv()
 const { db, close } = openDatabase(env.DB_FILE)
@@ -17,11 +15,22 @@ if (!db.select().from(settings).get()) {
   )
 }
 
+const ownerWithoutPassword = db
+  .select({ email: teamMembers.email })
+  .from(teamMembers)
+  .where(and(eq(teamMembers.role, 'owner'), isNull(teamMembers.passwordHash)))
+  .get()
+if (ownerWithoutPassword) {
+  process.stdout.write(
+    `[api] The owner has no password yet — run: npm run auth:set-password -- ${ownerWithoutPassword.email}\n`
+  )
+}
+
 const server = serve(
-  { fetch: createApp(db).fetch, port: env.API_PORT, hostname: HOSTNAME },
+  { fetch: createApp(db).fetch, port: env.API_PORT, hostname: env.API_HOST },
   (info) => {
     process.stdout.write(
-      `[api] http://${HOSTNAME}:${info.port}/api · db ${env.DB_FILE}\n`
+      `[api] http://${env.API_HOST}:${info.port}/api · db ${env.DB_FILE}\n`
     )
   }
 )

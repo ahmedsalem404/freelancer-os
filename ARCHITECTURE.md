@@ -70,6 +70,7 @@ freelancer-os/
 
 | Feature | Owns (tables) | Screens |
 |---|---|---|
+| `auth` | auth_sessions | Sign-in, sign-out button |
 | `settings` | settings, billing_identities, payment_methods, team_members | Settings |
 | `rates` | exchange_rates (daily YER quotes) | header chip, settings panel |
 | `clients` | clients, vault_entries | Clients list/detail |
@@ -108,7 +109,11 @@ freelancer-os/
    (`engagement_cycles.renewal_invoice_id`, `deliverables/review_rounds.invoice_item_id`,
    `engagements.lead_id`) are plain ids checked in services, so table modules
    never import each other in a cycle.
-8. The API listens on `127.0.0.1` only until authentication exists (phase 3).
+8. Every `/api` route needs a signed-in **owner** session except `/health`,
+   `/auth/sign-in`, `/auth/sign-out`, `/auth/me` (any member) and the public
+   `/portal/*`. The gate lives in `app/server/app.ts` (`authGate`). The API still
+   listens on `127.0.0.1` by default (`API_HOST`); the site is reached through Vite
+   or a tunnel.
 
 ## 4. Runtime architecture
 
@@ -138,6 +143,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 
 | Feature | Endpoints (all under `/api`) |
 |---|---|
+| auth | `POST /auth/sign-in` (rate-limited) · `POST /auth/sign-out` · `GET /auth/me` |
 | rates | `PUT /rates/today` |
 | invoices | `POST /invoices` (manual, issued at once) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` |
 | engagements | `POST /engagements` · `PUT /engagements/:id` · `PUT /engagements/:id/terms` · `POST /engagements/:id/{archive,unarchive}` · `DELETE /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
@@ -161,7 +167,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | Driver: **better-sqlite3** (synchronous, fastest, prebuilt Windows binaries) | no separate database server to install |
 | 2026-09-25 | IDs for new rows: prefixed ULID (`inv_01J…`); seed keeps readable ids | sortable, readable in logs |
 | 2026-09-25 | Reads through one snapshot endpoint; writes per business action | smallest change from the mock store; UI selectors reused |
-| 2026-09-25 | Temporary deviations from database.md until phase 3: `vault_entries.username` plaintext + `ciphertext` nullable; `attachments` file metadata nullable; `team_members.password_hash` nullable; `leads` money quad NOT NULL (UI requires an estimate); deferred tables: `auth_sessions`, `client_portal_links`, `tickets`, `reminder_log`, `message_templates`, `calendar_events` | ship the database now without faking security features |
+| 2026-09-25 | Temporary deviations from database.md until phase 3: `vault_entries.username` plaintext + `ciphertext` nullable; `attachments` file metadata nullable; `team_members.password_hash` nullable; `leads` money quad NOT NULL (UI requires an estimate); deferred tables: `auth_sessions` (added in `0002`), `client_portal_links` (added in `0001`), `tickets`, `reminder_log`, `message_templates`, `calendar_events` | ship the database now without faking security features |
 | 2026-09-25 | Client state: TanStack Query snapshot + per-action mutations; zustand only for UI prefs (display currency) | server data has one source of truth |
 | 2026-09-25 | A lead becomes `won` only through conversion (client + engagement in one transaction), enforced by CHECK `lead_won_converted`; subscriptions require `grace_days` | database.md §3 constraints deferred from phase 1 |
 | 2026-09-25 | End of day (`POST /day/close`) saves the reflection and carries tasks over atomically | both or neither |
@@ -172,6 +178,8 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | Expenses snapshot the daily rate on create and keep it on edit unless the currency changes | a typo fix never revalues past spending |
 | 2026-09-25 | Client portal links: 32-byte token, only its SHA-256 stored, shown once; one active link per engagement; the public view carries no money or contacts; per-IP limit keyed on `cf-connecting-ip` only (X-Forwarded-For is spoofable) | docs/database.md §3.6 |
 | 2026-09-25 | Tests split into Vitest projects: `node` (API, models, money, http) and `browser` (DOM, Chromium) | the API needs SQLite/Node; components need a real browser |
+| 2026-09-25 | Authentication: argon2id (Node's built-in `crypto.argon2`, no dependency) + server sessions in `auth_sessions` (SHA-256 of a 32-byte cookie token, 30-day sliding expiry). Cookie `fos_session`: HttpOnly, SameSite=Strict (the CSRF defence), Secure over HTTPS, Path=/api. Passwords are set from the terminal (`npm run auth:set-password`), never through a first-run web form | nobody who reaches the site first can claim the owner account |
+| 2026-09-25 | Owner-only by default: assistants can sign in but get 403 everywhere except `/auth/me` until their scoped screens exist. Signed-in endpoints never accept `source: client_link`; only the portal records it | the snapshot holds money and contacts |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status
@@ -182,15 +190,17 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 1 | Database: 24 Drizzle tables in their features, migration `0000_init`, demo seed (92 rows), `GET /api/snapshot`, round-trip test | **done** 2026-09-25 — write endpoints move to phase 2 with each feature's UI |
 | 2 | Frontend on the API: write endpoints (tested), `mock/store` removed, `domain/` `mock/` `i18n/` `components/fos/` dissolved into slices, every file ≤ 250 lines, lead conversion + grace constraints | **done** 2026-09-25 |
 | 2.5 | Create/edit: clients, engagements, expenses, manual invoices + void; token-scoped client portal (`client_portal_links`, migration `0001`) | **done** 2026-09-25 |
-| 3 | Deferred tables & security: auth + roles (`auth_sessions`), encrypted vault, tickets, reminders log, message templates, calendar events, file uploads, backup | pending |
+| 3 | Deferred tables & security: auth + roles (`auth_sessions`), encrypted vault, tickets, reminders log, message templates, calendar events, file uploads, backup | **in progress** — sign-in, sessions, owner-only gate done 2026-09-25 (migration `0002`) |
 
 ### Known gaps (next)
 
 - Playwright Chromium: `npm run test:browser:install` can hang while unpacking on this
   machine; download and unzip the zips from `npx playwright install --dry-run chromium`
   by hand (plus an empty `INSTALLATION_COMPLETE` file in each folder).
-- Owner endpoints are still unauthenticated (phase 3): e.g. `/deliverables/:id/approval`
-  accepts `source: client_link`. Tighten once auth lands.
+- Assistants have no screens yet: they can sign in, but every data endpoint answers 403
+  (needs a scoped snapshot: own tasks, time, reflections only — docs/database.md §3.1).
+- No password change / team management screen yet: passwords are set with
+  `npm run auth:set-password -- <email>`; the owner's email is the seed's until edited.
 - Own subscriptions don't record their renewal charge as an expense by themselves yet
   (the `expense_sub_charge` unique key is ready for it); no reminder before renewal yet
   (`remindDaysBefore` is stored — reminders are phase 3).
@@ -205,6 +215,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | `npm run db:generate` | generate a migration from the Drizzle tables |
 | `npm run db:reset` | delete the local DB, migrate, load demo data |
 | `npm run db:studio` | browse the database in Drizzle Studio |
+| `npm run auth:set-password -- <email>` | set a team member's password (hidden prompt) and sign them out everywhere |
 | `npm run check:size` | enforce the 250-line budget |
 | `npm test` · `npm run test:node` | all tests (node + Chromium) · node project only (no browser) |
 | `npm run lint` · `npx tsc -b` | lint (incl. line budget) · type check |

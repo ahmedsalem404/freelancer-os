@@ -13,6 +13,16 @@ const isServerStarting = (error: Error) =>
   error instanceof ApiError &&
   (error.status === 0 || error.status >= BAD_GATEWAY)
 
+/**
+ * `npm run dev` starts web and API together: until the API listens, the
+ * Vite proxy answers 502. Queries that boot a page keep retrying briefly.
+ */
+export const bootRetry = {
+  retry: (failures: number, error: Error) =>
+    failures < MAX_BOOT_RETRIES && isServerStarting(error),
+  retryDelay: BOOT_RETRY_MS,
+}
+
 /** Accepts raw JSON (SQL NULLs) and yields the validated snapshot. */
 const snapshotResponse = z.preprocess(stripNulls, snapshotSchema)
 
@@ -24,11 +34,7 @@ export const snapshotQuery = queryOptions({
   queryKey: ['snapshot'] as const,
   queryFn: () => callApi('GET', '/snapshot', snapshotResponse),
   staleTime: 30_000,
-  // `npm run dev` starts web and API together: until the API listens, the
-  // Vite proxy answers 502. Keep retrying briefly instead of failing the page.
-  retry: (failures, error) =>
-    failures < MAX_BOOT_RETRIES && isServerStarting(error),
-  retryDelay: BOOT_RETRY_MS,
+  ...bootRetry,
 })
 
 /** Every table the UI reads, validated. Must render under a route loader. */

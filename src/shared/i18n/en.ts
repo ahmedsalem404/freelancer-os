@@ -113,5 +113,8 @@ export const sharedEn: Widen<typeof sharedAr> = {
     subscription_in_use:
       'This subscription has recorded charges — stop it instead',
     type_locked: 'The engagement type is fixed once opened',
+    invalid_credentials: 'Wrong email or password',
+    unauthenticated: 'Your session ended — please sign in again',
+    forbidden: 'This account can’t do that',
   },
 }

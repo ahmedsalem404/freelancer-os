@@ -3,8 +3,8 @@ import { jsonBody } from '@/shared/http/validate'
 import type { AppEnv } from '@/shared/server/context'
 import { Hono } from 'hono'
 import {
-  addFeedbackInput,
-  approveInput,
+  teamFeedbackInput,
+  ownerApproveInput,
   changeScopeInput,
   extendGraceInput,
 } from '../model/engagement.input'
@@ -57,13 +57,13 @@ export const engagementsRoutes = new Hono<AppEnv>()
     const id = c.req.param('id')
     return c.json(success(c.var.run((ctx) => deleteEngagement(ctx, id))))
   })
-  .post('/deliverables/:id/rounds', jsonBody(addFeedbackInput), (c) => {
+  .post('/deliverables/:id/rounds', jsonBody(teamFeedbackInput), (c) => {
     const id = c.req.param('id')
     const input = c.req.valid('json')
     const result = c.var.run((ctx) => addFeedback(ctx, id, input))
     return c.json(success(result), 201)
   })
-  .post('/deliverables/:id/approval', jsonBody(approveInput), (c) => {
+  .post('/deliverables/:id/approval', jsonBody(ownerApproveInput), (c) => {
     const id = c.req.param('id')
     const input = c.req.valid('json')
     const result = c.var.run((ctx) => approveDeliverable(ctx, id, input))

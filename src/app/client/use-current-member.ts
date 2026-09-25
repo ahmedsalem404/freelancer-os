@@ -1,12 +1,12 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { sessionQuery } from '@/features/auth'
 import { useDb } from './snapshot-query'
 
-/**
- * The signed-in member. Until authentication exists (phase 3) the API acts
- * as the owner, so the UI does too.
- */
+/** The signed-in member (the `_authenticated` route guarantees one). */
 export function useCurrentMember() {
   const { team } = useDb()
-  const owner = team.find((m) => m.role === 'owner') ?? team[0]
-  if (!owner) throw new Error('No team member — run `npm run db:reset`')
-  return owner
+  const { data: session } = useSuspenseQuery(sessionQuery)
+  const member = team.find((m) => m.id === session?.id)
+  if (!member) throw new Error('Signed-in member is not in the team')
+  return member
 }

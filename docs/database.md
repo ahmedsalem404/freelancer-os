@@ -215,7 +215,7 @@ One row only (`CHECK (id = 1)`). Every rule the UI needs (numbering, due days, r
 | role | TEXT | NN | | `CHECK (role IN ('owner','assistant'))` |
 | email | TEXT | NN | | `UNIQUE`; login id |
 | whatsapp | TEXT | Y | | |
-| password_hash | TEXT | NN | | argon2id |
+| password_hash | TEXT | NN | | argon2id (PHC string). **Built nullable**: NULL = can't sign in until `npm run auth:set-password` sets one |
 | is_active | INTEGER | NN | 1 | bool |
 | archived_at | TEXT | Y | | |
 
@@ -229,9 +229,11 @@ Authorization rule (enforced in the API layer, not the DB): **assistant** can re
 | member_id | TEXT | NN | | FK→team_members `ON DELETE CASCADE` |
 | expires_at | TEXT | NN | | |
 | last_seen_at | TEXT | Y | | |
-| user_agent | TEXT | Y | | |
+| user_agent | TEXT | Y | | first 300 chars |
+| created_at | TEXT | NN | | |
 
-Index `(member_id)`, `(expires_at)`.
+Index `(member_id)`. Expired rows are swept on each sign-in (a handful of rows, so no
+`expires_at` index). Built in migration `0002`; see ARCHITECTURE.md §5 for the cookie.
 
 ### 3.3 Billing identities & clients
 

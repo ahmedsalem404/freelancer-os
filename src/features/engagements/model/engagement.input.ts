@@ -5,16 +5,30 @@ import { approvalSourceSchema, roundSourceSchema } from './work.schema'
 /** Longest grace the owner can grant in one decision. */
 export const MAX_GRACE_DAYS = 90
 
-/** Body of `POST /api/deliverables/:id/rounds`. */
+const NOTE_MAX = 2000
+const SIGNER_MAX = 120
+
+/** A feedback round, from the team or the client portal. */
 export const addFeedbackInput = z.object({
-  note: z.string().trim().min(1).max(2000),
+  note: z.string().trim().min(1).max(NOTE_MAX),
   source: roundSourceSchema.default('owner'),
 })
 
-/** Body of `POST /api/deliverables/:id/approval`. */
+/** An approval, from the owner or the client portal. */
 export const approveInput = z.object({
   source: approvalSourceSchema,
-  signerName: z.string().trim().min(1).max(120).optional(),
+  signerName: z.string().trim().min(1).max(SIGNER_MAX).optional(),
+})
+
+/**
+ * Bodies of the signed-in endpoints `POST /api/deliverables/:id/{rounds,
+ * approval}`: never `client_link` — only the portal records that.
+ */
+export const teamFeedbackInput = addFeedbackInput.extend({
+  source: z.enum(['owner', 'assistant']).default('owner'),
+})
+export const ownerApproveInput = approveInput.extend({
+  source: z.literal('owner').default('owner'),
 })
 
 /** Body of `POST /api/engagements/:id/scope`. */

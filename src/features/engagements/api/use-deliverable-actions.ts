@@ -2,10 +2,15 @@ import { z } from 'zod'
 import { useAction } from '@/app/client/use-action'
 import { callApi, seg } from '@/shared/http/api-client'
 import { issuedInvoiceSchema } from '@/features/invoices/model/invoice.input'
-import type { addFeedbackInput, approveInput } from '../model/engagement.input'
+import type {
+  ownerApproveInput,
+  teamFeedbackInput,
+} from '../model/engagement.input'
 
-type FeedbackVars = z.input<typeof addFeedbackInput> & { deliverableId: string }
-type ApproveVars = z.input<typeof approveInput> & { deliverableId: string }
+type FeedbackVars = z.input<typeof teamFeedbackInput> & {
+  deliverableId: string
+}
+type ApproveVars = z.input<typeof ownerApproveInput> & { deliverableId: string }
 
 export const useAddFeedback = () =>
   useAction(({ deliverableId, ...body }: FeedbackVars) =>

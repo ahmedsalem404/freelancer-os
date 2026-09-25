@@ -10,6 +10,7 @@
     "db:generate": "drizzle-kit generate",
     "db:reset": "tsx src/app/server/seed/reset.ts",
     "db:studio": "drizzle-kit studio",
+    "auth:set-password": "tsx src/app/server/set-password.ts",
     "check:size": "node scripts/check-file-size.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

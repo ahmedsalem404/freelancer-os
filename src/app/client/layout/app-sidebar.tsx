@@ -1,9 +1,9 @@
-import { engagementMeter } from '@/features/engagements/model/meter'
-import { useDb } from '@/app/client/snapshot-query'
-import { todayIso } from '@/shared/model/dates'
 import { Link, useLocation } from '@tanstack/react-router'
-import { useTranslation } from 'react-i18next'
+import { useDb } from '@/app/client/snapshot-query'
+import { useCurrentMember } from '@/app/client/use-current-member'
 import { useLayout } from '@/shared/context/layout-provider'
+import { todayIso } from '@/shared/model/dates'
+import { useTranslation } from 'react-i18next'
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +18,8 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { SignOutButton } from '@/features/auth'
+import { engagementMeter } from '@/features/engagements/model/meter'
 import { navSections } from './nav'
 
 function BrandMark() {
@@ -49,7 +51,7 @@ export function AppSidebar() {
   const { setOpenMobile } = useSidebar()
   const pathname = useLocation({ select: (l) => l.pathname })
   const db = useDb()
-  const owner = db.team[0]
+  const member = useCurrentMember()
   const overCount = db.engagements.filter(
     (e) => engagementMeter(db, e, todayIso()).unbilled > 0
   ).length
@@ -95,13 +97,16 @@ export function AppSidebar() {
       <SidebarFooter>
         <div className='flex items-center gap-2.5 rounded-lg p-1.5'>
           <span className='grid size-8 shrink-0 place-items-center rounded-full bg-accent text-sm font-semibold text-accent-foreground'>
-            {owner.name.slice(0, 1)}
+            {member.name.slice(0, 1)}
           </span>
-          <span className='grid leading-tight group-data-[collapsible=icon]:hidden'>
-            <span className='text-sm font-medium'>{owner.name}</span>
+          <span className='grid min-w-0 flex-1 leading-tight group-data-[collapsible=icon]:hidden'>
+            <span className='text-sm font-medium'>{member.name}</span>
             <span className='text-xs text-muted-foreground'>
-              {t(`settings.roles.${owner.role}`).split('—')[0]}
+              {t(`settings.roles.${member.role}`).split('—')[0]}
             </span>
+          </span>
+          <span className='group-data-[collapsible=icon]:hidden'>
+            <SignOutButton />
           </span>
         </div>
       </SidebarFooter>

@@ -8,6 +8,8 @@ import { sharedEn } from '@/shared/i18n/en'
 import { initialLang } from '@/shared/i18n/lang'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import { authAr } from '@/features/auth/i18n/ar'
+import { authEn } from '@/features/auth/i18n/en'
 import { calendarAr } from '@/features/calendar/i18n/ar'
 import { calendarEn } from '@/features/calendar/i18n/en'
 import { clientsAr } from '@/features/clients/i18n/ar'
@@ -47,6 +49,7 @@ const ar = {
   ...ratesAr,
   ...settingsAr,
   ...portalAr,
+  ...authAr,
 }
 
 const en = {
@@ -63,6 +66,7 @@ const en = {
   ...ratesEn,
   ...settingsEn,
   ...portalEn,
+  ...authEn,
 }
 
 void i18n.use(initReactI18next).init({
