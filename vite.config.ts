@@ -10,6 +10,7 @@ const NODE_TESTS = [
   'src/app/server/**/*.test.ts',
   'src/features/*/model/**/*.test.ts',
   'src/shared/money/**/*.test.ts',
+  'src/shared/http/**/*.test.ts',
 ]
 
 // https://vite.dev/config/

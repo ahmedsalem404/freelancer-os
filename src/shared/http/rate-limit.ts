@@ -8,13 +8,14 @@ type Options = {
   now?: () => number
 }
 
-/** The visitor's address as the tunnel or proxy reports it. */
+/**
+ * The visitor's address. Only `cf-connecting-ip` is trusted: Cloudflare
+ * sets it and overwrites any value the visitor sends, while
+ * `X-Forwarded-For` is client-controlled and would let one visitor rotate
+ * through unlimited buckets. Direct (local) traffic shares one bucket.
+ */
 function clientKey(header: (name: string) => string | undefined) {
-  return (
-    header('cf-connecting-ip') ??
-    header('x-forwarded-for')?.split(',')[0]?.trim() ??
-    'direct'
-  )
+  return header('cf-connecting-ip') ?? 'direct'
 }
 
 /**
@@ -28,9 +29,15 @@ export function rateLimit({
   now = Date.now,
 }: Options): MiddlewareHandler {
   const hits = new Map<string, { count: number; resetAt: number }>()
+  let nextSweep = 0
   return async (c, next) => {
     const key = clientKey((name) => c.req.header(name))
     const at = now()
+    // Forget finished windows once per window, so memory stays bounded.
+    if (at >= nextSweep) {
+      for (const [k, v] of hits) if (v.resetAt <= at) hits.delete(k)
+      nextSweep = at + windowMs
+    }
     const entry = hits.get(key)
     const current =
       entry && entry.resetAt > at ? entry : { count: 0, resetAt: at + windowMs }
