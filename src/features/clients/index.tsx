@@ -1,15 +1,19 @@
-import { HealthBadge } from '@/features/clients/ui/health-badge'
-import { BaseMoney } from '@/features/rates/ui/money'
-import { PageShell } from '@/app/client/layout/page-shell'
-import { clientCollectedBase, clientHealth, clientOutstandingBase } from '@/features/clients/model/client-health'
-import { useDb } from '@/app/client/snapshot-query'
-import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
+import { PageShell } from '@/app/client/layout/page-shell'
+import { useDb } from '@/app/client/snapshot-query'
+import { todayIso } from '@/shared/model/dates'
 import { Plus } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import {
+  clientCollectedBase,
+  clientHealth,
+  clientOutstandingBase,
+} from '@/features/clients/model/client-health'
+import { HealthBadge } from '@/features/clients/ui/health-badge'
+import { BaseMoney } from '@/features/rates/ui/money'
 import { ClientFormDialog } from './ui/client-form-dialog'
 
 export function Clients() {

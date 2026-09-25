@@ -1,10 +1,10 @@
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { ChoiceRow } from '@/shared/components/choice-row'
 import { TextField } from '@/shared/components/text-field'
 import { todayIso } from '@/shared/model/dates'
 import { toMinor } from '@/shared/money/money'
-import { useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -38,7 +38,10 @@ type Props = {
 }
 
 /** Opens an engagement for an existing client. */
-export function NewEngagementDialog({ clientId: initialClient, onClose }: Props) {
+export function NewEngagementDialog({
+  clientId: initialClient,
+  onClose,
+}: Props) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { clients } = useDb()

@@ -17,8 +17,10 @@ export const portalEn: Widen<typeof portalAr> = {
       create: 'Create client link',
       regenerate: 'New link',
       revoke: 'Turn off link',
-      active_one: 'Active link ending in {{hint}} · opened once · since {{date}}',
-      active: 'Active link ending in {{hint}} · opened {{count}} times · since {{date}}',
+      active_one:
+        'Active link ending in {{hint}} · opened once · since {{date}}',
+      active:
+        'Active link ending in {{hint}} · opened {{count}} times · since {{date}}',
       onceHint:
         'Copy the link now — for security it is never shown in full again. A new link turns the old one off.',
       revokeTitle: 'Turn off the client link?',

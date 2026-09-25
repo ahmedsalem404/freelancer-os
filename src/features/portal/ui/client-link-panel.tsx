@@ -1,12 +1,15 @@
+import { useState } from 'react'
 import { useDb } from '@/app/client/snapshot-query'
 import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { useDateFormat } from '@/shared/lib/dates'
-import { useState } from 'react'
 import { Copy, ExternalLink, Link2, RefreshCw, Unlink } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { useCreatePortalLink, useRevokePortalLink } from '../api/use-portal-link'
+import {
+  useCreatePortalLink,
+  useRevokePortalLink,
+} from '../api/use-portal-link'
 
 const portalUrl = (token: string) => `${window.location.origin}/p/${token}`
 

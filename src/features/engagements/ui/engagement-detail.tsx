@@ -17,9 +17,9 @@ import {
 import { engagementMeter } from '@/features/engagements/model/meter'
 import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
 import { TypeBadge } from '@/features/engagements/ui/badges'
+import { ClientLinkPanel } from '@/features/portal'
 import { Money } from '@/features/rates/ui/money'
 import { ChangeScopeDialog } from './change-scope-dialog'
-import { ClientLinkPanel } from '@/features/portal'
 import { CyclePanel } from './cycle-panel'
 import { DeliverableCard } from './deliverable-card'
 import { EditEngagementDialog } from './edit-engagement-dialog'
@@ -79,7 +79,11 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
               <ArrowRight className='ltr:rotate-180' /> {t('common.back')}
             </Link>
           </Button>
-          <Button variant='outline' size='sm' onClick={() => setIsEditing(true)}>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => setIsEditing(true)}
+          >
             <Pencil /> {t('engagements.edit')}
           </Button>
           {e.type === 'project' && (

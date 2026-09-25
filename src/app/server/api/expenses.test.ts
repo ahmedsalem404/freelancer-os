@@ -84,7 +84,10 @@ describe('expenses', () => {
 
   it('rejects bad input', async () => {
     t = createTestApp()
-    const zero = await t.call('POST', '/expenses', { ...HOSTING, amountMinor: 0 })
+    const zero = await t.call('POST', '/expenses', {
+      ...HOSTING,
+      amountMinor: 0,
+    })
     const kind = await t.call('POST', '/expenses', {
       ...HOSTING,
       category: 'coffee',

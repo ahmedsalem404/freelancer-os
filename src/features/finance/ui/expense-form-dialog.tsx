@@ -1,9 +1,9 @@
+import { useState } from 'react'
 import { ChoiceRow } from '@/shared/components/choice-row'
 import { TextField } from '@/shared/components/text-field'
 import { todayIso } from '@/shared/model/dates'
 import { CURRENCIES, type Currency } from '@/shared/money/currency'
 import { toMajor, toMinor } from '@/shared/money/money'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -23,8 +23,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useSaveExpense } from '../api/use-expenses'
-import { expenseInput } from '../model/expense.input'
 import { EXPENSE_CATEGORIES, type ExpenseCategory } from '../model/enums'
+import { expenseInput } from '../model/expense.input'
 import type { Expense } from '../model/finance.schema'
 
 type Props = {

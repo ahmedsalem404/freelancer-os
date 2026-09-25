@@ -85,6 +85,10 @@ export function updateClient(ctx: Ctx, id: string, input: NewClient) {
     'client',
     id
   )
-  ctx.db.update(clients).set(columns(ctx, input)).where(eq(clients.id, id)).run()
+  ctx.db
+    .update(clients)
+    .set(columns(ctx, input))
+    .where(eq(clients.id, id))
+    .run()
   return { id }
 }

@@ -56,9 +56,7 @@ describe('clients', () => {
       city: 'Jeddah',
     })
     expect(res.status).toBe(200)
-    const client = (await t.snapshot()).clients.find(
-      (c) => c.id === 'c-nakhla'
-    )
+    const client = (await t.snapshot()).clients.find((c) => c.id === 'c-nakhla')
     expect(client).toMatchObject({ kind: 'person', city: 'Jeddah' })
     expect(client?.company).toBeUndefined()
   })
@@ -75,7 +73,10 @@ describe('clients', () => {
 
   it('rejects bad input', async () => {
     t = createTestApp()
-    const blank = await t.call('POST', '/clients', { name: ' ', currency: 'SAR' })
+    const blank = await t.call('POST', '/clients', {
+      name: ' ',
+      currency: 'SAR',
+    })
     const phone = await t.call('POST', '/clients', {
       name: 'A',
       currency: 'SAR',

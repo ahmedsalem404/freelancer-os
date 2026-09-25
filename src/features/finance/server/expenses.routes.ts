@@ -3,11 +3,7 @@ import { jsonBody } from '@/shared/http/validate'
 import type { AppEnv } from '@/shared/server/context'
 import { Hono } from 'hono'
 import { expenseInput } from '../model/expense.input'
-import {
-  createExpense,
-  deleteExpense,
-  updateExpense,
-} from './expenses.service'
+import { createExpense, deleteExpense, updateExpense } from './expenses.service'
 
 export const expensesRoutes = new Hono<AppEnv>()
   .post('/expenses', jsonBody(expenseInput), (c) => {

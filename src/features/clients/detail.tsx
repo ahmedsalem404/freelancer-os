@@ -1,24 +1,28 @@
-import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
+import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
+import { PageShell } from '@/app/client/layout/page-shell'
+import { useDb } from '@/app/client/snapshot-query'
+import { EmptyState } from '@/shared/components/empty-state'
+import { Panel } from '@/shared/components/panel'
+import { StatTile } from '@/shared/components/stat-tile'
+import { useDateFormat } from '@/shared/lib/dates'
+import { waLink } from '@/shared/lib/whatsapp'
+import { todayIso } from '@/shared/model/dates'
+import { MessageCircle, Pencil } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button'
+import {
+  clientCollectedBase,
+  clientHealth,
+  clientOutstandingBase,
+} from '@/features/clients/model/client-health'
+import type { Client } from '@/features/clients/model/clients.schema'
 import { HealthBadge } from '@/features/clients/ui/health-badge'
+import { engagementMeter } from '@/features/engagements/model/meter'
+import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
 import { TypeBadge } from '@/features/engagements/ui/badges'
 import { InvoiceTable } from '@/features/invoices/ui/invoice-table'
 import { BaseMoney } from '@/features/rates/ui/money'
-import { EmptyState } from '@/shared/components/empty-state'
-import { PageShell } from '@/app/client/layout/page-shell'
-import { Panel } from '@/shared/components/panel'
-import { StatTile } from '@/shared/components/stat-tile'
-import { clientCollectedBase, clientHealth, clientOutstandingBase } from '@/features/clients/model/client-health'
-import { engagementMeter } from '@/features/engagements/model/meter'
-import type { Client } from '@/features/clients/model/clients.schema'
-import { useDb } from '@/app/client/snapshot-query'
-import { todayIso } from '@/shared/model/dates'
-import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
-import { MessageCircle, Pencil } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { useDateFormat } from '@/shared/lib/dates'
-import { waLink } from '@/shared/lib/whatsapp'
-import { Button } from '@/components/ui/button'
 import { ClientFormDialog } from './ui/client-form-dialog'
 import { VaultPanel } from './ui/vault-panel'
 
@@ -66,7 +70,11 @@ function ClientView({ client }: { client: Client }) {
       }
       actions={
         <>
-          <Button variant='outline' size='sm' onClick={() => setIsEditing(true)}>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => setIsEditing(true)}
+          >
             <Pencil /> {t('clients.edit')}
           </Button>
           {client.whatsapp && (

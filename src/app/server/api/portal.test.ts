@@ -28,7 +28,13 @@ describe('client portal', () => {
     expect(view.deliverables.map((d) => d.id)).toContain('dl-1')
 
     const raw = JSON.stringify(res.json.data)
-    for (const secret of ['amount', 'currency', 'whatsapp', 'rate', 'c-masar']) {
+    for (const secret of [
+      'amount',
+      'currency',
+      'whatsapp',
+      'rate',
+      'c-masar',
+    ]) {
       expect(raw).not.toContain(secret)
     }
   })
@@ -88,9 +94,13 @@ describe('client portal', () => {
   it('records a change request as a client round', async () => {
     t = createTestApp()
     const token = await linkFor('e-nakhla')
-    const res = await t.call('POST', `/portal/${token}/deliverables/dl-3/rounds`, {
-      note: 'Please make the logo bigger',
-    })
+    const res = await t.call(
+      'POST',
+      `/portal/${token}/deliverables/dl-3/rounds`,
+      {
+        note: 'Please make the logo bigger',
+      }
+    )
     expect(res.status).toBe(201)
     const round = (await t.snapshot()).rounds.find(
       (r) => r.deliverableId === 'dl-3'

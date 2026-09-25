@@ -1,8 +1,8 @@
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { TextField } from '@/shared/components/text-field'
 import { toMinor } from '@/shared/money/money'
-import { useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -118,7 +118,9 @@ export function NewInvoiceDialog({ clientId: initialClient, onClose }: Props) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={NONE}>{t('invoice.form.noEngagement')}</SelectItem>
+                  <SelectItem value={NONE}>
+                    {t('invoice.form.noEngagement')}
+                  </SelectItem>
                   {engagements.map((e) => (
                     <SelectItem key={e.id} value={e.id}>
                       {e.title}

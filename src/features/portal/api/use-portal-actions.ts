@@ -26,7 +26,10 @@ const base = (token: string, deliverableId: string) =>
 export const usePortalApprove = (token: string) =>
   usePortalAction(
     token,
-    ({ deliverableId, ...body }: PortalApproveInput & { deliverableId: string }) =>
+    ({
+      deliverableId,
+      ...body
+    }: PortalApproveInput & { deliverableId: string }) =>
       callApi(
         'POST',
         `${base(token, deliverableId)}/approval`,
@@ -38,7 +41,10 @@ export const usePortalApprove = (token: string) =>
 export const usePortalFeedback = (token: string) =>
   usePortalAction(
     token,
-    ({ deliverableId, ...body }: PortalFeedbackInput & { deliverableId: string }) =>
+    ({
+      deliverableId,
+      ...body
+    }: PortalFeedbackInput & { deliverableId: string }) =>
       callApi(
         'POST',
         `${base(token, deliverableId)}/rounds`,

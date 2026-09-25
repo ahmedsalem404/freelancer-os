@@ -44,9 +44,15 @@ describe('engagement setup', () => {
     })
     expect(res.status).toBe(201)
     const snap = await t.snapshot()
-    const cycles = snap.cycles.filter((c) => c.engagementId === res.json.data.id)
+    const cycles = snap.cycles.filter(
+      (c) => c.engagementId === res.json.data.id
+    )
     expect(cycles).toHaveLength(1)
-    expect(cycles[0]).toMatchObject({ seq: 1, includedUnits: 12, startsOn: today })
+    expect(cycles[0]).toMatchObject({
+      seq: 1,
+      includedUnits: 12,
+      startsOn: today,
+    })
   })
 
   it('rejects a retainer without included hours', async () => {

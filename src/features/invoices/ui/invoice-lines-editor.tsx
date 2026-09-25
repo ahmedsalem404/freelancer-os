@@ -37,11 +37,15 @@ export function InvoiceLinesEditor({ lines, currency, onChange }: Props) {
               id={`line-desc-${line.key}`}
               aria-label={t('invoice.item')}
               value={line.description}
-              onChange={(e) => update(line.key, { description: e.target.value })}
+              onChange={(e) =>
+                update(line.key, { description: e.target.value })
+              }
             />
           </div>
           <div className='grid gap-1'>
-            {index === 0 && <Label className='text-xs'>{t('invoice.qty')}</Label>}
+            {index === 0 && (
+              <Label className='text-xs'>{t('invoice.qty')}</Label>
+            )}
             <Input
               aria-label={t('invoice.qty')}
               dir='ltr'
