@@ -10,9 +10,12 @@ import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
+import { Plus } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/shared/lib/utils'
+import { Button } from '@/components/ui/button'
+import { NewEngagementDialog } from './ui/new-engagement-dialog'
 
 type Filter = 'all' | EngagementType
 
@@ -22,6 +25,7 @@ export function Engagements() {
   const { t } = useTranslation()
   const db = useDb()
   const [filter, setFilter] = useState<Filter>('all')
+  const [isAdding, setIsAdding] = useState(false)
   const now = todayIso()
 
   const rows = db.engagements
@@ -41,7 +45,13 @@ export function Engagements() {
     <PageShell
       title={t('engagements.title')}
       subtitle={t('engagements.subtitle')}
+      actions={
+        <Button size='sm' onClick={() => setIsAdding(true)}>
+          <Plus /> {t('engagements.add')}
+        </Button>
+      }
     >
+      {isAdding && <NewEngagementDialog onClose={() => setIsAdding(false)} />}
       <div role='tablist' className='flex flex-wrap gap-1.5'>
         {FILTERS.map((f) => (
           <button

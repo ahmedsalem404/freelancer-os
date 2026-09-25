@@ -8,16 +8,31 @@ import {
   changeScopeInput,
   extendGraceInput,
 } from '../model/engagement.input'
+import {
+  openEngagementInput,
+  updateEngagementInput,
+} from '../model/terms.input'
 import { extendGrace, renewCycle, stopCycle } from './cycles.service'
 import {
   addFeedback,
   approveDeliverable,
   billOverageRounds,
 } from './deliverables.service'
+import { createEngagement, updateEngagement } from './engagements.service'
 import { changeScope } from './scope.service'
 import { toggleStage } from './stages.service'
 
 export const engagementsRoutes = new Hono<AppEnv>()
+  .post('/engagements', jsonBody(openEngagementInput), (c) => {
+    const input = c.req.valid('json')
+    const result = c.var.run((ctx) => createEngagement(ctx, input))
+    return c.json(success(result), 201)
+  })
+  .put('/engagements/:id', jsonBody(updateEngagementInput), (c) => {
+    const id = c.req.param('id')
+    const input = c.req.valid('json')
+    return c.json(success(c.var.run((ctx) => updateEngagement(ctx, id, input))))
+  })
   .post('/deliverables/:id/rounds', jsonBody(addFeedbackInput), (c) => {
     const id = c.req.param('id')
     const input = c.req.valid('json')

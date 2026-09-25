@@ -4,7 +4,7 @@ import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
 import { EmptyState } from '@/shared/components/empty-state'
 import { todayIso } from '@/shared/model/dates'
-import { ArrowRight, Plus } from 'lucide-react'
+import { ArrowRight, Pencil, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -22,6 +22,7 @@ import { ChangeScopeDialog } from './change-scope-dialog'
 import { ClientLinkPanel } from './client-link-panel'
 import { CyclePanel } from './cycle-panel'
 import { DeliverableCard } from './deliverable-card'
+import { EditEngagementDialog } from './edit-engagement-dialog'
 import { FilesTab, MoneyTab, TimeTab } from './engagement-tabs'
 import { RetainerPanel } from './retainer-panel'
 import { StagesPanel } from './stages-panel'
@@ -43,6 +44,7 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
   const { t } = useTranslation()
   const db = useDb()
   const [isScopeOpen, setIsScopeOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const client = db.clients.find((c) => c.id === e.clientId)!
   const meter = engagementMeter(db, e, todayIso())
   const scope = scopeGuard(db, e)
@@ -76,6 +78,9 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
             <Link to='/engagements'>
               <ArrowRight className='ltr:rotate-180' /> {t('common.back')}
             </Link>
+          </Button>
+          <Button variant='outline' size='sm' onClick={() => setIsEditing(true)}>
+            <Pencil /> {t('engagements.edit')}
           </Button>
           {e.type === 'project' && (
             <Button size='sm' onClick={() => setIsScopeOpen(true)}>
@@ -187,6 +192,12 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
         open={isScopeOpen}
         onOpenChange={setIsScopeOpen}
       />
+      {isEditing && (
+        <EditEngagementDialog
+          engagement={e}
+          onClose={() => setIsEditing(false)}
+        />
+      )}
     </PageShell>
   )
 }
