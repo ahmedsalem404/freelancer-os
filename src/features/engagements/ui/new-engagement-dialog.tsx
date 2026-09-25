@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { ChoiceRow } from '@/shared/components/choice-row'
 import { TextField } from '@/shared/components/text-field'
+import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
@@ -93,11 +94,13 @@ export function NewEngagementDialog({
                 <SelectValue placeholder={t('engagements.form.pickClient')} />
               </SelectTrigger>
               <SelectContent>
-                {clients.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.company ?? c.name}
-                  </SelectItem>
-                ))}
+                {clients
+                  .filter((c) => !isArchived(c))
+                  .map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.company ?? c.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

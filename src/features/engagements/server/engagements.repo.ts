@@ -8,11 +8,8 @@ import { deliverables, engagementStages } from './work.table'
 /** Snapshot slice owned by `engagements` (the guard reads all of it). */
 export function loadEngagements(db: Database) {
   return {
-    engagements: db
-      .select()
-      .from(engagements)
-      .where(isNull(engagements.archivedAt))
-      .all(),
+    // Archived ones stay: invoices, time and cycles still point at them.
+    engagements: db.select().from(engagements).all(),
     cycles: db
       .select()
       .from(engagementCycles)

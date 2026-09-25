@@ -1,10 +1,11 @@
-import { useDb } from '@/app/client/snapshot-query'
 import React from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { Handshake, Moon, Sun, Users } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
+import { useDb } from '@/app/client/snapshot-query'
 import { useSearch } from '@/shared/context/search-provider'
 import { useTheme } from '@/shared/context/theme-provider'
+import { isArchived } from '@/shared/model/archive'
+import { Handshake, Moon, Sun, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   CommandDialog,
   CommandEmpty,
@@ -14,16 +15,16 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import { navSections } from './nav'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { navSections } from './nav'
 
 export function CommandMenu() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { setTheme } = useTheme()
   const { open, setOpen } = useSearch()
-  const clients = useDb().clients
-  const engagements = useDb().engagements
+  const clients = useDb().clients.filter((c) => !isArchived(c))
+  const engagements = useDb().engagements.filter((e) => !isArchived(e))
 
   const run = React.useCallback(
     (command: () => unknown) => {

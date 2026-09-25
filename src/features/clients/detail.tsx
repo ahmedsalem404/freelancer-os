@@ -1,12 +1,15 @@
 import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
+import { useLifecycle } from '@/app/client/use-lifecycle'
+import { ArchiveActions } from '@/shared/components/archive-actions'
 import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { StatTile } from '@/shared/components/stat-tile'
 import { useDateFormat } from '@/shared/lib/dates'
 import { waLink } from '@/shared/lib/whatsapp'
+import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { MessageCircle, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -53,6 +56,10 @@ function ClientView({ client }: { client: Client }) {
     { hour: '2-digit', minute: '2-digit', timeZone: client.timezone }
   ).format(new Date())
   const [isEditing, setIsEditing] = useState(false)
+  const navigate = useNavigate()
+  const lifecycle = useLifecycle('clients', client.id, {
+    onDeleted: () => navigate({ to: '/clients' }),
+  })
 
   return (
     <PageShell
@@ -88,9 +95,19 @@ function ClientView({ client }: { client: Client }) {
               </a>
             </Button>
           )}
+          <ArchiveActions
+            name={client.company ?? client.name}
+            isArchived={isArchived(client)}
+            {...lifecycle}
+          />
         </>
       }
     >
+      {isArchived(client) && (
+        <p className='rounded-lg border border-dashed px-4 py-2 text-sm text-muted-foreground'>
+          {t('common.archivedNote')}
+        </p>
+      )}
       {isEditing && (
         <ClientFormDialog client={client} onClose={() => setIsEditing(false)} />
       )}

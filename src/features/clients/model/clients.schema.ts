@@ -17,6 +17,8 @@ export const clientSchema = z.object({
   billingIdentityId: recordId,
   color: z.string(),
   createdAt: isoDateTime,
+  /** Set when hidden from lists; its records stay (see `isArchived`). */
+  archivedAt: isoDateTime.optional(),
 })
 
 /** The UI never holds secrets — only labels. Secrets are revealed on demand. */

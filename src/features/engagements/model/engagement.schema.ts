@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { isoDate, recordId } from '@/shared/model/schema'
+import { isoDate, isoDateTime, recordId } from '@/shared/model/schema'
 import { moneyFieldsSchema } from '@/shared/money/money.schema'
 import {
   ALLOWANCE_UNITS,
@@ -28,6 +28,8 @@ export const engagementSchema = moneyFieldsSchema.extend({
   endOn: isoDate.optional(),
   nextAction: z.string(),
   nextActionOn: isoDate.optional(),
+  /** Set when hidden from lists; its records stay (see `isArchived`). */
+  archivedAt: isoDateTime.optional(),
 })
 
 export const cycleSchema = z.object({

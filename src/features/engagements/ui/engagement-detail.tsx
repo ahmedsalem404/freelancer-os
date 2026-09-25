@@ -1,8 +1,11 @@
 import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
+import { useLifecycle } from '@/app/client/use-lifecycle'
+import { ArchiveActions } from '@/shared/components/archive-actions'
 import { EmptyState } from '@/shared/components/empty-state'
+import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { ArrowRight, Pencil, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -45,6 +48,10 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
   const db = useDb()
   const [isScopeOpen, setIsScopeOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const navigate = useNavigate()
+  const lifecycle = useLifecycle('engagements', e.id, {
+    onDeleted: () => navigate({ to: '/engagements' }),
+  })
   const client = db.clients.find((c) => c.id === e.clientId)!
   const meter = engagementMeter(db, e, todayIso())
   const scope = scopeGuard(db, e)
@@ -91,9 +98,19 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
               <Plus /> {t('engagements.changeScope')}
             </Button>
           )}
+          <ArchiveActions
+            name={e.title}
+            isArchived={isArchived(e)}
+            {...lifecycle}
+          />
         </>
       }
     >
+      {isArchived(e) && (
+        <p className='rounded-lg border border-dashed px-4 py-2 text-sm text-muted-foreground'>
+          {t('common.archivedNote')}
+        </p>
+      )}
       <div className='grid gap-4 rounded-xl border bg-card p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-8'>
         <AllowanceMeter meter={meter} />
         <div className='grid gap-0.5 sm:text-end'>

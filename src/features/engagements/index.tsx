@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
 import { cn } from '@/shared/lib/utils'
+import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { Plus } from 'lucide-react'
 import { motion } from 'motion/react'
@@ -12,6 +13,7 @@ import {
   currentCycle,
   subscriptionState,
 } from '@/features/engagements/model/cycles'
+import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import type { EngagementType } from '@/features/engagements/model/enums'
 import { engagementCurrentValue } from '@/features/engagements/model/guard'
 import { engagementMeter } from '@/features/engagements/model/meter'
@@ -20,9 +22,21 @@ import { SubStateBadge, TypeBadge } from '@/features/engagements/ui/badges'
 import { Money } from '@/features/rates/ui/money'
 import { NewEngagementDialog } from './ui/new-engagement-dialog'
 
-type Filter = 'all' | EngagementType
+type Filter = 'all' | EngagementType | 'archived'
 
-const FILTERS: Filter[] = ['all', 'project', 'retainer', 'subscription']
+const FILTERS: Filter[] = [
+  'all',
+  'project',
+  'retainer',
+  'subscription',
+  'archived',
+]
+
+/** Type filters show live engagements; "archived" shows only archived. */
+const matches = (e: Engagement, f: Filter) =>
+  f === 'archived'
+    ? isArchived(e)
+    : !isArchived(e) && (f === 'all' || e.type === f)
 
 export function Engagements() {
   const { t } = useTranslation()
@@ -32,7 +46,7 @@ export function Engagements() {
   const now = todayIso()
 
   const rows = db.engagements
-    .filter((e) => filter === 'all' || e.type === filter)
+    .filter((e) => matches(e, filter))
     .map((e) => ({
       e,
       client: db.clients.find((c) => c.id === e.clientId)!,
@@ -42,7 +56,15 @@ export function Engagements() {
     .sort((a, b) => b.meter.unbilled - a.meter.unbilled)
 
   const count = (f: Filter) =>
-    db.engagements.filter((e) => f === 'all' || e.type === f).length
+    db.engagements.filter((e) => matches(e, f)).length
+  const label = (f: Filter) =>
+    f === 'all'
+      ? t('common.all')
+      : f === 'archived'
+        ? t('common.showArchived')
+        : t(`types.${f}`)
+  // The archive tab appears once something is archived.
+  const filters = FILTERS.filter((f) => f !== 'archived' || count(f) > 0)
 
   return (
     <PageShell
@@ -56,7 +78,7 @@ export function Engagements() {
     >
       {isAdding && <NewEngagementDialog onClose={() => setIsAdding(false)} />}
       <div role='tablist' className='flex flex-wrap gap-1.5'>
-        {FILTERS.map((f) => (
+        {filters.map((f) => (
           <button
             key={f}
             role='tab'
@@ -69,7 +91,7 @@ export function Engagements() {
                 : 'bg-card text-muted-foreground hover:text-foreground'
             )}
           >
-            {f === 'all' ? t('common.all') : t(`types.${f}`)}{' '}
+            {label(f)}{' '}
             <span className='num text-xs opacity-70'>{count(f)}</span>
           </button>
         ))}

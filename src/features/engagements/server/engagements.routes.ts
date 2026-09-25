@@ -18,6 +18,11 @@ import {
   approveDeliverable,
   billOverageRounds,
 } from './deliverables.service'
+import {
+  archiveEngagement,
+  deleteEngagement,
+  unarchiveEngagement,
+} from './engagement-lifecycle'
 import { createEngagement, updateEngagement } from './engagements.service'
 import { changeScope } from './scope.service'
 import { toggleStage } from './stages.service'
@@ -32,6 +37,18 @@ export const engagementsRoutes = new Hono<AppEnv>()
     const id = c.req.param('id')
     const input = c.req.valid('json')
     return c.json(success(c.var.run((ctx) => updateEngagement(ctx, id, input))))
+  })
+  .post('/engagements/:id/archive', (c) => {
+    const id = c.req.param('id')
+    return c.json(success(c.var.run((ctx) => archiveEngagement(ctx, id))))
+  })
+  .post('/engagements/:id/unarchive', (c) => {
+    const id = c.req.param('id')
+    return c.json(success(c.var.run((ctx) => unarchiveEngagement(ctx, id))))
+  })
+  .delete('/engagements/:id', (c) => {
+    const id = c.req.param('id')
+    return c.json(success(c.var.run((ctx) => deleteEngagement(ctx, id))))
   })
   .post('/deliverables/:id/rounds', jsonBody(addFeedbackInput), (c) => {
     const id = c.req.param('id')

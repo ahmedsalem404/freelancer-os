@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { TextField } from '@/shared/components/text-field'
+import { isArchived } from '@/shared/model/archive'
 import { toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -45,7 +46,9 @@ export function NewInvoiceDialog({ clientId: initialClient, onClose }: Props) {
   const [dueOn, setDueOn] = useState('')
   const [note, setNote] = useState('')
   const client = db.clients.find((c) => c.id === clientId)
-  const engagements = db.engagements.filter((e) => e.clientId === clientId)
+  const engagements = db.engagements.filter(
+    (e) => e.clientId === clientId && !isArchived(e)
+  )
   const items = lines.map((l) => ({
     description: l.description,
     quantity: Number(l.quantity),
@@ -97,11 +100,13 @@ export function NewInvoiceDialog({ clientId: initialClient, onClose }: Props) {
                   <SelectValue placeholder={t('engagements.form.pickClient')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {db.clients.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.company ?? c.name}
-                    </SelectItem>
-                  ))}
+                  {db.clients
+                    .filter((c) => !isArchived(c))
+                    .map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.company ?? c.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>

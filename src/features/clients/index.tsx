@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
+import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
-import { Plus } from 'lucide-react'
+import { Archive, Plus } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -21,15 +22,33 @@ export function Clients() {
   const db = useDb()
   const now = todayIso()
   const [isAdding, setIsAdding] = useState(false)
+  const [isShowingArchived, setIsShowingArchived] = useState(false)
+  const archivedCount = db.clients.filter(isArchived).length
+  const rows = db.clients.filter((c) => isArchived(c) === isShowingArchived)
 
   return (
     <PageShell
       title={t('clients.title')}
-      subtitle={t('clients.count', { count: db.clients.length })}
+      subtitle={t('clients.count', {
+        count: db.clients.length - archivedCount,
+      })}
       actions={
-        <Button size='sm' onClick={() => setIsAdding(true)}>
-          <Plus /> {t('clients.add')}
-        </Button>
+        <>
+          {archivedCount > 0 && (
+            <Button
+              variant={isShowingArchived ? 'default' : 'outline'}
+              size='sm'
+              aria-pressed={isShowingArchived}
+              onClick={() => setIsShowingArchived((v) => !v)}
+            >
+              <Archive /> {t('common.showArchived')}{' '}
+              <span className='num text-xs opacity-70'>{archivedCount}</span>
+            </Button>
+          )}
+          <Button size='sm' onClick={() => setIsAdding(true)}>
+            <Plus /> {t('clients.add')}
+          </Button>
+        </>
       }
     >
       {isAdding && <ClientFormDialog onClose={() => setIsAdding(false)} />}
@@ -58,7 +77,7 @@ export function Clients() {
             </tr>
           </thead>
           <tbody className='divide-y'>
-            {db.clients.map((client, index) => {
+            {rows.map((client, index) => {
               const engagements = db.engagements.filter(
                 (e) => e.clientId === client.id
               )

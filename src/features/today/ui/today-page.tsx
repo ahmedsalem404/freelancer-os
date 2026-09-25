@@ -7,6 +7,7 @@ import { useCurrentMember } from '@/app/client/use-current-member'
 import { Panel } from '@/shared/components/panel'
 import { StatTile } from '@/shared/components/stat-tile'
 import { daysFrom, useLang } from '@/shared/lib/dates'
+import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { ar as arLocale, enUS } from 'date-fns/locale'
 import { ArrowUpLeft, Moon } from 'lucide-react'
@@ -39,7 +40,9 @@ export function Today() {
   const now = todayIso()
   const owner = useCurrentMember()
 
-  const active = db.engagements.filter((e) => e.status === 'active')
+  const active = db.engagements.filter(
+    (e) => e.status === 'active' && !isArchived(e)
+  )
   const meters = active.map((e) => ({ e, meter: engagementMeter(db, e, now) }))
 
   const openInvoices = db.invoices.filter((i) =>

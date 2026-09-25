@@ -1,14 +1,15 @@
-import { DailyRateEditor } from '@/features/rates/ui/daily-rate-editor'
 import { PageShell } from '@/app/client/layout/page-shell'
-import { Panel } from '@/shared/components/panel'
 import { useDb } from '@/app/client/snapshot-query'
+import { Panel } from '@/shared/components/panel'
+import { useLocale } from '@/shared/context/direction-provider'
+import { useTheme } from '@/shared/context/theme-provider'
+import { cn } from '@/shared/lib/utils'
+import { isArchived } from '@/shared/model/archive'
 import { Download, Languages, Moon, Sun, Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { cn } from '@/shared/lib/utils'
-import { useLocale } from '@/shared/context/direction-provider'
-import { useTheme } from '@/shared/context/theme-provider'
 import { Button } from '@/components/ui/button'
+import { DailyRateEditor } from '@/features/rates/ui/daily-rate-editor'
 
 export function SettingsPage() {
   const { t } = useTranslation()
@@ -62,7 +63,10 @@ export function SettingsPage() {
                 </ul>
                 <div className='text-xs text-muted-foreground'>
                   {db.clients
-                    .filter((c) => c.billingIdentityId === identity.id)
+                    .filter(
+                      (c) =>
+                        c.billingIdentityId === identity.id && !isArchived(c)
+                    )
                     .map((c) => c.company ?? c.name)
                     .join(' · ')}
                 </div>
