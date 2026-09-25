@@ -109,5 +109,7 @@ export const sharedEn: Widen<typeof sharedAr> = {
     client_in_use: 'This client has records — archive it instead',
     engagement_running: 'Stop the open cycle before archiving',
     engagement_in_use: 'This engagement has records — archive it instead',
+    subscription_in_use: 'This subscription has recorded charges — stop it instead',
+    type_locked: 'The engagement type is fixed once opened',
   },
 }

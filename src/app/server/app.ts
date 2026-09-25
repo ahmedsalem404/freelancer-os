@@ -6,7 +6,10 @@ import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { clientsRoutes, vaultRoutes } from '@/features/clients/server'
 import { engagementsRoutes } from '@/features/engagements/server'
-import { expensesRoutes } from '@/features/finance/server'
+import {
+  expensesRoutes,
+  ownSubscriptionsRoutes,
+} from '@/features/finance/server'
 import { invoicesRoutes } from '@/features/invoices/server'
 import { leadsRoutes } from '@/features/leads/server'
 import { createPortalRoutes } from '@/features/portal/server'
@@ -28,6 +31,7 @@ const FEATURE_ROUTES = [
   vaultRoutes,
   clientsRoutes,
   expensesRoutes,
+  ownSubscriptionsRoutes,
 ]
 
 /** HTTP composition root: mounts feature routes under /api. */

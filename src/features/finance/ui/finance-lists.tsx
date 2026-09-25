@@ -55,39 +55,3 @@ export function PaymentsList() {
     </Panel>
   )
 }
-
-export function SubscriptionsList() {
-  const { t } = useTranslation()
-  const fmt = useDateFormat()
-  const subs = useDb().ownSubscriptions
-  return (
-    <Panel bodyClassName='p-0'>
-      <ul className='divide-y'>
-        {subs.map((s) => (
-          <li
-            key={s.id}
-            className='flex items-center justify-between gap-3 px-4 py-3 text-sm'
-          >
-            <div className='grid gap-0.5'>
-              <span className='font-medium'>{s.name}</span>
-              <span className='text-xs text-muted-foreground'>
-                {t(
-                  s.period === 'monthly'
-                    ? 'finance.perMonth'
-                    : 'finance.perYear'
-                )}{' '}
-                · {t('finance.renews')} {fmt(s.nextRenewalOn)}
-              </span>
-            </div>
-            <Money
-              amount={s.amount}
-              currency={s.currency}
-              rateToBase={s.rateToBase}
-              showBase
-            />
-          </li>
-        ))}
-      </ul>
-    </Panel>
-  )
-}

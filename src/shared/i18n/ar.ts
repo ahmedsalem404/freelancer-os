@@ -104,5 +104,7 @@ export const sharedAr = {
     client_in_use: 'للعميل سجلات — أرشفه بدل الحذف',
     engagement_running: 'أوقف الدورة المفتوحة قبل الأرشفة',
     engagement_in_use: 'للاتفاق سجلات — أرشفه بدل الحذف',
+    subscription_in_use: 'للاشتراك مبالغ مسجّلة — أوقفه بدل الحذف',
+    type_locked: 'نوع الاتفاق ثابت بعد فتحه',
   },
 }

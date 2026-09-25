@@ -140,12 +140,12 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 |---|---|
 | rates | `PUT /rates/today` |
 | invoices | `POST /invoices` (manual, issued at once) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` |
-| engagements | `POST /engagements` · `PUT /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
+| engagements | `POST /engagements` · `PUT /engagements/:id` · `PUT /engagements/:id/terms` · `POST /engagements/:id/{archive,unarchive}` · `DELETE /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
 | time | `POST /time` · `POST /engagements/:id/bill-hours` |
 | leads | `POST /leads/:id/stage` (not to `won`) · `POST /leads/:id/convert` |
 | today | `POST /tasks` · `/tasks/:id/toggle` · `/tasks/carry-over` · `PUT /reflections/today` · `POST /day/close` |
-| clients | `POST /clients` · `PUT /clients/:id` · `POST /vault/:id/reveal` → 423 until phase 3 |
-| finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` |
+| clients | `POST /clients` · `PUT /clients/:id` · `POST /clients/:id/{archive,unarchive}` · `DELETE /clients/:id` · `POST /vault/:id/reveal` → 423 until phase 3 |
+| finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` · `POST /own-subscriptions` · `PUT /own-subscriptions/:id` · `POST /own-subscriptions/:id/cancel` · `DELETE /own-subscriptions/:id` |
 | portal | owner: `POST`/`DELETE /engagements/:id/portal-link` · public (rate-limited): `GET /portal/:token` · `POST /portal/:token/deliverables/:id/{approval,rounds}` |
 - **Derived values are never stored** (invoice status, balances, meters, health) —
   see docs/database.md §5.
@@ -168,6 +168,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | Features may import `app/client/*` (snapshot, useAction, prefs, page shell); shared code uses the global `i18next` instance instead of importing app | the composed snapshot schema needs every feature, so it lives in app |
 | 2026-09-25 | Issued invoices are never edited: they are voided with a reason (blocked once payments exist) and reissued | the number sequence and the record stay intact |
 | 2026-09-25 | Voiding frees the revision rounds billed on it (billable again); renewal invoices can't be voided; a client link can't approve or request changes once a deliverable is approved | a void must not lose or double-bill work; undoing a renewal is its own flow |
+| 2026-09-25 | Archive hides, delete removes mistakes only: the snapshot keeps archived clients/engagements (`archivedAt`) and lists filter them; a hard delete relies on the foreign keys and answers 409 `*_in_use` for anything with records. Engagement type is fixed after opening; new terms reach the open cycle only while nothing bills it | history must always resolve; the DB already knows every reference |
 | 2026-09-25 | Expenses snapshot the daily rate on create and keep it on edit unless the currency changes | a typo fix never revalues past spending |
 | 2026-09-25 | Client portal links: 32-byte token, only its SHA-256 stored, shown once; one active link per engagement; the public view carries no money or contacts; per-IP limit keyed on `cf-connecting-ip` only (X-Forwarded-For is spoofable) | docs/database.md §3.6 |
 | 2026-09-25 | Tests split into Vitest projects: `node` (API, models, money, http) and `browser` (DOM, Chromium) | the API needs SQLite/Node; components need a real browser |
@@ -190,8 +191,11 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
   by hand (plus an empty `INSTALLATION_COMPLETE` file in each folder).
 - Owner endpoints are still unauthenticated (phase 3): e.g. `/deliverables/:id/approval`
   accepts `source: client_link`. Tighten once auth lands.
-- No archive/delete for clients and engagements yet; no edit of engagement terms
-  (amount, type) after opening; own subscriptions have no form yet.
+- Own subscriptions don't record their renewal charge as an expense by themselves yet
+  (the `expense_sub_charge` unique key is ready for it); no reminder before renewal yet
+  (`remindDaysBefore` is stored — reminders are phase 3).
+- A renewal can't be undone (its invoice can't be voided); a client's currency can
+  still be changed after it has invoices.
 
 ## 7. Commands
 

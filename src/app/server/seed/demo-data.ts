@@ -636,6 +636,7 @@ export function seedDb(): Db {
         ...m(15, 'USD'),
         period: 'monthly',
         nextRenewalOn: d(6),
+        remindDaysBefore: 3,
       },
       {
         id: 'os2',
@@ -643,6 +644,7 @@ export function seedDb(): Db {
         ...m(60, 'USD'),
         period: 'monthly',
         nextRenewalOn: d(12),
+        remindDaysBefore: 3,
       },
       {
         id: 'os3',
@@ -650,6 +652,7 @@ export function seedDb(): Db {
         ...m(20, 'USD'),
         period: 'monthly',
         nextRenewalOn: d(20),
+        remindDaysBefore: 3,
       },
       {
         id: 'os4',
@@ -657,6 +660,7 @@ export function seedDb(): Db {
         ...m(110, 'USD'),
         period: 'yearly',
         nextRenewalOn: d(140),
+        remindDaysBefore: 3,
       },
     ],
     leads: [

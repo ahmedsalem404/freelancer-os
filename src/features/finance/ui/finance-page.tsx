@@ -11,8 +11,9 @@ import { InvoiceTable } from '@/features/invoices/ui/invoice-table'
 import { NewInvoiceDialog } from '@/features/invoices/ui/new-invoice-dialog'
 import { BaseMoney } from '@/features/rates/ui/money'
 import { ExpensesPanel } from './expenses-panel'
-import { PaymentsList, SubscriptionsList } from './finance-lists'
+import { PaymentsList } from './finance-lists'
 import { ForecastChart } from './forecast-chart'
+import { SubscriptionsPanel } from './subscriptions-panel'
 import { useFinance } from './use-finance'
 
 const TABS = [
@@ -97,7 +98,7 @@ export function Finance() {
           <ExpensesPanel />
         </TabsContent>
         <TabsContent value='subscriptions'>
-          <SubscriptionsList />
+          <SubscriptionsPanel />
         </TabsContent>
       </Tabs>
     </PageShell>

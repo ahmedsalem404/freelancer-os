@@ -16,8 +16,10 @@ export const expenseSchema = moneyFieldsSchema.extend({
 export const ownSubscriptionSchema = moneyFieldsSchema.extend({
   id: recordId,
   name: z.string(),
+  vendor: z.string().optional(),
   period: z.enum(SUBSCRIPTION_PERIODS),
   nextRenewalOn: isoDate,
+  remindDaysBefore: z.number().int().nonnegative(),
 })
 
 export type Expense = z.infer<typeof expenseSchema>
