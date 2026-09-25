@@ -20,7 +20,7 @@ const envelopeSchema = z.discriminatedUnion('ok', [
   }),
 ])
 
-type Method = 'GET' | 'POST' | 'PUT'
+type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 /**
  * Calls `/api<path>`, unwraps the `{ ok, data }` envelope and validates the

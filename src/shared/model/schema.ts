@@ -9,6 +9,15 @@ export const isoDateTime = z.string().min(1)
 /** Record id: seed ids are readable (`c-nakhla`), new ids are prefixed ULIDs. */
 export const recordId = z.string().min(1).max(64)
 
+/** Optional form text: trimmed, and blank becomes `undefined` ("not set"). */
+export const optionalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .optional()
+    .transform((v) => (v ? v : undefined))
+
 /**
  * SQL `NULL` → `undefined`, recursively. JSON from the API carries `null` for
  * empty columns; the feature schemas model them as optional fields.

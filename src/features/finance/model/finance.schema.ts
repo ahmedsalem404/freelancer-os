@@ -8,6 +8,8 @@ export const expenseSchema = moneyFieldsSchema.extend({
   title: z.string(),
   category: z.enum(EXPENSE_CATEGORIES),
   spentOn: isoDate,
+  vendor: z.string().optional(),
+  note: z.string().optional(),
   ownSubscriptionId: recordId.optional(),
 })
 

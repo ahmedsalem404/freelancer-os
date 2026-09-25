@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { InvoiceTable } from '@/features/invoices/ui/invoice-table'
 import { BaseMoney } from '@/features/rates/ui/money'
-import { ExpensesList, PaymentsList, SubscriptionsList } from './finance-lists'
+import { ExpensesPanel } from './expenses-panel'
+import { PaymentsList, SubscriptionsList } from './finance-lists'
 import { ForecastChart } from './forecast-chart'
 import { useFinance } from './use-finance'
 
@@ -77,7 +78,7 @@ export function Finance() {
           <PaymentsList />
         </TabsContent>
         <TabsContent value='expenses'>
-          <ExpensesList />
+          <ExpensesPanel />
         </TabsContent>
         <TabsContent value='subscriptions'>
           <SubscriptionsList />

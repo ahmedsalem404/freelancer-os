@@ -1,14 +1,6 @@
 import { z } from 'zod'
+import { optionalText } from '@/shared/model/schema'
 import { currencySchema } from '@/shared/money/money.schema'
-
-/** Blank text means "not set": trimmed, and '' becomes undefined. */
-const optionalText = (max: number) =>
-  z
-    .string()
-    .trim()
-    .max(max)
-    .optional()
-    .transform((v) => (v ? v : undefined))
 
 /**
  * Body of `POST /api/clients` and `PUT /api/clients/:id`. WhatsApp is the

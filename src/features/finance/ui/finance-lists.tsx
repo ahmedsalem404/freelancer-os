@@ -56,37 +56,6 @@ export function PaymentsList() {
   )
 }
 
-export function ExpensesList() {
-  const { t } = useTranslation()
-  const fmt = useDateFormat()
-  const expenses = useDb().expenses
-  return (
-    <Panel bodyClassName='p-0'>
-      <ul className='divide-y'>
-        {expenses.map((x) => (
-          <li
-            key={x.id}
-            className='flex items-center justify-between gap-3 px-4 py-3 text-sm'
-          >
-            <div className='grid gap-0.5'>
-              <span>{x.title}</span>
-              <span className='text-xs text-muted-foreground'>
-                {t(`finance.category.${x.category}`)} · {fmt(x.spentOn)}
-              </span>
-            </div>
-            <Money
-              amount={x.amount}
-              currency={x.currency}
-              rateToBase={x.rateToBase}
-              showBase
-            />
-          </li>
-        ))}
-      </ul>
-    </Panel>
-  )
-}
-
 export function SubscriptionsList() {
   const { t } = useTranslation()
   const fmt = useDateFormat()
