@@ -139,12 +139,14 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | Feature | Endpoints (all under `/api`) |
 |---|---|
 | rates | `PUT /rates/today` |
-| invoices | `POST /invoices/:id/payments` |
-| engagements | `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
+| invoices | `POST /invoices` (manual, issued at once) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` |
+| engagements | `POST /engagements` · `PUT /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
 | time | `POST /time` · `POST /engagements/:id/bill-hours` |
 | leads | `POST /leads/:id/stage` (not to `won`) · `POST /leads/:id/convert` |
 | today | `POST /tasks` · `/tasks/:id/toggle` · `/tasks/carry-over` · `PUT /reflections/today` · `POST /day/close` |
-| clients | `POST /vault/:id/reveal` → 423 until phase 3 |
+| clients | `POST /clients` · `PUT /clients/:id` · `POST /vault/:id/reveal` → 423 until phase 3 |
+| finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` |
+| portal | owner: `POST`/`DELETE /engagements/:id/portal-link` · public (rate-limited): `GET /portal/:token` · `POST /portal/:token/deliverables/:id/{approval,rounds}` |
 - **Derived values are never stored** (invoice status, balances, meters, health) —
   see docs/database.md §5.
 
@@ -164,6 +166,10 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | A lead becomes `won` only through conversion (client + engagement in one transaction), enforced by CHECK `lead_won_converted`; subscriptions require `grace_days` | database.md §3 constraints deferred from phase 1 |
 | 2026-09-25 | End of day (`POST /day/close`) saves the reflection and carries tasks over atomically | both or neither |
 | 2026-09-25 | Features may import `app/client/*` (snapshot, useAction, prefs, page shell); shared code uses the global `i18next` instance instead of importing app | the composed snapshot schema needs every feature, so it lives in app |
+| 2026-09-25 | Issued invoices are never edited: they are voided with a reason (blocked once payments exist) and reissued | the number sequence and the record stay intact |
+| 2026-09-25 | Expenses snapshot the daily rate on create and keep it on edit unless the currency changes | a typo fix never revalues past spending |
+| 2026-09-25 | Client portal links: 32-byte token, only its SHA-256 stored, shown once; one active link per engagement; the public view carries no money or contacts; per-IP limit keyed on `cf-connecting-ip` only (X-Forwarded-For is spoofable) | docs/database.md §3.6 |
+| 2026-09-25 | Tests split into Vitest projects: `node` (API, models, money, http) and `browser` (DOM, Chromium) | the API needs SQLite/Node; components need a real browser |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status
@@ -173,14 +179,18 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 0 | This document, line-budget check, `no-explicit-any` | **done** 2026-09-25 |
 | 1 | Database: 24 Drizzle tables in their features, migration `0000_init`, demo seed (92 rows), `GET /api/snapshot`, round-trip test | **done** 2026-09-25 — write endpoints move to phase 2 with each feature's UI |
 | 2 | Frontend on the API: write endpoints (tested), `mock/store` removed, `domain/` `mock/` `i18n/` `components/fos/` dissolved into slices, every file ≤ 250 lines, lead conversion + grace constraints | **done** 2026-09-25 |
-| 3 | Deferred tables & security: auth + roles (`auth_sessions`), encrypted vault, client portal links, tickets, reminders log, message templates, calendar events, file uploads, backup | pending |
+| 2.5 | Create/edit: clients, engagements, expenses, manual invoices + void; token-scoped client portal (`client_portal_links`, migration `0001`) | **done** 2026-09-25 |
+| 3 | Deferred tables & security: auth + roles (`auth_sessions`), encrypted vault, tickets, reminders log, message templates, calendar events, file uploads, backup | pending |
 
 ### Known gaps (next)
 
-- Browser-mode tests (`npm test`) need Playwright Chromium: `npm run test:browser:install`.
-- The client portal (`/p/$token`) still reads the full snapshot; phase 3 gives it a
-  token-scoped public endpoint.
-- No create/edit forms yet for clients, engagements, expenses, invoices (owner to prioritise).
+- Playwright Chromium: `npm run test:browser:install` can hang while unpacking on this
+  machine; download and unzip the zips from `npx playwright install --dry-run chromium`
+  by hand (plus an empty `INSTALLATION_COMPLETE` file in each folder).
+- Owner endpoints are still unauthenticated (phase 3): e.g. `/deliverables/:id/approval`
+  accepts `source: client_link`. Tighten once auth lands.
+- No archive/delete for clients and engagements yet; no edit of engagement terms
+  (amount, type) after opening; own subscriptions have no form yet.
 
 ## 7. Commands
 
@@ -191,5 +201,5 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | `npm run db:reset` | delete the local DB, migrate, load demo data |
 | `npm run db:studio` | browse the database in Drizzle Studio |
 | `npm run check:size` | enforce the 250-line budget |
-| `npx vitest run --browser.enabled=false src/app/server src/features src/shared` | unit + API tests (node) |
+| `npm test` · `npm run test:node` | all tests (node + Chromium) · node project only (no browser) |
 | `npm run lint` · `npx tsc -b` | lint (incl. line budget) · type check |
