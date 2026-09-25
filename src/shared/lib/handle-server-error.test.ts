@@ -1,90 +1,29 @@
-import { AxiosError } from 'axios'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import '@/app/client/i18n'
+import i18n from 'i18next'
+import { ApiError } from '@/shared/http/api-client'
 import { handleServerError } from './handle-server-error'
 
 const toastError = vi.hoisted(() => vi.fn())
 
-vi.mock('sonner', () => ({
-  toast: {
-    error: toastError,
-  },
-}))
+vi.mock('sonner', () => ({ toast: { error: toastError } }))
 
-beforeEach(() => {
-  vi.mocked(toastError).mockClear()
-})
+beforeAll(() => i18n.changeLanguage('en'))
+beforeEach(() => toastError.mockClear())
 
 describe('handleServerError', () => {
-  it('shows a generic message when the error is not recognised', () => {
-    handleServerError(new Error('network'))
-
-    expect(toastError).toHaveBeenCalledWith('Something went wrong!')
+  it('shows the translated message for a known API error code', () => {
+    handleServerError(new ApiError('overpayment', 'too much', 422))
+    expect(toastError).toHaveBeenCalledWith(i18n.t('apiErrors.overpayment'))
   })
 
-  it('maps a plain object with status 204 to the no-content message', () => {
-    handleServerError({ status: 204 })
-
-    expect(toastError).toHaveBeenCalledWith('No content.')
+  it('falls back to the generic message for an unknown code', () => {
+    handleServerError(new ApiError('no_such_code', 'x', 422))
+    expect(toastError).toHaveBeenCalledWith(i18n.t('apiErrors.generic'))
   })
 
-  it('prefers the API title when the error is an Axios error with response data', () => {
-    const error = new AxiosError('Bad request')
-    error.response = {
-      status: 422,
-      data: { title: 'Validation failed' },
-    } as AxiosError['response']
-
-    handleServerError(error)
-
-    expect(toastError).toHaveBeenCalledWith('Validation failed')
-  })
-
-  it('falls back to the generic message when Axios response has no data.title', () => {
-    const error = new AxiosError('Request failed')
-    error.response = {
-      status: 500,
-      data: {},
-    } as AxiosError['response']
-
-    handleServerError(error)
-
-    expect(toastError).toHaveBeenCalledWith('Something went wrong!')
-  })
-
-  it('falls back to the generic message when Axios data.title is an empty string', () => {
-    const error = new AxiosError('Bad request')
-    error.response = {
-      status: 400,
-      data: { title: '' },
-    } as AxiosError['response']
-
-    handleServerError(error)
-
-    expect(toastError).toHaveBeenCalledWith('Something went wrong!')
-  })
-
-  it('logs the error to the console in development', () => {
-    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
-    const err = new Error('logged')
-
-    handleServerError(err)
-
-    expect(log).toHaveBeenCalledTimes(1)
-    expect(log).toHaveBeenCalledWith(err)
-
-    log.mockRestore()
-  })
-
-  it('does not log the error to the console in production', () => {
-    vi.stubEnv('DEV', false)
-
-    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
-    const err = new Error('not logged')
-
-    handleServerError(err)
-
-    expect(log).not.toHaveBeenCalled()
-
-    log.mockRestore()
+  it('shows the generic message for anything that is not an API error', () => {
+    handleServerError(new Error('boom'))
+    expect(toastError).toHaveBeenCalledWith(i18n.t('apiErrors.generic'))
   })
 })

@@ -3,31 +3,28 @@
 نظام إدارة أعمال للفريلانسر والفريق الصغير — **كل عمل خارج الاتفاق يصير فاتورة.**
 عربي/إنجليزي، RTL كامل، عملات SAR / USD / YER.
 
-> المرحلة الحالية: **واجهات فقط ببيانات تجريبية في الذاكرة** (تُمسح عند إعادة التحميل). الـ backend (SQLite محلي) هو المرحلة التالية.
+واجهة React + API (Hono) + قاعدة SQLite محلية في `data/`. الدخول بحساب وكلمة مرور.
 
 ## التشغيل
 ```bash
 npm install
+npm run db:reset
+npm run auth:set-password -- owner@freelancer-os.local
 npm run dev
 ```
 
-## المراجع
-- المواصفة: `D:\memory\wiki\syntheses\freelancer-os-build-spec.md`
-- تصميم قاعدة البيانات وقرارات المالك: [docs/database.md](docs/database.md)
-- المكتبات المرجعية: `D:\codeing\_libraries\README.md`
+- `db:reset` يمسح القاعدة المحلية ويحمّل بيانات تجريبية.
+- `auth:set-password` يضبط كلمة مرور المالك (مرة وحدة). بعدها تغيّر اسم الدخول وكلمة
+  المرور من الإعدادات.
+- يفتح على `http://localhost:5180`. يحتاج Node 24.7 أو أحدث.
 
-## البنية
-| المسار | المحتوى |
-|---|---|
-| `src/domain/` | الأنواع (مطابقة لجداول القاعدة)، المال (وحدات صغرى)، `selectors.ts` (الحارس وكل القيم المحسوبة)، التسعير — مع اختبارات |
-| `src/mock/` | بيانات تجريبية + store (zustand) — كل action يقابل API مستقبلي |
-| `src/i18n/` | قاموسا `ar.ts` و`en.ts` |
-| `src/components/fos/` | مكونات النظام: مقياس الحدود، المال، الشارات، الصفحة، جدول الفواتير، تسجيل الدفعة |
-| `src/features/` | الصفحات: today, engagements, clients, leads, calendar, finance, invoices, time, pricing, settings, portal |
+## المراجع
+- البنية والقواعد والقرارات: [ARCHITECTURE.md](ARCHITECTURE.md)
+- تصميم قاعدة البيانات وقرارات المالك: [docs/database.md](docs/database.md)
 
 ## الاختبارات
 ```bash
-npx vitest run --browser.enabled=false src/domain
+npm test
 ```
 
-مبني على [satnaing/shadcn-admin](https://github.com/satnaing/shadcn-admin) (MIT).
+مبني في الأصل على [satnaing/shadcn-admin](https://github.com/satnaing/shadcn-admin) (MIT).

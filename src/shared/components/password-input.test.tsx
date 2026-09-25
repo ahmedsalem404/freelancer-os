@@ -1,14 +1,6 @@
-import { useForm } from 'react-hook-form'
 import { describe, expect, it } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form'
 import { PasswordInput } from './password-input'
 
 describe('PasswordInput', () => {
@@ -61,39 +53,15 @@ describe('PasswordInput', () => {
     await expect.element(passwordInput).toBeDisabled()
   })
 
-  it('works with FormLabel and react-hook-form field spread', async () => {
-    function PasswordInLabeledForm() {
-      const form = useForm<{ password: string }>({
-        defaultValues: { password: '' },
-      })
-
-      return (
-        <Form {...form}>
-          <form>
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-      )
-    }
-
-    const { getByLabelText } = await render(<PasswordInLabeledForm />)
-
+  it('is reachable through its label', async () => {
+    const { getByLabelText } = await render(
+      <>
+        <label htmlFor='pw'>Password</label>
+        <PasswordInput id='pw' />
+      </>
+    )
     const password = getByLabelText(/^Password$/i)
-    await expect.element(password).toHaveAttribute('type', 'password')
-
     await userEvent.type(password, 'secret-value')
-
     await expect.element(password).toHaveValue('secret-value')
   })
 })
