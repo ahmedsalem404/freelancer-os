@@ -13,6 +13,8 @@ export type Ctx = {
   now: string
   /** Acting member: the signed-in one, or the owner for public requests. */
   memberId: string
+  /** Their role; assistants only reach their own tasks, time and notes. */
+  role: 'owner' | 'assistant'
 }
 
 /** Runs `fn` in one SQLite transaction with a fresh context. */

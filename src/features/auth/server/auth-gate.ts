@@ -25,16 +25,16 @@ type GateOptions = {
   /** Open to anyone (sign-in, health, the client portal). */
   isPublic: (path: string) => boolean
   /** Open to every signed-in member; everything else is owner-only. */
-  anyMember: ReadonlySet<string>
+  isAnyMember: (method: string, path: string) => boolean
 }
 
 /**
- * 401 without a session, 403 for an assistant outside `anyMember`
+ * 401 without a session, 403 for an assistant outside `isAnyMember`
  * (docs/database.md §3.1: assistants never see money, the vault or settings).
  */
 export function authGate({
   isPublic,
-  anyMember,
+  isAnyMember,
 }: GateOptions): MiddlewareHandler<AppEnv> {
   return async (c, next) => {
     const path = c.req.path
@@ -43,7 +43,7 @@ export function authGate({
     if (!member) {
       return c.json(failure('unauthenticated', 'Sign in first'), 401)
     }
-    if (member.role !== 'owner' && !anyMember.has(path)) {
+    if (member.role !== 'owner' && !isAnyMember(c.req.method, path)) {
       return c.json(failure('forbidden', 'Not allowed for this account'), 403)
     }
     // Private data: never keep it in a shared or browser cache.

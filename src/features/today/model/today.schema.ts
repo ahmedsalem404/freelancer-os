@@ -21,6 +21,8 @@ export const reflectionSchema = z.object({
 export const addTaskInput = z.object({
   title: z.string().trim().min(1).max(300),
   engagementId: recordId.optional(),
+  /** Owner only: give the task to a team member (default: yourself). */
+  assigneeId: recordId.optional(),
 })
 
 /** Body of `PUT /api/reflections/today`. */

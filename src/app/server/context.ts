@@ -1,7 +1,7 @@
 import type { Database } from '@/shared/db/database'
 import { DomainError } from '@/shared/http/errors'
 import { isoDay } from '@/shared/model/dates'
-import type { Ctx, RunInTx } from '@/shared/server/context'
+import type { Actor, Ctx, RunInTx } from '@/shared/server/context'
 import { and, asc, eq, isNull } from 'drizzle-orm'
 import { teamMembers } from '@/features/settings/server'
 
@@ -30,7 +30,7 @@ function ownerId(db: Database) {
 export function createRunner(
   db: Database,
   clock: Clock,
-  memberId?: string
+  actor?: Pick<Actor, 'id' | 'role'>
 ): RunInTx {
   return <T>(fn: (ctx: Ctx) => T): T =>
     db.transaction((tx) => {
@@ -39,7 +39,8 @@ export function createRunner(
         db: tx,
         today: isoDay(at),
         now: at.toISOString(),
-        memberId: memberId ?? ownerId(tx),
+        memberId: actor?.id ?? ownerId(tx),
+        role: actor?.role ?? 'owner',
       })
     })
 }

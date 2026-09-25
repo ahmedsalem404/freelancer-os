@@ -19,6 +19,15 @@ export const todayEn: Widen<typeof todayAr> = {
     noAlerts: 'Nothing stuck. Every engagement is within its limits.',
     wrapUp: 'Wrap up the day',
     upcoming: 'Upcoming',
+    team: {
+      title: 'Team tasks',
+      empty: 'No team tasks for today.',
+      placeholder: 'New task for your assistant…',
+      to: 'For',
+      noEngagement: 'No engagement',
+      assign: 'Send task',
+      assigned: 'Task sent to {{name}}',
+    },
   },
   reflection: {
     title: 'End of day',

@@ -84,6 +84,7 @@ freelancer-os/
 | `files` | attachments | attachment lists / upload |
 | `pricing` | — (pure calculator) | Pricing |
 | `portal` | — (reads engagements) | Public client link `/p/$token` |
+| `my-day` | — (reads `GET /api/workspace`) | Assistant's whole app `/my-day`: own tasks, time, end-of-day note, account |
 
 ## 3. Boundaries & dependency rules
 
@@ -110,8 +111,10 @@ freelancer-os/
    `engagements.lead_id`) are plain ids checked in services, so table modules
    never import each other in a cycle.
 8. Every `/api` route needs a signed-in **owner** session except `/health`,
-   `/auth/sign-in`, `/auth/sign-out`, `/auth/me` + `/auth/account` (any member) and the public
-   `/portal/*`. The gate lives in `app/server/app.ts` (`authGate`). The API still
+   `/auth/sign-in`, `/auth/sign-out` and the public `/portal/*`. Assistants reach only
+   the `ANY_MEMBER` list in `app.ts` (`/auth/me`, `/auth/account`, `/workspace`, own
+   tasks, time, end of day); the services keep them to their own rows
+   (`today/server/assistant-scope.ts`). The gate lives in `app/server/app.ts` (`authGate`). The API still
    listens on `127.0.0.1` by default (`API_HOST`); the site is reached through Vite
    or a tunnel.
 
@@ -149,9 +152,10 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | engagements | `POST /engagements` · `PUT /engagements/:id` · `PUT /engagements/:id/terms` · `POST /engagements/:id/{archive,unarchive}` · `DELETE /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
 | time | `POST /time` · `POST /engagements/:id/bill-hours` |
 | leads | `POST /leads/:id/stage` (not to `won`) · `POST /leads/:id/convert` |
-| today | `POST /tasks` · `/tasks/:id/toggle` · `/tasks/carry-over` · `PUT /reflections/today` · `POST /day/close` |
+| today | `POST /tasks` (owner may set `assigneeId`) · `/tasks/:id/toggle` · `/tasks/carry-over` · `PUT /reflections/today` · `POST /day/close` |
 | clients | `POST /clients` · `PUT /clients/:id` · `POST /clients/:id/{archive,unarchive}` · `DELETE /clients/:id` · `POST /vault/:id/reveal` → 423 until phase 3 |
 | finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` · `POST /own-subscriptions` · `PUT /own-subscriptions/:id` · `POST /own-subscriptions/:id/cancel` · `DELETE /own-subscriptions/:id` |
+| workspace | `GET /workspace` — the signed-in member's own tasks (open + last 14 days), time (14 days), today's note and the titles of their tasks' engagements; no money |
 | portal | owner: `POST`/`DELETE /engagements/:id/portal-link` · public (rate-limited): `GET /portal/:token` · `POST /portal/:token/deliverables/:id/{approval,rounds}` |
 - **Derived values are never stored** (invoice status, balances, meters, health) —
   see docs/database.md §5.
@@ -180,7 +184,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | Tests split into Vitest projects: `node` (API, models, money, http) and `browser` (DOM, Chromium) | the API needs SQLite/Node; components need a real browser |
 | 2026-09-25 | Authentication: argon2id (Node's built-in `crypto.argon2`, no dependency) + server sessions in `auth_sessions` (SHA-256 of a 32-byte cookie token, 30-day sliding expiry). Cookie `fos_session`: HttpOnly, SameSite=Strict (the CSRF defence), Secure over HTTPS, Path=/api. Passwords are set from the terminal (`npm run auth:set-password`), never through a first-run web form | nobody who reaches the site first can claim the owner account |
 | 2026-09-25 | The login is free text (an email or any name, unique case-insensitively; stored in `team_members.email`). Passwords: 4–200 characters, no complexity rules (owner's choice). Editing one's account needs the current password — no email codes | owner instruction: full freedom, no verification step |
-| 2026-09-25 | Owner-only by default: assistants can sign in but get 403 everywhere except `/auth/me` until their scoped screens exist. Signed-in endpoints never accept `source: client_link`; only the portal records it | the snapshot holds money and contacts |
+| 2026-09-25 | Assistants get their own screen (`/my-day`) fed by `GET /api/workspace`, never the snapshot. They add/tick only their own tasks and log time only on engagements from their tasks; the owner assigns tasks from Today → Team tasks. Everything else answers 403. Signed-in endpoints never accept `source: client_link`; only the portal records it | the snapshot holds money and contacts |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status
@@ -191,17 +195,16 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 1 | Database: 24 Drizzle tables in their features, migration `0000_init`, demo seed (92 rows), `GET /api/snapshot`, round-trip test | **done** 2026-09-25 — write endpoints move to phase 2 with each feature's UI |
 | 2 | Frontend on the API: write endpoints (tested), `mock/store` removed, `domain/` `mock/` `i18n/` `components/fos/` dissolved into slices, every file ≤ 250 lines, lead conversion + grace constraints | **done** 2026-09-25 |
 | 2.5 | Create/edit: clients, engagements, expenses, manual invoices + void; token-scoped client portal (`client_portal_links`, migration `0001`) | **done** 2026-09-25 |
-| 3 | Deferred tables & security: auth + roles (`auth_sessions`), encrypted vault, tickets, reminders log, message templates, calendar events, file uploads, backup | **in progress** — sign-in, sessions, owner-only gate done 2026-09-25 (migration `0002`) |
+| 3 | Deferred tables & security: auth + roles (`auth_sessions`), encrypted vault, tickets, reminders log, message templates, calendar events, file uploads, backup | **in progress** — sign-in, sessions, roles, account settings, assistant `/my-day` done 2026-09-25 (migration `0002`) |
 
 ### Known gaps (next)
 
 - Playwright Chromium: `npm run test:browser:install` can hang while unpacking on this
   machine; download and unzip the zips from `npx playwright install --dry-run chromium`
   by hand (plus an empty `INSTALLATION_COMPLETE` file in each folder).
-- Assistants have no screens yet: they can sign in, but every data endpoint answers 403
-  (needs a scoped snapshot: own tasks, time, reflections only — docs/database.md §3.1).
 - The first password is set with `npm run auth:set-password -- <login>`; after that,
-  Settings → My account. The owner can't yet add, remove or reset other members.
+  Settings → My account. The owner can't yet add or remove members, or reset an assistant's forgotten
+  password (use the command above).
 - Own subscriptions don't record their renewal charge as an expense by themselves yet
   (the `expense_sub_charge` unique key is ready for it); no reminder before renewal yet
   (`remindDaysBefore` is stored — reminders are phase 3).

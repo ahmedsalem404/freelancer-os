@@ -1,11 +1,11 @@
 import { PageShell } from '@/app/client/layout/page-shell'
+import { useDb } from '@/app/client/snapshot-query'
 import { Panel } from '@/shared/components/panel'
 import { StatTile } from '@/shared/components/stat-tile'
-import { useDb } from '@/app/client/snapshot-query'
+import { daysFrom, useDateFormat } from '@/shared/lib/dates'
 import { todayIso } from '@/shared/model/dates'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
-import { daysFrom, useDateFormat } from '@/shared/lib/dates'
 
 const WINDOW_DAYS = 7
 const hours = (minutes: number) => Math.round((minutes / 60) * 10) / 10

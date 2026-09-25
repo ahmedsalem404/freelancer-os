@@ -23,6 +23,7 @@ import { timeRoutes } from '@/features/time/server'
 import { todayRoutes } from '@/features/today/server'
 import { type Clock, createRunner } from './context'
 import { loadSnapshot } from './snapshot'
+import { loadWorkspace } from './workspace'
 
 export type AppOptions = { clock?: Clock }
 
@@ -34,8 +35,27 @@ const PUBLIC_PATHS = new Set([
 ])
 const isPublic = (path: string) =>
   PUBLIC_PATHS.has(path) || path.startsWith('/api/portal/')
-/** Every signed-in member may call these; the rest is owner-only. */
-const ANY_MEMBER = new Set(['/api/auth/me', '/api/auth/account'])
+/**
+ * Every signed-in member may call these; the rest is owner-only. The
+ * services themselves keep an assistant to their own tasks, time and notes.
+ */
+const ANY_MEMBER = [
+  'GET /api/auth/me',
+  'PUT /api/auth/account',
+  'GET /api/workspace',
+  'POST /api/tasks',
+  'POST /api/tasks/carry-over',
+  'POST /api/tasks/:id/toggle',
+  'PUT /api/reflections/today',
+  'POST /api/day/close',
+  'POST /api/time',
+].map((rule) => {
+  const [method, path] = rule.split(' ')
+  const pattern = new RegExp(`^${path.replace(/:[a-z]+/g, '[^/]+')}$`)
+  return { method, pattern }
+})
+const isAnyMember = (method: string, path: string) =>
+  ANY_MEMBER.some((r) => r.method === method && r.pattern.test(path))
 
 const FEATURE_ROUTES = [
   ratesRoutes,
@@ -58,12 +78,13 @@ export function createApp(
   const app = new Hono<AppEnv>().basePath('/api')
   app.use('*', sessionMember(db, clock))
   app.use('*', async (c, next) => {
-    c.set('run', createRunner(db, clock, c.var.member?.id))
+    c.set('run', createRunner(db, clock, c.var.member ?? undefined))
     await next()
   })
-  app.use('*', authGate({ isPublic, anyMember: ANY_MEMBER }))
+  app.use('*', authGate({ isPublic, isAnyMember }))
   app.get('/health', (c) => c.json(success({ status: 'up' })))
   app.get('/snapshot', (c) => c.json(success(loadSnapshot(db))))
+  app.get('/workspace', (c) => c.json(success(c.var.run(loadWorkspace))))
   app.route('/', createAuthRoutes())
   for (const routes of FEATURE_ROUTES) app.route('/', routes)
   app.route('/', createPortalRoutes())

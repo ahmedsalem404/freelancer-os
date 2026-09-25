@@ -9,6 +9,8 @@ import { initialLang } from '@/shared/i18n/lang'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { authAr } from '@/features/auth/i18n/ar'
+import { myDayAr } from '@/features/my-day/i18n/ar'
+import { myDayEn } from '@/features/my-day/i18n/en'
 import { authEn } from '@/features/auth/i18n/en'
 import { calendarAr } from '@/features/calendar/i18n/ar'
 import { calendarEn } from '@/features/calendar/i18n/en'
@@ -50,6 +52,7 @@ const ar = {
   ...settingsAr,
   ...portalAr,
   ...authAr,
+  ...myDayAr,
 }
 
 const en = {
@@ -67,6 +70,7 @@ const en = {
   ...settingsEn,
   ...portalEn,
   ...authEn,
+  ...myDayEn,
 }
 
 void i18n.use(initReactI18next).init({

@@ -10,8 +10,8 @@ export const Route = createFileRoute('/_authenticated')({
     if (!member) {
       throw redirect({ to: '/sign-in', search: { redirect: location.href } })
     }
-    // Assistants get their own scoped screens later (ARCHITECTURE.md §6).
-    if (member.role !== 'owner') throw redirect({ to: '/403' })
+    // Assistants have their own screen, fed by /api/workspace only.
+    if (member.role !== 'owner') throw redirect({ to: '/my-day' })
   },
   // Every screen reads the snapshot; load it once before rendering.
   loader: ({ context }) => context.queryClient.ensureQueryData(snapshotQuery),

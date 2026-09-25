@@ -29,6 +29,7 @@ import { NextActionsPanel } from './next-actions-panel'
 import { OverdueAlert } from './overdue-alert'
 import { ReflectionDialog } from './reflection-dialog'
 import { TasksPanel } from './tasks-panel'
+import { TeamTasksPanel } from './team-tasks-panel'
 import { UpcomingPanel } from './upcoming-panel'
 
 export function Today() {
@@ -203,6 +204,7 @@ export function Today() {
 
         <div className='grid content-start gap-4'>
           <TasksPanel doneCount={doneCount} tasks={myTasks} />
+          <TeamTasksPanel />
           <UpcomingPanel upcoming={upcoming} />
         </div>
       </div>

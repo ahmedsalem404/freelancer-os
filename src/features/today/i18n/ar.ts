@@ -17,6 +17,15 @@ export const todayAr = {
     noAlerts: 'لا شيء عالق. كل الاتفاقات ضمن حدودها.',
     wrapUp: 'اختم يومك',
     upcoming: 'قادم',
+    team: {
+      title: 'مهام الفريق',
+      empty: 'ما فيه مهام للفريق اليوم.',
+      placeholder: 'مهمة جديدة للمساعد…',
+      to: 'لمين',
+      noEngagement: 'بدون اتفاق',
+      assign: 'أرسل المهمة',
+      assigned: 'وصلت المهمة لـ {{name}}',
+    },
   },
   reflection: {
     title: 'ختام اليوم',
