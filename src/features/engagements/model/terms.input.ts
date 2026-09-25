@@ -45,6 +45,19 @@ export const openEngagementInput = termsShape
   .extend({ clientId: z.string().min(1) })
   .superRefine(checkTerms)
 
+/**
+ * Body of `PUT /api/engagements/:id/terms`. The type is sent back as
+ * stored (it can't change) so the same shape rules apply.
+ */
+export const updateTermsInput = termsShape
+  .pick({
+    type: true,
+    amountMinor: true,
+    cyclePeriod: true,
+    includedHours: true,
+  })
+  .superRefine(checkTerms)
+
 /** Body of `PUT /api/engagements/:id`. A blank date clears it. */
 export const updateEngagementInput = z.object({
   title: z.string().trim().min(1).max(200),
@@ -55,3 +68,4 @@ export const updateEngagementInput = z.object({
 export type EngagementTermsInput = z.infer<typeof engagementTermsInput>
 export type OpenEngagementInput = z.infer<typeof openEngagementInput>
 export type UpdateEngagementInput = z.input<typeof updateEngagementInput>
+export type UpdateTermsInput = z.infer<typeof updateTermsInput>

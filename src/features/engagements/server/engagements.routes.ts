@@ -11,6 +11,7 @@ import {
 import {
   openEngagementInput,
   updateEngagementInput,
+  updateTermsInput,
 } from '../model/terms.input'
 import { extendGrace, renewCycle, stopCycle } from './cycles.service'
 import {
@@ -26,6 +27,7 @@ import {
 import { createEngagement, updateEngagement } from './engagements.service'
 import { changeScope } from './scope.service'
 import { toggleStage } from './stages.service'
+import { updateTerms } from './terms.service'
 
 export const engagementsRoutes = new Hono<AppEnv>()
   .post('/engagements', jsonBody(openEngagementInput), (c) => {
@@ -37,6 +39,11 @@ export const engagementsRoutes = new Hono<AppEnv>()
     const id = c.req.param('id')
     const input = c.req.valid('json')
     return c.json(success(c.var.run((ctx) => updateEngagement(ctx, id, input))))
+  })
+  .put('/engagements/:id/terms', jsonBody(updateTermsInput), (c) => {
+    const id = c.req.param('id')
+    const input = c.req.valid('json')
+    return c.json(success(c.var.run((ctx) => updateTerms(ctx, id, input))))
   })
   .post('/engagements/:id/archive', (c) => {
     const id = c.req.param('id')

@@ -1,8 +1,8 @@
 import { pill } from '@/shared/components/pill'
+import { cn } from '@/shared/lib/utils'
+import { useTranslation } from 'react-i18next'
 import type { SubscriptionState } from '@/features/engagements/model/cycles'
 import type { EngagementType } from '@/features/engagements/model/enums'
-import { useTranslation } from 'react-i18next'
-import { cn } from '@/shared/lib/utils'
 
 const TYPE_STYLE: Record<EngagementType, string> = {
   project: 'bg-accent text-accent-foreground',
@@ -16,7 +16,6 @@ export function TypeBadge({ type }: { type: EngagementType }) {
     <span className={cn(pill, TYPE_STYLE[type])}>{t(`types.${type}`)}</span>
   )
 }
-
 
 const SUB_STYLE: Record<SubscriptionState, string> = {
   active: 'bg-success-soft text-success',

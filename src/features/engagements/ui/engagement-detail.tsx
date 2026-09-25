@@ -26,6 +26,7 @@ import { ChangeScopeDialog } from './change-scope-dialog'
 import { CyclePanel } from './cycle-panel'
 import { DeliverableCard } from './deliverable-card'
 import { EditEngagementDialog } from './edit-engagement-dialog'
+import { EditTermsDialog } from './edit-terms-dialog'
 import { FilesTab, MoneyTab, TimeTab } from './engagement-tabs'
 import { RetainerPanel } from './retainer-panel'
 import { StagesPanel } from './stages-panel'
@@ -48,6 +49,7 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
   const db = useDb()
   const [isScopeOpen, setIsScopeOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [isEditingTerms, setIsEditingTerms] = useState(false)
   const navigate = useNavigate()
   const lifecycle = useLifecycle('engagements', e.id, {
     onDeleted: () => navigate({ to: '/engagements' }),
@@ -113,9 +115,17 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
       )}
       <div className='grid gap-4 rounded-xl border bg-card p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-8'>
         <AllowanceMeter meter={meter} />
-        <div className='grid gap-0.5 sm:text-end'>
-          <span className='text-xs text-muted-foreground'>
+        <div className='grid gap-0.5 sm:justify-items-end sm:text-end'>
+          <span className='flex items-center gap-2 text-xs text-muted-foreground'>
             {t('engagements.contractValue')}
+            <Button
+              variant='link'
+              size='sm'
+              className='h-auto p-0 text-xs'
+              onClick={() => setIsEditingTerms(true)}
+            >
+              {t('engagements.form.editTerms')}
+            </Button>
           </span>
           <Money
             amount={engagementCurrentValue(db, e)}
@@ -213,6 +223,12 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
         open={isScopeOpen}
         onOpenChange={setIsScopeOpen}
       />
+      {isEditingTerms && (
+        <EditTermsDialog
+          engagement={e}
+          onClose={() => setIsEditingTerms(false)}
+        />
+      )}
       {isEditing && (
         <EditEngagementDialog
           engagement={e}

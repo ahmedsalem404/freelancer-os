@@ -73,6 +73,12 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
       nextOn: 'Next step date',
       nextPlaceholder: 'e.g. Send the first draft',
       saved: 'Changes saved',
+      editTerms: 'Edit terms',
+      termsTitle: 'Edit engagement terms',
+      termsHint:
+        'The type is fixed. Issued invoices never change; the current cycle takes the new terms while nothing in it is billed yet.',
+      termsSaved: 'Terms saved — they apply to the current cycle',
+      termsSavedNext: 'Terms saved — they apply from the next renewal',
     },
     tabs: {
       work: 'Deliverables & stages',
