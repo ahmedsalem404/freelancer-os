@@ -113,6 +113,27 @@ describe('voiding invoices', () => {
     expect(res.json.error?.code).toBe('invoice_has_payments')
   })
 
+  it('frees billed revision rounds so they can be billed again', async () => {
+    t = createTestApp()
+    const billed = await t.call('POST', '/deliverables/dl-2/bill-overage')
+    const res = await t.call('POST', `/invoices/${billed.json.data.id}/void`, {
+      reason: 'Wrong quantity',
+    })
+    expect(res.status).toBe(200)
+    const again = await t.call('POST', '/deliverables/dl-2/bill-overage')
+    expect(again.status).toBe(201)
+  })
+
+  it('refuses to void a renewal invoice', async () => {
+    t = createTestApp()
+    const renewal = await t.call('POST', '/engagements/e-souq/renew')
+    const res = await t.call('POST', `/invoices/${renewal.json.data.id}/void`, {
+      reason: 'Client cancelled',
+    })
+    expect(res.status).toBe(409)
+    expect(res.json.error?.code).toBe('invoice_is_renewal')
+  })
+
   it('refuses to void twice', async () => {
     t = createTestApp()
     const { json } = await t.call('POST', '/invoices', MANUAL)
