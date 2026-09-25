@@ -21,7 +21,7 @@ import {
 } from '@/features/engagements/model/enums'
 import { useConvertLead } from '../api/use-convert-lead'
 import type { Lead } from '../model/lead.schema'
-import { ChoiceRow } from './choice-row'
+import { ChoiceRow } from '@/shared/components/choice-row'
 
 const PERIODS = ['monthly', 'yearly'] as const
 const DEFAULT_HOURS = '10'

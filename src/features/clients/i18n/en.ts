@@ -23,5 +23,21 @@ export const clientsEn: Widen<typeof clientsAr> = {
     noVault: 'No saved logins',
     engagements: 'Engagements',
     invoices: 'Invoices',
+    edit: 'Edit',
+    notes: 'Notes',
+    form: {
+      editTitle: 'Edit client',
+      hint: 'Only the name and currency are required; add the rest later.',
+      name: 'Contact name',
+      company: 'Company (optional)',
+      email: 'Email',
+      notes: 'Notes',
+      created: 'Client added',
+      updated: 'Changes saved',
+      bad: {
+        whatsapp: 'Digits only, with the country code, e.g. 967771234567',
+        email: 'This email is not valid',
+      },
+    },
   },
 }

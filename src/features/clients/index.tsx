@@ -4,20 +4,31 @@ import { PageShell } from '@/app/client/layout/page-shell'
 import { clientCollectedBase, clientHealth, clientOutstandingBase } from '@/features/clients/model/client-health'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
+import { Plus } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button'
+import { ClientFormDialog } from './ui/client-form-dialog'
 
 export function Clients() {
   const { t } = useTranslation()
   const db = useDb()
   const now = todayIso()
+  const [isAdding, setIsAdding] = useState(false)
 
   return (
     <PageShell
       title={t('clients.title')}
       subtitle={t('clients.count', { count: db.clients.length })}
+      actions={
+        <Button size='sm' onClick={() => setIsAdding(true)}>
+          <Plus /> {t('clients.add')}
+        </Button>
+      }
     >
+      {isAdding && <ClientFormDialog onClose={() => setIsAdding(false)} />}
       <div className='overflow-x-auto rounded-xl border bg-card'>
         <table className='w-full min-w-[720px] text-sm'>
           <thead className='text-xs text-muted-foreground'>

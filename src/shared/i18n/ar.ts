@@ -80,5 +80,6 @@ export const sharedAr = {
     lead_already_won: 'هذا العميل المحتمل محوّل من قبل',
     overpayment: 'المبلغ أكبر من المتبقي على الفاتورة',
     no_identity: 'أضف هوية فوترة أولاً',
+    unknown_identity: 'هوية الفوترة المختارة غير موجودة',
   },
 }

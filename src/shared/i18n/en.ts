@@ -85,5 +85,6 @@ export const sharedEn: Widen<typeof sharedAr> = {
     lead_already_won: 'This lead is already converted',
     overpayment: 'The amount is more than the invoice balance',
     no_identity: 'Add a billing identity first',
+    unknown_identity: 'The chosen billing identity does not exist',
   },
 }

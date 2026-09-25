@@ -4,7 +4,7 @@ import { DomainError } from '@/shared/http/errors'
 import type { AppEnv } from '@/shared/server/context'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { vaultRoutes } from '@/features/clients/server'
+import { clientsRoutes, vaultRoutes } from '@/features/clients/server'
 import { engagementsRoutes } from '@/features/engagements/server'
 import { invoicesRoutes } from '@/features/invoices/server'
 import { leadsRoutes } from '@/features/leads/server'
@@ -24,6 +24,7 @@ const FEATURE_ROUTES = [
   leadsRoutes,
   todayRoutes,
   vaultRoutes,
+  clientsRoutes,
 ]
 
 /** HTTP composition root: mounts feature routes under /api. */

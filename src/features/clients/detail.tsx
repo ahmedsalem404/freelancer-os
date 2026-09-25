@@ -10,18 +10,17 @@ import { StatTile } from '@/shared/components/stat-tile'
 import { clientCollectedBase, clientHealth, clientOutstandingBase } from '@/features/clients/model/client-health'
 import { engagementMeter } from '@/features/engagements/model/meter'
 import type { Client } from '@/features/clients/model/clients.schema'
-import { useRevealSecret } from './api/use-reveal-secret'
 import { useDb } from '@/app/client/snapshot-query'
 import { todayIso } from '@/shared/model/dates'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Eye, EyeOff, KeyRound, MessageCircle } from 'lucide-react'
+import { MessageCircle, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateFormat } from '@/shared/lib/dates'
 import { waLink } from '@/shared/lib/whatsapp'
 import { Button } from '@/components/ui/button'
-
-const REVEAL_MS = 10_000
+import { ClientFormDialog } from './ui/client-form-dialog'
+import { VaultPanel } from './ui/vault-panel'
 
 export function ClientDetail({ id }: { id: string }) {
   const { t } = useTranslation()
@@ -49,6 +48,7 @@ function ClientView({ client }: { client: Client }) {
     i18n.language === 'en' ? 'en-GB' : 'ar-SA-u-nu-latn',
     { hour: '2-digit', minute: '2-digit', timeZone: client.timezone }
   ).format(new Date())
+  const [isEditing, setIsEditing] = useState(false)
 
   return (
     <PageShell
@@ -65,17 +65,27 @@ function ClientView({ client }: { client: Client }) {
         </span>
       }
       actions={
-        <Button asChild variant='outline' size='sm'>
-          <a
-            href={waLink(client.whatsapp, '')}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            <MessageCircle /> WhatsApp
-          </a>
-        </Button>
+        <>
+          <Button variant='outline' size='sm' onClick={() => setIsEditing(true)}>
+            <Pencil /> {t('clients.edit')}
+          </Button>
+          {client.whatsapp && (
+            <Button asChild variant='outline' size='sm'>
+              <a
+                href={waLink(client.whatsapp, '')}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <MessageCircle /> WhatsApp
+              </a>
+            </Button>
+          )}
+        </>
       }
     >
+      {isEditing && (
+        <ClientFormDialog client={client} onClose={() => setIsEditing(false)} />
+      )}
       <div className='grid gap-3 sm:grid-cols-3'>
         <StatTile
           label={t('clients.revenue')}
@@ -126,8 +136,18 @@ function ClientView({ client }: { client: Client }) {
           <Panel bodyClassName='grid gap-3 text-sm'>
             <Row
               label='WhatsApp'
-              value={<span className='num'>+{client.whatsapp}</span>}
+              value={
+                client.whatsapp && (
+                  <span className='num'>+{client.whatsapp}</span>
+                )
+              }
             />
+            {client.email && (
+              <Row
+                label={t('clients.form.email')}
+                value={<span dir='ltr'>{client.email}</span>}
+              />
+            )}
             <Row label={t('clients.city')} value={client.city} />
             <Row
               label={t('clients.localTime')}
@@ -138,6 +158,11 @@ function ClientView({ client }: { client: Client }) {
               value={<span className='num'>{client.currency}</span>}
             />
             <Row label={t('clients.identity')} value={identity?.name} />
+            {client.notes && (
+              <p className='border-t pt-3 whitespace-pre-line text-muted-foreground'>
+                {client.notes}
+              </p>
+            )}
           </Panel>
           <VaultPanel clientId={client.id} />
         </div>
@@ -152,74 +177,5 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
       <span className='text-muted-foreground'>{label}</span>
       <span className='font-medium'>{value}</span>
     </div>
-  )
-}
-
-function VaultPanel({ clientId }: { clientId: string }) {
-  const { t } = useTranslation()
-  const vault = useDb().vault
-  const reveal = useRevealSecret()
-  const [revealed, setRevealed] = useState<{ id: string; secret: string }>()
-  const entries = vault.filter((v) => v.clientId === clientId)
-
-  useEffect(() => {
-    if (!revealed) return
-    const timer = setTimeout(() => setRevealed(undefined), REVEAL_MS)
-    return () => clearTimeout(timer)
-  }, [revealed])
-
-  return (
-    <Panel
-      title={
-        <span className='flex items-center gap-2'>
-          <KeyRound className='size-4' /> {t('clients.vault')}
-        </span>
-      }
-    >
-      <p className='mb-3 text-xs text-muted-foreground'>
-        {t('clients.vaultHint')}
-      </p>
-      {entries.length === 0 ? (
-        <EmptyState>{t('clients.noVault')}</EmptyState>
-      ) : (
-        <ul className='grid gap-2'>
-          {entries.map((entry) => {
-            const isShown = revealed?.id === entry.id
-            return (
-              <li
-                key={entry.id}
-                className='grid gap-1 rounded-lg border p-3 text-sm'
-              >
-                <div className='flex items-center justify-between'>
-                  <span className='font-medium'>{entry.label}</span>
-                  <Button
-                    size='sm'
-                    variant='ghost'
-                    disabled={reveal.isPending}
-                    onClick={() =>
-                      isShown
-                        ? setRevealed(undefined)
-                        : reveal.mutate(entry.id, {
-                            onSuccess: ({ secret }) =>
-                              setRevealed({ id: entry.id, secret }),
-                          })
-                    }
-                  >
-                    {isShown ? <EyeOff /> : <Eye />}
-                    {isShown ? t('common.hide') : t('common.show')}
-                  </Button>
-                </div>
-                <div className='num text-xs text-muted-foreground'>
-                  {entry.username}
-                </div>
-                <div className='num text-sm'>
-                  {isShown ? revealed.secret : '••••••••••'}
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-      )}
-    </Panel>
   )
 }
