@@ -32,6 +32,7 @@ const emptyDb = (): Db => ({
   tasks: [],
   team: [],
   reflections: [],
+  portalLinks: [],
   settings: {
     invoicePrefix: 'INV',
     invoiceSeqYear: 2026,

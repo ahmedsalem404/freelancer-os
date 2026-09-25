@@ -7,11 +7,15 @@ import type { AddFeedbackInput, ApproveInput } from '../model/engagement.input'
 import { billingOf, findDeliverable, findEngagement, roundsFor } from './lookup'
 import { approvals, reviewRounds } from './rounds.table'
 
-/** Records the next feedback round; the guard derives in/out of scope. */
+/**
+ * Records the next feedback round; the guard derives in/out of scope.
+ * `portalLinkId` is set when the client sent it through their link.
+ */
 export function addFeedback(
   ctx: Ctx,
   deliverableId: string,
-  input: AddFeedbackInput
+  input: AddFeedbackInput,
+  portalLinkId?: string
 ) {
   findDeliverable(ctx, deliverableId)
   const last = roundsFor(ctx, deliverableId).reduce(
@@ -28,6 +32,7 @@ export function addFeedback(
       receivedOn: ctx.today,
       note: input.note,
       source: input.source,
+      portalLinkId,
       createdBy: input.source === 'client_link' ? undefined : ctx.memberId,
     })
     .run()
@@ -37,7 +42,8 @@ export function addFeedback(
 export function approveDeliverable(
   ctx: Ctx,
   deliverableId: string,
-  input: ApproveInput
+  input: ApproveInput,
+  portalLinkId?: string
 ) {
   findDeliverable(ctx, deliverableId)
   const id = newId('appr')
@@ -49,6 +55,7 @@ export function approveDeliverable(
       source: input.source,
       decision: 'approved',
       signerName: input.signerName,
+      portalLinkId,
       recordedBy: input.source === 'owner' ? ctx.memberId : undefined,
       createdAt: ctx.now,
     })

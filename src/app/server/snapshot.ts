@@ -6,6 +6,7 @@ import { loadFiles } from '@/features/files/server'
 import { loadFinance } from '@/features/finance/server'
 import { loadInvoices } from '@/features/invoices/server'
 import { loadLeads } from '@/features/leads/server'
+import { loadPortal } from '@/features/portal/server'
 import { loadRates } from '@/features/rates/server'
 import { loadSettings } from '@/features/settings/server'
 import { loadTime } from '@/features/time/server'
@@ -28,6 +29,7 @@ export function loadSnapshot(db: Database) {
     ...loadToday(tx),
     ...loadCalendar(tx),
     ...loadFiles(tx),
+    ...loadPortal(tx),
   }))
 }
 

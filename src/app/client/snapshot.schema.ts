@@ -26,6 +26,7 @@ import {
   paymentSchema,
 } from '@/features/invoices/model/invoice.schema'
 import { leadSchema } from '@/features/leads/model/lead.schema'
+import { portalLinkSchema } from '@/features/portal/model/portal.schema'
 import { dailyRateSchema } from '@/features/rates/model/rates.schema'
 import {
   billingIdentitySchema,
@@ -69,6 +70,7 @@ export const snapshotSchema = z.object({
   reflections: z.array(reflectionSchema),
   importantDates: z.array(importantDateSchema),
   attachments: z.array(attachmentSchema),
+  portalLinks: z.array(portalLinkSchema),
 })
 
 export type Snapshot = z.infer<typeof snapshotSchema>

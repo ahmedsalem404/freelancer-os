@@ -89,5 +89,7 @@ export const sharedEn: Widen<typeof sharedAr> = {
     due_in_past: 'The due date is before today',
     engagement_mismatch: 'The chosen engagement belongs to another client',
     invoice_has_payments: 'This invoice has payments and cannot be voided',
+    already_approved: 'This deliverable is already approved',
+    rate_limited: 'Too many requests — try again in a minute',
   },
 }

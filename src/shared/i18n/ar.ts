@@ -84,5 +84,7 @@ export const sharedAr = {
     due_in_past: 'تاريخ الاستحقاق قبل اليوم',
     engagement_mismatch: 'الاتفاق المختار لعميل آخر',
     invoice_has_payments: 'على الفاتورة دفعات مسجّلة، لا يمكن إلغاؤها',
+    already_approved: 'تم اعتماد هذا المخرج مسبقاً',
+    rate_limited: 'طلبات كثيرة — حاول بعد دقيقة',
   },
 }

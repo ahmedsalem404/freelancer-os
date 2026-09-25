@@ -9,6 +9,7 @@ import { engagementsRoutes } from '@/features/engagements/server'
 import { expensesRoutes } from '@/features/finance/server'
 import { invoicesRoutes } from '@/features/invoices/server'
 import { leadsRoutes } from '@/features/leads/server'
+import { createPortalRoutes } from '@/features/portal/server'
 import { ratesRoutes } from '@/features/rates/server'
 import { timeRoutes } from '@/features/time/server'
 import { todayRoutes } from '@/features/today/server'
@@ -44,6 +45,7 @@ export function createApp(
   app.get('/health', (c) => c.json(success({ status: 'up' })))
   app.get('/snapshot', (c) => c.json(success(loadSnapshot(db))))
   for (const routes of FEATURE_ROUTES) app.route('/', routes)
+  app.route('/', createPortalRoutes())
 
   app.notFound((c) => c.json(failure('not_found', 'Unknown endpoint'), 404))
   app.onError((error, c) => {
