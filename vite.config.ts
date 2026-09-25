@@ -6,6 +6,12 @@ import tailwindcss from '@tailwindcss/vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { playwright } from '@vitest/browser-playwright'
 
+const NODE_TESTS = [
+  'src/app/server/**/*.test.ts',
+  'src/features/*/model/**/*.test.ts',
+  'src/shared/money/**/*.test.ts',
+]
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -30,11 +36,31 @@ export default defineConfig({
   test: {
     silent: 'passed-only',
     unstubEnvs: true,
-    browser: {
-      enabled: true,
-      provider: playwright(),
-      instances: [{ browser: 'chromium' }],
-    },
+    // The API tests need Node (SQLite, node:*) and pure logic runs there too;
+    // anything touching the DOM runs in Chromium.
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'node',
+          include: NODE_TESTS,
+          environment: 'node',
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'browser',
+          include: ['src/**/*.test.{ts,tsx}'],
+          exclude: NODE_TESTS,
+          browser: {
+            enabled: true,
+            provider: playwright(),
+            instances: [{ browser: 'chromium' }],
+          },
+        },
+      },
+    ],
     coverage: {
       // include: ['src/**/*.{js,jsx,ts,tsx}'], // Uncomment to expand the report to all src/**/* so untested modules appear as 0% coverage.
       exclude: [

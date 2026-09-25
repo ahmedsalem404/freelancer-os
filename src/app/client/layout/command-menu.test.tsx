@@ -1,10 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import '@/app/client/i18n'
+import { SearchProvider } from '@/shared/context/search-provider'
+import i18n from 'i18next'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, type RenderResult } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
-import { SearchProvider } from '@/shared/context/search-provider'
 import { CommandMenu } from './command-menu'
 
-const COMMAND_MENU_PLACEHOLDER = 'Type a command or search...'
+const PLACEHOLDER = 'Search or jump to a page'
 
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
@@ -21,7 +23,10 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 
 // The menu lists clients and engagements from the snapshot.
 vi.mock('@/app/client/snapshot-query', () => ({
-  useDb: () => ({ clients: [], engagements: [] }),
+  useDb: () => ({
+    clients: [{ id: 'c1', name: 'Sara Ali', company: 'Nakhla Studio' }],
+    engagements: [{ id: 'e1', title: 'Brand refresh' }],
+  }),
 }))
 
 vi.mock('@/shared/context/theme-provider', () => ({
@@ -30,140 +35,138 @@ vi.mock('@/shared/context/theme-provider', () => ({
 
 type ShortcutModifier = 'Control' | 'Meta'
 
-async function renderWithSearchProvider() {
-  return await render(<SearchProvider>
+async function renderMenu() {
+  return await render(
+    <SearchProvider>
       <CommandMenu />
-    </SearchProvider>)
+    </SearchProvider>
+  )
 }
 
 /**
  * Open the palette by shortcut, retrying while the keydown listener may not be mounted yet.
  * Waits between attempts so a successful toggle is not immediately undone by a second chord.
  */
-async function openCommandPalette(
+async function openPalette(
   screen: RenderResult,
   modifier: ShortcutModifier = 'Control'
 ) {
   await vi.waitFor(
     async () => {
-      const isCommandPaletteOpen =
-        document.querySelector(
-          `[placeholder="${COMMAND_MENU_PLACEHOLDER}"]`
-        ) !== null
+      const isOpen =
+        document.querySelector(`[placeholder="${PLACEHOLDER}"]`) !== null
 
-      if (!isCommandPaletteOpen) {
+      if (!isOpen) {
         await userEvent.keyboard(`{${modifier}>}k{/${modifier}}`)
       }
 
       await expect
-        .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
+        .element(screen.getByPlaceholder(PLACEHOLDER))
         .toBeInTheDocument()
     },
     { interval: 50, timeout: 5000 }
   )
 }
 
-describe('SearchProvider and CommandMenu', () => {
+async function expectClosed(screen: RenderResult) {
+  await expect
+    .element(screen.getByPlaceholder(PLACEHOLDER))
+    .not.toBeInTheDocument()
+}
+
+describe('CommandMenu', () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage('en')
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders the command palette when the palette is open', async () => {
-    const screen = await renderWithSearchProvider()
-    const { getByPlaceholder, getByText } = screen
+  it('lists pages, engagements, clients and themes when open', async () => {
+    const screen = await renderMenu()
 
-    await openCommandPalette(screen)
+    await openPalette(screen)
 
-    await expect
-      .element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .toBeInTheDocument()
-    await expect.element(getByText('Theme')).toBeInTheDocument()
-    await expect.element(getByText('Light')).toBeInTheDocument()
-    await expect.element(getByText('Dark')).toBeInTheDocument()
-    await expect.element(getByText('System')).toBeInTheDocument()
-    await expect.element(getByText('Dashboard')).toBeInTheDocument()
+    await expect.element(screen.getByText('Today')).toBeInTheDocument()
+    await expect.element(screen.getByText('Leads')).toBeInTheDocument()
+    await expect.element(screen.getByText('Brand refresh')).toBeInTheDocument()
+    await expect.element(screen.getByText('Nakhla Studio')).toBeInTheDocument()
+    await expect.element(screen.getByText('Light')).toBeInTheDocument()
+    await expect.element(screen.getByText('Dark')).toBeInTheDocument()
   })
 
-  it('does not show the dialog content when search is closed', async () => {
-    const { getByPlaceholder } = await renderWithSearchProvider()
+  it('stays closed until the shortcut is pressed', async () => {
+    const screen = await renderMenu()
 
-    await expect
-      .element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .not.toBeInTheDocument()
+    await expectClosed(screen)
   })
 
   it.each([
     ['Ctrl', 'Control'],
     ['Cmd', 'Meta'],
-  ] as const)(
-    'opens the command menu when %s + K is pressed',
-    async (_label, modifier) => {
-      const screen = await renderWithSearchProvider()
+  ] as const)('opens when %s + K is pressed', async (_label, modifier) => {
+    const screen = await renderMenu()
 
-      await expect
-        .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-        .not.toBeInTheDocument()
-
-      await openCommandPalette(screen, modifier)
-
-      await expect
-        .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-        .toBeInTheDocument()
-    }
-  )
-
-  it('navigates to a top-level route and closes the palette when a nav item is selected', async () => {
-    const screen = await renderWithSearchProvider()
-
-    await openCommandPalette(screen)
-
-    await userEvent.click(screen.getByText('Tasks'))
-
-    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/tasks' })
-    await expect
-      .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .not.toBeInTheDocument()
+    await expectClosed(screen)
+    await openPalette(screen, modifier)
   })
 
-  it('navigates for nested sidebar items (group with sub-items)', async () => {
-    const screen = await renderWithSearchProvider()
-    const { getByPlaceholder, getByRole } = screen
+  it('navigates to a page and closes', async () => {
+    const screen = await renderMenu()
+    await openPalette(screen)
 
-    await openCommandPalette(screen)
+    await userEvent.click(screen.getByText('Leads'))
 
-    await userEvent.click(getByRole('option', { name: 'Settings Account' }))
-
-    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/settings/account' })
-    await expect
-      .element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .not.toBeInTheDocument()
+    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/leads' })
+    await expectClosed(screen)
   })
 
-  it('applies theme and closes the palette when a theme command is chosen', async () => {
-    const screen = await renderWithSearchProvider()
+  it('opens an engagement by id', async () => {
+    const screen = await renderMenu()
+    await openPalette(screen)
 
-    await openCommandPalette(screen)
+    await userEvent.click(screen.getByText('Brand refresh'))
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      to: '/engagements/$id',
+      params: { id: 'e1' },
+    })
+    await expectClosed(screen)
+  })
+
+  it('opens a client by id', async () => {
+    const screen = await renderMenu()
+    await openPalette(screen)
+
+    await userEvent.click(screen.getByText('Nakhla Studio'))
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      to: '/clients/$id',
+      params: { id: 'c1' },
+    })
+    await expectClosed(screen)
+  })
+
+  it('applies a theme and closes', async () => {
+    const screen = await renderMenu()
+    await openPalette(screen)
 
     await userEvent.click(screen.getByText('Dark'))
 
     expect(mocks.setTheme).toHaveBeenCalledWith('dark')
-    await expect
-      .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .not.toBeInTheDocument()
+    await expectClosed(screen)
   })
 
-  it('shows empty state when the filter matches nothing', async () => {
-    const screen = await renderWithSearchProvider()
-
-    await openCommandPalette(screen)
+  it('shows the empty state when nothing matches', async () => {
+    const screen = await renderMenu()
+    await openPalette(screen)
 
     await userEvent.fill(
-      screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER),
+      screen.getByPlaceholder(PLACEHOLDER),
       'zzzz-no-match-xxxx'
     )
 
-    await expect
-      .element(screen.getByText('No results found.'))
-      .toBeInTheDocument()
+    await expect.element(screen.getByText('No results')).toBeInTheDocument()
   })
 })
