@@ -2,8 +2,12 @@ import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
 import { Panel } from '@/shared/components/panel'
 import { StatTile } from '@/shared/components/stat-tile'
+import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { NewInvoiceDialog } from '@/features/invoices/ui/new-invoice-dialog'
 import { InvoiceTable } from '@/features/invoices/ui/invoice-table'
 import { BaseMoney } from '@/features/rates/ui/money'
 import { ExpensesPanel } from './expenses-panel'
@@ -23,6 +27,7 @@ export function Finance() {
   const { t } = useTranslation()
   const invoices = useDb().invoices
   const f = useFinance()
+  const [isInvoicing, setIsInvoicing] = useState(false)
 
   return (
     <PageShell title={t('finance.title')}>
@@ -70,9 +75,20 @@ export function Finance() {
         </TabsContent>
 
         <TabsContent value='invoices'>
-          <Panel bodyClassName='p-0'>
+          <Panel
+            title={t('finance.tabs.invoices')}
+            action={
+              <Button size='sm' onClick={() => setIsInvoicing(true)}>
+                <Plus /> {t('invoice.form.title')}
+              </Button>
+            }
+            bodyClassName='p-0'
+          >
             <InvoiceTable invoices={invoices} />
           </Panel>
+          {isInvoicing && (
+            <NewInvoiceDialog onClose={() => setIsInvoicing(false)} />
+          )}
         </TabsContent>
         <TabsContent value='payments'>
           <PaymentsList />

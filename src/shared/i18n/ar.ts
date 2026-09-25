@@ -81,5 +81,8 @@ export const sharedAr = {
     overpayment: 'المبلغ أكبر من المتبقي على الفاتورة',
     no_identity: 'أضف هوية فوترة أولاً',
     unknown_identity: 'هوية الفوترة المختارة غير موجودة',
+    due_in_past: 'تاريخ الاستحقاق قبل اليوم',
+    engagement_mismatch: 'الاتفاق المختار لعميل آخر',
+    invoice_has_payments: 'على الفاتورة دفعات مسجّلة، لا يمكن إلغاؤها',
   },
 }

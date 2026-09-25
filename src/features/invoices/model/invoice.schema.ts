@@ -24,6 +24,7 @@ export const invoiceSchema = moneyFieldsSchema.extend({
   issueOn: isoDate,
   dueOn: isoDate,
   note: z.string().optional(),
+  voidReason: z.string().optional(),
 })
 
 export const invoiceItemSchema = z.object({

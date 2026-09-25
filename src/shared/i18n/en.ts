@@ -86,5 +86,8 @@ export const sharedEn: Widen<typeof sharedAr> = {
     overpayment: 'The amount is more than the invoice balance',
     no_identity: 'Add a billing identity first',
     unknown_identity: 'The chosen billing identity does not exist',
+    due_in_past: 'The due date is before today',
+    engagement_mismatch: 'The chosen engagement belongs to another client',
+    invoice_has_payments: 'This invoice has payments and cannot be voided',
   },
 }

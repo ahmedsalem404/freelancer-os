@@ -6,7 +6,7 @@ import { Panel } from '@/shared/components/panel'
 import { useDateFormat } from '@/shared/lib/dates'
 import { waLink } from '@/shared/lib/whatsapp'
 import { todayIso } from '@/shared/model/dates'
-import { MessageCircle, Printer, Wallet } from 'lucide-react'
+import { Ban, MessageCircle, Printer, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,6 +20,7 @@ import { RecordPaymentDialog } from '@/features/invoices/ui/record-payment-dialo
 import { Money, useMoneyText } from '@/features/rates/ui/money'
 import { InvoiceDocument } from './invoice-document'
 import { RemindersPanel } from './reminders-panel'
+import { VoidInvoiceDialog } from './void-invoice-dialog'
 
 export function InvoiceDetail({ id }: { id: string }) {
   const { t } = useTranslation()
@@ -40,9 +41,16 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
   const moneyText = useMoneyText()
   const db = useDb()
   const [isPaying, setIsPaying] = useState(false)
+  const [isVoiding, setIsVoiding] = useState(false)
   const client = db.clients.find((c) => c.id === invoice.clientId)!
   const status = invoiceStatus(db, invoice, todayIso())
-  const balance = invoiceBalance(db, invoice)
+  const isVoid = invoice.state === 'void'
+  const balance = isVoid ? 0 : invoiceBalance(db, invoice)
+  const canVoid =
+    invoice.state === 'issued' &&
+    !db.payments.some(
+      (p) => p.invoiceId === invoice.id && p.status !== 'rejected'
+    )
   const message = t('invoice.whatsappMessage', {
     name: client.name,
     number: invoice.number,
@@ -73,22 +81,38 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
               <Wallet /> {t('finance.recordPayment')}
             </Button>
           )}
-          <Button
-            asChild
-            size='sm'
-            className='bg-[#1f8a5b] text-white hover:bg-[#1f8a5b]/90'
-          >
-            <a
-              href={waLink(client.whatsapp, message)}
-              target='_blank'
-              rel='noopener noreferrer'
+          {canVoid && (
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => setIsVoiding(true)}
             >
-              <MessageCircle /> {t('common.whatsapp')}
-            </a>
-          </Button>
+              <Ban /> {t('invoice.void.action')}
+            </Button>
+          )}
+          {!isVoid && (
+            <Button
+              asChild
+              size='sm'
+              className='bg-[#1f8a5b] text-white hover:bg-[#1f8a5b]/90'
+            >
+              <a
+                href={waLink(client.whatsapp, message)}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <MessageCircle /> {t('common.whatsapp')}
+              </a>
+            </Button>
+          )}
         </>
       }
     >
+      {isVoid && invoice.voidReason && (
+        <p className='rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground'>
+          {t('invoice.void.reasonLabel')} {invoice.voidReason}
+        </p>
+      )}
       <div className='grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]'>
         <InvoiceDocument invoice={invoice} />
         <div className='grid content-start gap-4'>
@@ -115,17 +139,25 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
               <Money amount={balance} currency={invoice.currency} />
             </div>
           </Panel>
-          <RemindersPanel
-            invoice={invoice}
-            message={message}
-            whatsapp={client.whatsapp}
-          />
+          {!isVoid && (
+            <RemindersPanel
+              invoice={invoice}
+              message={message}
+              whatsapp={client.whatsapp}
+            />
+          )}
         </div>
       </div>
       <RecordPaymentDialog
         invoice={isPaying ? invoice : undefined}
         onOpenChange={(open) => !open && setIsPaying(false)}
       />
+      {isVoiding && (
+        <VoidInvoiceDialog
+          invoice={invoice}
+          onClose={() => setIsVoiding(false)}
+        />
+      )}
     </PageShell>
   )
 }

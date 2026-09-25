@@ -32,6 +32,8 @@ export type DraftInvoice = {
   rateToBase: number
   items: DraftItem[]
   note?: string
+  /** Defaults to today + the settings' payment terms. */
+  dueOn?: string
 }
 
 export type IssuedInvoice = { id: string; number: string; itemIds: string[] }
@@ -73,7 +75,7 @@ export function issueInvoice(ctx: Ctx, draft: DraftInvoice): IssuedInvoice {
       engagementId: draft.engagementId,
       billingIdentityId: client.billingIdentityId,
       issueOn: ctx.today,
-      dueOn: addDaysIso(ctx.today, setup.defaultDueDays),
+      dueOn: draft.dueOn ?? addDaysIso(ctx.today, setup.defaultDueDays),
       note: draft.note,
       issuedAt: ctx.now,
       ...money(total, draft.currency, draft.rateToBase),
