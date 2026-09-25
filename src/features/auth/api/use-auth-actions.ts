@@ -1,7 +1,11 @@
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { callApi } from '@/shared/http/api-client'
-import { type SignInInput, sessionMemberSchema } from '../model/auth.schema'
+import {
+  type AccountInput,
+  type SignInInput,
+  sessionMemberSchema,
+} from '../model/auth.schema'
 import { sessionQuery } from './session-query'
 
 /** Signs in; on success the session query holds the member. */
@@ -29,6 +33,20 @@ export function useSignOut() {
     onSettled: () => {
       queryClient.clear()
       queryClient.setQueryData(sessionQuery.queryKey, null)
+    },
+  })
+}
+
+/** Saves the member's own name, login and password. */
+export function useSaveAccount() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: AccountInput) =>
+      callApi('PUT', '/auth/account', sessionMemberSchema, input),
+    onSuccess: async (member) => {
+      queryClient.setQueryData(sessionQuery.queryKey, member)
+      // The name shows in the team list and the sidebar.
+      await queryClient.invalidateQueries({ queryKey: ['snapshot'] })
     },
   })
 }

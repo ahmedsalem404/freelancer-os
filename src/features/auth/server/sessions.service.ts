@@ -1,5 +1,5 @@
 import type { Database } from '@/shared/db/database'
-import { and, eq, isNull, lte, sql } from 'drizzle-orm'
+import { and, eq, isNull, lte, ne, sql } from 'drizzle-orm'
 import { createHash, randomBytes } from 'node:crypto'
 import { teamMembers } from '@/features/settings/server'
 import type { SessionMember } from '../model/auth.schema'
@@ -19,20 +19,21 @@ const hashToken = (token: string) =>
 const expiryFrom = (now: Date) =>
   new Date(now.getTime() + SESSION_DAYS * DAY_MS).toISOString()
 
-const byEmail = (email: string) =>
-  sql`lower(${teamMembers.email}) = ${email.trim().toLowerCase()}`
+/** Logins match case-insensitively (the `email` column holds the login). */
+export const byLogin = (login: string) =>
+  sql`lower(${teamMembers.email}) = ${login.trim().toLowerCase()}`
 
 const activeMember = and(
   eq(teamMembers.isActive, true),
   isNull(teamMembers.archivedAt)
 )
 
-/** The sign-in candidate for `email`, if it is an active account. */
-export function findLoginMember(db: Database, email: string) {
+/** The sign-in candidate for `login`, if it is an active account. */
+export function findLoginMember(db: Database, login: string) {
   return db
     .select({ id: teamMembers.id, passwordHash: teamMembers.passwordHash })
     .from(teamMembers)
-    .where(and(byEmail(email), activeMember))
+    .where(and(byLogin(login), activeMember))
     .get()
 }
 
@@ -97,6 +98,18 @@ export function resolveSession(
   return { id: row.id, name: row.name, role: row.role, email: row.email }
 }
 
+/** Signs a member out everywhere except the session holding `keepToken`. */
+export function endOtherSessions(
+  db: Database,
+  memberId: string,
+  keepToken: string | undefined
+) {
+  const keep = keepToken ? hashToken(keepToken) : ''
+  db.delete(authSessions)
+    .where(and(eq(authSessions.memberId, memberId), ne(authSessions.id, keep)))
+    .run()
+}
+
 export function endSession(db: Database, token: string | undefined) {
   if (!token || !TOKEN_PATTERN.test(token)) return
   db.delete(authSessions)
@@ -106,14 +119,14 @@ export function endSession(db: Database, token: string | undefined) {
 
 /**
  * Stores a new password hash and signs the member out everywhere.
- * Returns false when no account has that email.
+ * Returns false when no account has that login.
  */
-export function replacePassword(db: Database, email: string, hash: string) {
+export function replacePassword(db: Database, login: string, hash: string) {
   return db.transaction((tx) => {
     const member = tx
       .select({ id: teamMembers.id })
       .from(teamMembers)
-      .where(byEmail(email))
+      .where(byLogin(login))
       .get()
     if (!member) return false
     tx.update(teamMembers)

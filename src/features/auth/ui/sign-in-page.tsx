@@ -12,12 +12,12 @@ import { signInInput } from '../model/auth.schema'
 
 type Props = { redirectTo?: string }
 
-/** The only way in: email + password of a team member. */
+/** The only way in: login name (or email) + password of a team member. */
 export function SignInPage({ redirectTo }: Props) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const signIn = useSignIn()
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ login: '', password: '' })
   const parsed = signInInput.safeParse(form)
 
   const submit = (event: React.FormEvent) => {
@@ -53,15 +53,14 @@ export function SignInPage({ redirectTo }: Props) {
             </p>
           </div>
           <TextField
-            id='sign-in-email'
-            label={t('auth.email')}
-            type='email'
+            id='sign-in-login'
+            label={t('auth.login')}
             dir='ltr'
             autoComplete='username'
             autoFocus
             required
-            value={form.email}
-            onChange={(email) => setForm((prev) => ({ ...prev, email }))}
+            value={form.login}
+            onChange={(login) => setForm((prev) => ({ ...prev, login }))}
           />
           <div className='grid gap-2'>
             <Label htmlFor='sign-in-password'>{t('auth.password')}</Label>

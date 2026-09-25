@@ -35,7 +35,7 @@ const PUBLIC_PATHS = new Set([
 const isPublic = (path: string) =>
   PUBLIC_PATHS.has(path) || path.startsWith('/api/portal/')
 /** Every signed-in member may call these; the rest is owner-only. */
-const ANY_MEMBER = new Set(['/api/auth/me'])
+const ANY_MEMBER = new Set(['/api/auth/me', '/api/auth/account'])
 
 const FEATURE_ROUTES = [
   ratesRoutes,

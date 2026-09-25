@@ -213,7 +213,7 @@ One row only (`CHECK (id = 1)`). Every rule the UI needs (numbering, due days, r
 |---|---|---|---|---|
 | name | TEXT | NN | | |
 | role | TEXT | NN | | `CHECK (role IN ('owner','assistant'))` |
-| email | TEXT | NN | | `UNIQUE`; login id |
+| email | TEXT | NN | | `UNIQUE`; login id — free text since 2026-09-25 (an email or any name), matched case-insensitively |
 | whatsapp | TEXT | Y | | |
 | password_hash | TEXT | NN | | argon2id (PHC string). **Built nullable**: NULL = can't sign in until `npm run auth:set-password` sets one |
 | is_active | INTEGER | NN | 1 | bool |

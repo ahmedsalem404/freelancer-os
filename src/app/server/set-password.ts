@@ -8,7 +8,7 @@ import { openDatabase, runMigrations } from './db'
 import { readEnv } from './env'
 
 /**
- * `npm run auth:set-password -- <email>`: sets a team member's password
+ * `npm run auth:set-password -- <login>`: sets a team member's password
  * from this machine's terminal. Done here, not in the browser, so nobody
  * who reaches the site before the owner can claim the account.
  */
@@ -49,13 +49,11 @@ function askHidden(question: string) {
 }
 
 async function main() {
-  const email = process.argv[2]?.trim()
-  if (!email) throw new Error('Usage: npm run auth:set-password -- <email>')
+  const login = process.argv[2]?.trim()
+  if (!login) throw new Error('Usage: npm run auth:set-password -- <login>')
   const password = await askHidden('New password: ')
   if (password.length < PASSWORD_MIN || password.length > PASSWORD_MAX) {
-    throw new Error(
-      `Use ${PASSWORD_MIN} to ${PASSWORD_MAX} characters (a short sentence works well).`
-    )
+    throw new Error(`Use ${PASSWORD_MIN} to ${PASSWORD_MAX} characters.`)
   }
   if ((await askHidden('Repeat it: ')) !== password) {
     throw new Error('The two passwords differ. Nothing changed.')
@@ -65,14 +63,14 @@ async function main() {
   const { db, close } = openDatabase(env.DB_FILE)
   try {
     runMigrations(db, env.MIGRATIONS_DIR)
-    if (!replacePassword(db, email, await hashPassword(password))) {
-      throw new Error(`No team member has the email ${email}.`)
+    if (!replacePassword(db, login, await hashPassword(password))) {
+      throw new Error(`No team member signs in as ${login}.`)
     }
   } finally {
     close()
   }
   process.stdout.write(
-    `Password set for ${email}. Every earlier session was signed out.\n`
+    `Password set for ${login}. Every earlier session was signed out.\n`
   )
 }
 

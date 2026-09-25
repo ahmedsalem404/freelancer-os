@@ -9,6 +9,7 @@ import { Download, Languages, Moon, Sun, Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { AccountPanel } from '@/features/auth'
 import { DailyRateEditor } from '@/features/rates/ui/daily-rate-editor'
 
 export function SettingsPage() {
@@ -25,6 +26,8 @@ export function SettingsPage() {
   return (
     <PageShell title={t('settings.title')}>
       <div className='grid gap-4 lg:grid-cols-2'>
+        <AccountPanel className='lg:col-span-2' />
+
         <Panel title={t('settings.identities')} className='lg:col-span-2'>
           <p className='mb-3 text-xs text-muted-foreground'>
             {t('settings.identitiesHint')}

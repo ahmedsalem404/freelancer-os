@@ -6,10 +6,6 @@ const SALT_BYTES = 16
 const PHC_PATTERN =
   /^\$argon2id\$v=19\$m=(\d+),t=(\d+),p=(\d+)\$([A-Za-z0-9+/]+)\$([A-Za-z0-9+/]+)$/
 
-/** Shortest and longest password accepted when one is set. */
-export const PASSWORD_MIN = 10
-export const PASSWORD_MAX = 200
-
 type Params = typeof PARAMS
 
 function derive(password: string, salt: Buffer, params: Params) {
@@ -48,7 +44,7 @@ export async function verifyPassword(password: string, stored: string) {
 }
 
 /**
- * Hash checked when the email is unknown, so a wrong email costs the same
+ * Hash checked when the login is unknown, so a wrong login costs the same
  * time as a wrong password and does not reveal which accounts exist.
  */
 let decoy: Promise<string> | undefined

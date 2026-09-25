@@ -106,8 +106,10 @@ export const sharedAr = {
     engagement_in_use: 'للاتفاق سجلات — أرشفه بدل الحذف',
     subscription_in_use: 'للاشتراك مبالغ مسجّلة — أوقفه بدل الحذف',
     type_locked: 'نوع الاتفاق ثابت بعد فتحه',
-    invalid_credentials: 'البريد أو كلمة المرور غير صحيحة',
+    invalid_credentials: 'اسم الدخول أو كلمة المرور غير صحيحة',
     unauthenticated: 'انتهت الجلسة — سجّل دخولك مرة ثانية',
     forbidden: 'هذا الحساب ما يقدر يسوي هذا',
+    wrong_password: 'كلمة المرور الحالية غير صحيحة',
+    login_taken: 'اسم الدخول مستخدم لعضو ثاني',
   },
 }

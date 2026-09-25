@@ -70,7 +70,7 @@ freelancer-os/
 
 | Feature | Owns (tables) | Screens |
 |---|---|---|
-| `auth` | auth_sessions | Sign-in, sign-out button |
+| `auth` | auth_sessions | Sign-in, sign-out button, "My account" panel (settings) |
 | `settings` | settings, billing_identities, payment_methods, team_members | Settings |
 | `rates` | exchange_rates (daily YER quotes) | header chip, settings panel |
 | `clients` | clients, vault_entries | Clients list/detail |
@@ -110,7 +110,7 @@ freelancer-os/
    `engagements.lead_id`) are plain ids checked in services, so table modules
    never import each other in a cycle.
 8. Every `/api` route needs a signed-in **owner** session except `/health`,
-   `/auth/sign-in`, `/auth/sign-out`, `/auth/me` (any member) and the public
+   `/auth/sign-in`, `/auth/sign-out`, `/auth/me` + `/auth/account` (any member) and the public
    `/portal/*`. The gate lives in `app/server/app.ts` (`authGate`). The API still
    listens on `127.0.0.1` by default (`API_HOST`); the site is reached through Vite
    or a tunnel.
@@ -143,7 +143,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 
 | Feature | Endpoints (all under `/api`) |
 |---|---|
-| auth | `POST /auth/sign-in` (rate-limited) · `POST /auth/sign-out` · `GET /auth/me` |
+| auth | `POST /auth/sign-in` (rate-limited) · `POST /auth/sign-out` · `GET /auth/me` · `PUT /auth/account` (own name, login, password; needs the current password; rate-limited) |
 | rates | `PUT /rates/today` |
 | invoices | `POST /invoices` (manual, issued at once) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` |
 | engagements | `POST /engagements` · `PUT /engagements/:id` · `PUT /engagements/:id/terms` · `POST /engagements/:id/{archive,unarchive}` · `DELETE /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
@@ -179,6 +179,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | Client portal links: 32-byte token, only its SHA-256 stored, shown once; one active link per engagement; the public view carries no money or contacts; per-IP limit keyed on `cf-connecting-ip` only (X-Forwarded-For is spoofable) | docs/database.md §3.6 |
 | 2026-09-25 | Tests split into Vitest projects: `node` (API, models, money, http) and `browser` (DOM, Chromium) | the API needs SQLite/Node; components need a real browser |
 | 2026-09-25 | Authentication: argon2id (Node's built-in `crypto.argon2`, no dependency) + server sessions in `auth_sessions` (SHA-256 of a 32-byte cookie token, 30-day sliding expiry). Cookie `fos_session`: HttpOnly, SameSite=Strict (the CSRF defence), Secure over HTTPS, Path=/api. Passwords are set from the terminal (`npm run auth:set-password`), never through a first-run web form | nobody who reaches the site first can claim the owner account |
+| 2026-09-25 | The login is free text (an email or any name, unique case-insensitively; stored in `team_members.email`). Passwords: 4–200 characters, no complexity rules (owner's choice). Editing one's account needs the current password — no email codes | owner instruction: full freedom, no verification step |
 | 2026-09-25 | Owner-only by default: assistants can sign in but get 403 everywhere except `/auth/me` until their scoped screens exist. Signed-in endpoints never accept `source: client_link`; only the portal records it | the snapshot holds money and contacts |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
@@ -199,8 +200,8 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
   by hand (plus an empty `INSTALLATION_COMPLETE` file in each folder).
 - Assistants have no screens yet: they can sign in, but every data endpoint answers 403
   (needs a scoped snapshot: own tasks, time, reflections only — docs/database.md §3.1).
-- No password change / team management screen yet: passwords are set with
-  `npm run auth:set-password -- <email>`; the owner's email is the seed's until edited.
+- The first password is set with `npm run auth:set-password -- <login>`; after that,
+  Settings → My account. The owner can't yet add, remove or reset other members.
 - Own subscriptions don't record their renewal charge as an expense by themselves yet
   (the `expense_sub_charge` unique key is ready for it); no reminder before renewal yet
   (`remindDaysBefore` is stored — reminders are phase 3).
@@ -215,7 +216,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | `npm run db:generate` | generate a migration from the Drizzle tables |
 | `npm run db:reset` | delete the local DB, migrate, load demo data |
 | `npm run db:studio` | browse the database in Drizzle Studio |
-| `npm run auth:set-password -- <email>` | set a team member's password (hidden prompt) and sign them out everywhere |
+| `npm run auth:set-password -- <login>` | set a team member's password (hidden prompt) and sign them out everywhere |
 | `npm run check:size` | enforce the 250-line budget |
 | `npm test` · `npm run test:node` | all tests (node + Chromium) · node project only (no browser) |
 | `npm run lint` · `npx tsc -b` | lint (incl. line budget) · type check |

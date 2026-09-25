@@ -8,8 +8,8 @@ afterEach(() => t.close())
 const OWNER_EMAIL = 'owner@freelancer-os.local'
 const PASSWORD = 'correct horse battery'
 
-async function withPassword(email = OWNER_EMAIL, password = PASSWORD) {
-  replacePassword(t.db, email, await hashPassword(password))
+async function withPassword(login = OWNER_EMAIL, password = PASSWORD) {
+  replacePassword(t.db, login, await hashPassword(password))
 }
 
 /** The raw `fos_session` value from a sign-in response. */
@@ -45,7 +45,7 @@ describe('authentication', () => {
     t = createTestApp()
     await withPassword()
     const res = await t.callAs(null, 'POST', '/auth/sign-in', {
-      email: 'Owner@Freelancer-OS.local ',
+      login: 'Owner@Freelancer-OS.local ',
       password: PASSWORD,
     })
     expect(res.status).toBe(200)
@@ -61,15 +61,15 @@ describe('authentication', () => {
     expect((await t.callAs(token, 'GET', '/snapshot')).status).toBe(200)
   })
 
-  it('answers the same error for a wrong password and an unknown email', async () => {
+  it('answers the same error for a wrong password and an unknown login', async () => {
     t = createTestApp()
     await withPassword()
     const wrong = await t.callAs(null, 'POST', '/auth/sign-in', {
-      email: OWNER_EMAIL,
+      login: OWNER_EMAIL,
       password: 'not the password',
     })
     const unknown = await t.callAs(null, 'POST', '/auth/sign-in', {
-      email: 'nobody@example.com',
+      login: 'nobody@example.com',
       password: PASSWORD,
     })
     for (const res of [wrong, unknown]) {
@@ -82,7 +82,7 @@ describe('authentication', () => {
   it('refuses an account that has no password yet', async () => {
     t = createTestApp()
     const res = await t.callAs(null, 'POST', '/auth/sign-in', {
-      email: OWNER_EMAIL,
+      login: OWNER_EMAIL,
       password: PASSWORD,
     })
     expect(res.status).toBe(401)
@@ -124,7 +124,7 @@ describe('authentication', () => {
     const statuses: number[] = []
     for (let i = 0; i < 11; i++) {
       const res = await t.callAs(null, 'POST', '/auth/sign-in', {
-        email: 'nobody@example.com',
+        login: 'nobody@example.com',
         password: 'x',
       })
       statuses.push(res.status)
