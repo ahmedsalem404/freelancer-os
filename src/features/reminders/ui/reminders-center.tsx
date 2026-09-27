@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { useHandleImportantDate } from '@/features/calendar'
+import { useRenewOwnSubscription } from '@/features/finance'
 import { useLogReminder } from '../api/use-log-reminder'
 import { pendingReminders, type PendingReminder } from '../model/schedule'
 import { useReminderView } from './use-reminder-view'
@@ -19,6 +20,7 @@ export function RemindersCenter() {
   const viewOf = useReminderView()
   const log = useLogReminder()
   const handleDate = useHandleImportantDate()
+  const renewOwn = useRenewOwnSubscription()
   const pending = pendingReminders(db, todayIso()).flatMap((r) => {
     const view = viewOf(r)
     return view ? [{ r, view }] : []
@@ -91,6 +93,22 @@ export function RemindersCenter() {
                     >
                       <MessageCircle /> {t('reminders.send')}
                     </a>
+                  </Button>
+                )}
+                {view.ownSubscriptionId && (
+                  <Button
+                    size='sm'
+                    variant='outline'
+                    disabled={renewOwn.isPending}
+                    onClick={() =>
+                      view.ownSubscriptionId &&
+                      renewOwn.mutate(view.ownSubscriptionId, {
+                        onSuccess: () =>
+                          toast.success(t('finance.subForm.renewed')),
+                      })
+                    }
+                  >
+                    <Check /> {t('finance.subForm.renew')}
                   </Button>
                 )}
                 {view.importantDateId && (

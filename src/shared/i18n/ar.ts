@@ -86,6 +86,7 @@ export const sharedAr = {
     backToList: 'العودة للقائمة',
     edit: 'تعديل',
     mustBePositive: 'اكتب رقماً أكبر من صفر',
+    fillToSave: 'عشان تحفظ، عبّي: {{fields}}',
   },
   apiErrors: {
     generic: 'صار خطأ — حاول مرة ثانية',
@@ -110,6 +111,7 @@ export const sharedAr = {
     engagement_mismatch: 'الاتفاق المختار لعميل آخر',
     invoice_has_payments: 'على الفاتورة دفعات مسجّلة، لا يمكن إلغاؤها',
     already_approved: 'تم اعتماد هذا المخرج مسبقاً',
+    already_charged: 'هذا التجديد مسجّل من قبل',
     rate_limited: 'طلبات كثيرة — حاول بعد دقيقة',
     invoice_is_renewal: 'فاتورة التجديد ما تُلغى — الدورة الجديدة مفتوحة عليها',
     client_has_engagements: 'أرشف اتفاقات العميل أولاً',
@@ -123,6 +125,7 @@ export const sharedAr = {
     forbidden: 'هذا الحساب ما يقدر يسوي هذا',
     wrong_password: 'كلمة المرور الحالية غير صحيحة',
     login_taken: 'اسم الدخول مستخدم لعضو ثاني',
+    currency_locked: 'للعميل فواتير — عملته ثابتة',
     not_an_assistant: 'عدّل حسابك من «حسابي»',
   },
 }

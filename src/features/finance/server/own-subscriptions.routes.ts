@@ -5,6 +5,7 @@ import { Hono } from 'hono'
 import { ownSubscriptionInput } from '../model/own-subscription.input'
 import {
   cancelOwnSubscription,
+  renewOwnSubscription,
   createOwnSubscription,
   deleteOwnSubscription,
   updateOwnSubscription,
@@ -21,6 +22,10 @@ export const ownSubscriptionsRoutes = new Hono<AppEnv>()
     const input = c.req.valid('json')
     const result = c.var.run((ctx) => updateOwnSubscription(ctx, id, input))
     return c.json(success(result))
+  })
+  .post('/own-subscriptions/:id/renew', (c) => {
+    const id = c.req.param('id')
+    return c.json(success(c.var.run((ctx) => renewOwnSubscription(ctx, id))))
   })
   .post('/own-subscriptions/:id/cancel', (c) => {
     const id = c.req.param('id')

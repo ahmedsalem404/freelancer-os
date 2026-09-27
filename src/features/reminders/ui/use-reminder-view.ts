@@ -16,6 +16,8 @@ export type ReminderView = {
   link?: { to: '/invoices/$id' | '/engagements/$id'; id: string }
   /** An important date can be marked renewed from the list. */
   importantDateId?: string
+  /** An own subscription can be recorded as renewed and paid. */
+  ownSubscriptionId?: string
 }
 
 /** Turns a pending reminder into its title, message and destination. */
@@ -81,6 +83,7 @@ export function useReminderView() {
       return {
         title: t('reminders.own', { name: sub.name }),
         detail: `${moneyText(sub.amount, sub.currency)} · ${when}`,
+        ownSubscriptionId: sub.id,
       }
     }
     const date = db.importantDates.find((d) => d.id === r.targetId)

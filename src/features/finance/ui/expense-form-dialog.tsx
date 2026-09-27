@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { MissingFields } from '@/shared/components/missing-fields'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { useFieldErrors } from '@/shared/lib/use-field-errors'
@@ -150,6 +151,12 @@ export function ExpenseFormDialog({ expense, onClose }: Props) {
             value={note}
             onChange={setNote}
             isMultiline
+          />
+          <MissingFields
+            fields={[
+              !title.trim() && t('finance.expenseForm.title'),
+              !amount.trim() && t('finance.expenseForm.amount'),
+            ]}
           />
           <DialogFooter>
             <Button type='button' variant='ghost' onClick={onClose}>

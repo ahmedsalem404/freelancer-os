@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { MissingFields } from '@/shared/components/missing-fields'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { useFieldErrors } from '@/shared/lib/use-field-errors'
@@ -160,6 +161,13 @@ export function NewEngagementDialog({
               onChange={setHours}
             />
           )}
+          <MissingFields
+            fields={[
+              !clientId && t('common.client'),
+              !title.trim() && t('engagements.form.title'),
+              !amount.trim() && t('engagements.form.amount'),
+            ]}
+          />
           <DialogFooter>
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}

@@ -4,12 +4,15 @@ import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { useDateFormat } from '@/shared/lib/dates'
-import { Ban, Pencil, Plus } from 'lucide-react'
+import { Ban, Pencil, Plus, RefreshCw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Money } from '@/features/rates/ui/money'
-import { useCancelOwnSubscription } from '../api/use-own-subscriptions'
+import {
+  useCancelOwnSubscription,
+  useRenewOwnSubscription,
+} from '../api/use-own-subscriptions'
 import type { OwnSubscription } from '../model/finance.schema'
 import { SubscriptionFormDialog } from './subscription-form-dialog'
 
@@ -18,6 +21,7 @@ type Open =
   | { kind: 'add' }
   | { kind: 'edit'; subscription: OwnSubscription }
   | { kind: 'cancel'; subscription: OwnSubscription }
+  | { kind: 'renew'; subscription: OwnSubscription }
 
 /** The owner's own tools, with add, edit and stop. */
 export function SubscriptionsPanel() {
@@ -25,6 +29,7 @@ export function SubscriptionsPanel() {
   const fmt = useDateFormat()
   const subs = useDb().ownSubscriptions
   const cancel = useCancelOwnSubscription()
+  const renew = useRenewOwnSubscription()
   const [open, setOpen] = useState<Open>()
   const close = () => setOpen(undefined)
 
@@ -77,6 +82,14 @@ export function SubscriptionsPanel() {
                 <Button
                   size='icon'
                   variant='ghost'
+                  aria-label={t('finance.subForm.renew')}
+                  onClick={() => setOpen({ kind: 'renew', subscription: s })}
+                >
+                  <RefreshCw />
+                </Button>
+                <Button
+                  size='icon'
+                  variant='ghost'
                   aria-label={t('finance.subForm.edit')}
                   onClick={() => setOpen({ kind: 'edit', subscription: s })}
                 >
@@ -101,6 +114,28 @@ export function SubscriptionsPanel() {
         <SubscriptionFormDialog
           subscription={open.subscription}
           onClose={close}
+        />
+      )}
+      {open?.kind === 'renew' && (
+        <ConfirmDialog
+          open
+          onOpenChange={(isOpen) => !isOpen && close()}
+          title={t('finance.subForm.renewTitle', {
+            name: open.subscription.name,
+          })}
+          desc={t('finance.subForm.renewHint', {
+            date: fmt(open.subscription.nextRenewalOn),
+          })}
+          confirmText={t('finance.subForm.renew')}
+          isLoading={renew.isPending}
+          handleConfirm={() =>
+            renew.mutate(open.subscription.id, {
+              onSuccess: () => {
+                toast.success(t('finance.subForm.renewed'))
+                close()
+              },
+            })
+          }
         />
       )}
       {open?.kind === 'cancel' && (

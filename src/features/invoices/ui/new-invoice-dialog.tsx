@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
+import { MissingFields } from '@/shared/components/missing-fields'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { isArchived } from '@/shared/model/archive'
@@ -172,6 +173,12 @@ export function NewInvoiceDialog({ clientId: initialClient, onClose }: Props) {
             value={note}
             onChange={setNote}
             isMultiline
+          />
+          <MissingFields
+            fields={[
+              !clientId && t('common.client'),
+              total <= 0 && t('invoice.form.lines'),
+            ]}
           />
           <DialogFooter>
             <Button type='button' variant='ghost' onClick={onClose}>

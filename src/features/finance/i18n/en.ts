@@ -52,6 +52,11 @@ export const financeEn: Widen<typeof financeAr> = {
     addSubscription: 'New subscription',
     subForm: {
       edit: 'Edit subscription',
+      renew: 'Renewed and paid',
+      renewTitle: 'Record the {{name}} renewal?',
+      renewHint:
+        'The renewal is recorded as an expense on {{date}} and the next renewal moves one period on.',
+      renewed: 'Renewal recorded as an expense',
       hint: 'Your own tools (Figma, hosting…) — not client subscriptions.',
       name: 'Tool name',
       vendor: 'Vendor (optional)',

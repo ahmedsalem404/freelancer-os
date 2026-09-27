@@ -91,6 +91,7 @@ export const sharedEn: Widen<typeof sharedAr> = {
     backToList: 'Back to the list',
     edit: 'Edit',
     mustBePositive: 'Enter a number above zero',
+    fillToSave: 'To save, fill in: {{fields}}',
   },
   apiErrors: {
     generic: 'Something went wrong — please try again',
@@ -115,6 +116,7 @@ export const sharedEn: Widen<typeof sharedAr> = {
     engagement_mismatch: 'The chosen engagement belongs to another client',
     invoice_has_payments: 'This invoice has payments and cannot be voided',
     already_approved: 'This deliverable is already approved',
+    already_charged: 'This renewal is already recorded',
     rate_limited: 'Too many requests — try again in a minute',
     invoice_is_renewal:
       'A renewal invoice can’t be voided — its new cycle is open',
@@ -130,6 +132,7 @@ export const sharedEn: Widen<typeof sharedAr> = {
     forbidden: 'This account can’t do that',
     wrong_password: 'The current password is wrong',
     login_taken: 'Another member already uses this login',
+    currency_locked: 'This client has invoices — their currency is fixed',
     not_an_assistant: 'Edit your own account in My account',
   },
 }

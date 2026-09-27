@@ -13,6 +13,12 @@ export const useSaveOwnSubscription = () =>
       : callApi('POST', '/own-subscriptions', saved, body)
   )
 
+/** Records this period's charge as an expense and moves the renewal on. */
+export const useRenewOwnSubscription = () =>
+  useAction((id: string) =>
+    callApi('POST', `/own-subscriptions/${seg(id)}/renew`, saved)
+  )
+
 export const useCancelOwnSubscription = () =>
   useAction((id: string) =>
     callApi('POST', `/own-subscriptions/${seg(id)}/cancel`, saved)

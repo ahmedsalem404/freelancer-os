@@ -50,8 +50,11 @@ describe('clients', () => {
 
   it('updates a client and recomputes its kind', async () => {
     t = createTestApp()
+    const before = (await t.snapshot()).clients.find((c) => c.id === 'c-nakhla')
     const res = await t.call('PUT', '/clients/c-nakhla', {
       ...NEW_CLIENT,
+      // The client has invoices, so its currency stays.
+      currency: before?.currency,
       company: '',
       city: 'Jeddah',
     })
@@ -90,5 +93,28 @@ describe('clients', () => {
     t = createTestApp()
     const res = await t.call('PUT', '/clients/c-missing', NEW_CLIENT)
     expect(res.status).toBe(404)
+  })
+})
+
+describe('client currency', () => {
+  it('is fixed once the client has invoices', async () => {
+    t = createTestApp()
+    const app = t
+    const snap = await app.snapshot()
+    const invoice = snap.invoices[0]!
+    const client = snap.clients.find((c) => c.id === invoice.clientId)!
+    const other = client.currency === 'SAR' ? 'USD' : 'SAR'
+    const res = await app.call('PUT', `/clients/${client.id}`, {
+      name: client.name,
+      currency: other,
+    })
+    expect(res.status).toBe(409)
+    expect(res.json.error?.code).toBe('currency_locked')
+    // Keeping the same currency still saves.
+    const same = await app.call('PUT', `/clients/${client.id}`, {
+      name: `${client.name} (edited)`,
+      currency: client.currency,
+    })
+    expect(same.status).toBe(200)
   })
 })

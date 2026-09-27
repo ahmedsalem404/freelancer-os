@@ -14,6 +14,7 @@ export const clientsEn: Widen<typeof clientsAr> = {
     localTime: 'Local time',
     identity: 'Billing identity',
     currency: 'Currency',
+    currencyLocked: 'fixed — the client has invoices',
     health: 'Client health',
     revenue: 'Collected',
     outstanding: 'Outstanding',

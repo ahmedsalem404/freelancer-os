@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { MissingFields } from '@/shared/components/missing-fields'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { CURRENCIES, type Currency } from '@/shared/money/currency'
@@ -46,6 +47,9 @@ export function ClientFormDialog({ client, onClose }: Props) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const db = useDb()
+  // Mirrors the server: invoices fix the client's currency.
+  const isCurrencyLocked =
+    client !== undefined && db.invoices.some((i) => i.clientId === client.id)
   const save = useSaveClient()
   const [form, setForm] = useState(() =>
     initialForm(client, db.identities[0]?.id ?? '')
@@ -127,13 +131,23 @@ export function ClientFormDialog({ client, onClose }: Props) {
               value={form.city}
               onChange={set('city')}
             />
-            <ChoiceRow
-              label={t('clients.currency')}
-              options={CURRENCIES}
-              value={form.currency as Currency}
-              onChange={set('currency')}
-              labelOf={(c) => c}
-            />
+            {isCurrencyLocked ? (
+              <div className='grid gap-2 text-sm'>
+                <span className='font-medium'>{t('clients.currency')}</span>
+                <span className='text-muted-foreground'>
+                  <span className='num text-foreground'>{form.currency}</span> ·{' '}
+                  {t('clients.currencyLocked')}
+                </span>
+              </div>
+            ) : (
+              <ChoiceRow
+                label={t('clients.currency')}
+                options={CURRENCIES}
+                value={form.currency as Currency}
+                onChange={set('currency')}
+                labelOf={(c) => c}
+              />
+            )}
           </div>
           {db.identities.length > 1 && (
             <ChoiceRow
@@ -152,6 +166,9 @@ export function ClientFormDialog({ client, onClose }: Props) {
             value={form.notes}
             onChange={set('notes')}
             isMultiline
+          />
+          <MissingFields
+            fields={[!form.name.trim() && t('clients.form.name')]}
           />
           <DialogFooter>
             <Button type='button' variant='ghost' onClick={onClose}>

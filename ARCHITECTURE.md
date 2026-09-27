@@ -159,7 +159,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | reminders | owner only: `POST /reminders` (`sent`/`dismissed`, idempotent on `kind:target:occurrence:offset`) — the pending list itself is derived (`reminders/model/schedule.ts`) |
 | calendar | owner only: `POST`/`PUT`/`DELETE /calendar-events[/:id]` · `POST`/`PUT /important-dates[/:id]` · `POST /important-dates/:id/{handled,archive}` (handled rolls a recurring date forward) |
 | backup | `GET /backup` (owner only) — zip of a `VACUUM INTO` copy of the database, `data/files/` and `data/vault.key` |
-| finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` · `POST /own-subscriptions` · `PUT /own-subscriptions/:id` · `POST /own-subscriptions/:id/cancel` · `DELETE /own-subscriptions/:id` |
+| finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` · `POST /own-subscriptions` · `PUT /own-subscriptions/:id` · `POST /own-subscriptions/:id/renew` (records the period's charge as an expense on the renewal day and moves the renewal on; a period is charged once — `already_charged`) · `POST /own-subscriptions/:id/cancel` · `DELETE /own-subscriptions/:id` |
 | workspace | `GET /workspace` — the signed-in member's own tasks (open + last 14 days), time (14 days), today's note and the titles of their tasks' engagements; no money |
 | portal | owner: `POST`/`DELETE /engagements/:id/portal-link` · public (rate-limited): `GET /portal/:token` · `POST /portal/:token/deliverables/:id/{approval,rounds}` |
 - **Derived values are never stored** (invoice status, balances, meters, health) —
@@ -214,11 +214,10 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 - The owner's first password is set with `npm run auth:set-password -- <login>`; after that,
   Settings → My account. Assistants are added, renamed, given a new password and stopped
   or restarted from Settings → Team (a stopped member keeps their records).
-- Own subscriptions don't record their renewal charge as an expense by themselves yet
-  (the `expense_sub_charge` unique key is ready for it); no reminder before renewal yet
-  (`remindDaysBefore` is stored — reminders are phase 3).
-- A renewal can't be undone (its invoice can't be voided); a client's currency can
-  still be changed after it has invoices.
+- A renewal can't be undone (its invoice can't be voided).
+- Retainer `tickets` (docs/database.md §3.5) have no table or screen yet: retainers are
+  created with hours only, so nothing can reach the tickets unit today.
+- Reminders are shown when the app is opened (Today); nothing is pushed while it is closed.
 
 ## 7. Commands
 

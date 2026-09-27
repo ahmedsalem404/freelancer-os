@@ -12,6 +12,7 @@ export const clientsAr = {
     localTime: 'التوقيت المحلي',
     identity: 'هوية الفوترة',
     currency: 'عملة التعامل',
+    currencyLocked: 'ثابتة لأن عنده فواتير',
     health: 'صحة العميل',
     revenue: 'المحصّل',
     outstanding: 'غير محصّل',

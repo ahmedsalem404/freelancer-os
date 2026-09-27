@@ -1,7 +1,7 @@
 import { newId } from '@/shared/db/new-id'
 import { DomainError, required } from '@/shared/http/errors'
 import type { Ctx } from '@/shared/server/context'
-import { asc, count, eq } from 'drizzle-orm'
+import { asc, count, eq, sql } from 'drizzle-orm'
 import { billingIdentities, settings } from '@/features/settings/server'
 import type { ClientFields } from '../model/client.input'
 import type { ClientKind } from '../model/enums'
@@ -74,17 +74,36 @@ export function createClient(ctx: Ctx, input: NewClient) {
   return { id }
 }
 
-/** Replaces a client's editable fields. Past records keep their snapshots. */
+/**
+ * Whether any invoice names this client. Read by table name: `invoices`
+ * sits above `clients` in the dependency order (ARCHITECTURE.md §3).
+ */
+const hasInvoices = (ctx: Ctx, clientId: string) =>
+  ctx.db.get<{ found: number } | undefined>(
+    sql`SELECT 1 AS found FROM invoices WHERE client_id = ${clientId} LIMIT 1`
+  ) !== undefined
+
+/**
+ * Replaces a client's editable fields. Past records keep their snapshots;
+ * the currency is fixed once an invoice exists.
+ */
 export function updateClient(ctx: Ctx, id: string, input: NewClient) {
-  required(
+  const current = required(
     ctx.db
-      .select({ id: clients.id })
+      .select({ id: clients.id, currency: clients.currency })
       .from(clients)
       .where(eq(clients.id, id))
       .get(),
     'client',
     id
   )
+  if (input.currency !== current.currency && hasInvoices(ctx, id)) {
+    throw new DomainError(
+      'currency_locked',
+      'The client has invoices; their currency is fixed',
+      409
+    )
+  }
   ctx.db
     .update(clients)
     .set(columns(ctx, input))

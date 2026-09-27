@@ -1,12 +1,15 @@
 import { deleteUnused } from '@/shared/db/delete-unused'
 import { newId } from '@/shared/db/new-id'
-import { required } from '@/shared/http/errors'
+import { DomainError, required } from '@/shared/http/errors'
+import { addMonthsIso } from '@/shared/model/dates'
 import { money } from '@/shared/money/money'
 import type { Ctx } from '@/shared/server/context'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { latestRates } from '@/features/rates/server'
 import type { OwnSubscriptionFields } from '../model/own-subscription.input'
-import { ownSubscriptions } from './finance.table'
+import { expenses, ownSubscriptions } from './finance.table'
+
+const MONTHS_IN = { monthly: 1, yearly: 12 } as const
 
 function columns(input: OwnSubscriptionFields, rateToBase: number) {
   return {
@@ -62,6 +65,56 @@ export function updateOwnSubscription(
     .where(eq(ownSubscriptions.id, id))
     .run()
   return { id }
+}
+
+/**
+ * "Renewed and paid": records this period's charge as an expense (at
+ * today's rate, dated on the renewal day) and moves the renewal one period
+ * on. The unique (subscription, day) key refuses charging a period twice.
+ */
+export function renewOwnSubscription(ctx: Ctx, id: string) {
+  const sub = required(
+    ctx.db
+      .select()
+      .from(ownSubscriptions)
+      .where(eq(ownSubscriptions.id, id))
+      .get(),
+    'subscription',
+    id
+  )
+  const charged = ctx.db
+    .select({ id: expenses.id })
+    .from(expenses)
+    .where(
+      and(
+        eq(expenses.ownSubscriptionId, id),
+        eq(expenses.spentOn, sub.nextRenewalOn)
+      )
+    )
+    .get()
+  if (charged) {
+    throw new DomainError('already_charged', 'This period is recorded', 409)
+  }
+  const expenseId = newId('exp')
+  ctx.db
+    .insert(expenses)
+    .values({
+      id: expenseId,
+      title: sub.name,
+      category: 'subscription',
+      ...money(sub.amount, sub.currency, latestRates(ctx.db)[sub.currency]),
+      spentOn: sub.nextRenewalOn,
+      vendor: sub.vendor,
+      ownSubscriptionId: id,
+    })
+    .run()
+  const nextRenewalOn = addMonthsIso(sub.nextRenewalOn, MONTHS_IN[sub.period])
+  ctx.db
+    .update(ownSubscriptions)
+    .set({ nextRenewalOn })
+    .where(eq(ownSubscriptions.id, id))
+    .run()
+  return { id, expenseId, nextRenewalOn }
 }
 
 /** Stops a subscription: it leaves the list, its charges stay on record. */
