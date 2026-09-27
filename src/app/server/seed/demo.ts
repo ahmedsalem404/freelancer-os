@@ -7,6 +7,7 @@ import { subMonths, subYears, parseISO, format } from 'date-fns'
 import type { Database } from '@/shared/db/database'
 import type { SQLiteTable } from 'drizzle-orm/sqlite-core'
 import { importantDates } from '@/features/calendar/server/calendar.table'
+import { calendarEvents } from '@/features/calendar/server/events.table'
 import { clients, vaultEntries } from '@/features/clients/server/clients.table'
 import { engagementCycles } from '@/features/engagements/server/cycles.table'
 import { engagements } from '@/features/engagements/server/engagements.table'
@@ -169,6 +170,11 @@ export function seedDemo(db: Database) {
     insertAll(tx, expenses, demo.expenses)
     insertAll(tx, timeEntries, demo.timeEntries)
     insertAll(tx, importantDates, demo.importantDates)
+    insertAll(
+      tx,
+      calendarEvents,
+      demo.calendarEvents.map((e) => ({ ...e, createdBy: OWNER }))
+    )
     insertAll(
       tx,
       tasks,

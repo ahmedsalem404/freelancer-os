@@ -36,8 +36,6 @@ export const invoicesEn: Widen<typeof invoicesAr> = {
     total: 'Amount due',
     payWith: 'Payment methods',
     thanks: 'Thank you for your trust.',
-    whatsappMessage:
-      'Hi {{name}}, here is invoice {{number}} for {{amount}}, due {{due}}. Thank you.',
     reminders: 'Automatic reminders',
     remindersHint: 'A ready message from the system — no awkwardness',
     reminderAt_zero: 'On the due date',

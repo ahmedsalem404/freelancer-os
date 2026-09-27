@@ -1,8 +1,17 @@
 import { useState } from 'react'
 import { useDb } from '@/app/client/snapshot-query'
+import { useMessageTemplate } from '@/app/client/use-message-template'
 import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { useDateFormat } from '@/shared/lib/dates'
-import { Copy, ExternalLink, Link2, RefreshCw, Unlink } from 'lucide-react'
+import { waLink } from '@/shared/lib/whatsapp'
+import {
+  Copy,
+  ExternalLink,
+  Link2,
+  MessageCircle,
+  RefreshCw,
+  Unlink,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -20,7 +29,17 @@ const portalUrl = (token: string) => `${window.location.origin}/p/${token}`
 export function ClientLinkPanel({ engagementId }: { engagementId: string }) {
   const { t } = useTranslation()
   const fmt = useDateFormat()
-  const link = useDb().portalLinks.find((l) => l.engagementId === engagementId)
+  const db = useDb()
+  const fill = useMessageTemplate()
+  const link = db.portalLinks.find((l) => l.engagementId === engagementId)
+  const engagement = db.engagements.find((e) => e.id === engagementId)
+  const client = db.clients.find((c) => c.id === engagement?.clientId)
+  const shareText = (url: string) =>
+    fill('portal_link', {
+      client_name: client?.name,
+      service: engagement?.title,
+      link: url,
+    })
   const create = useCreatePortalLink()
   const revoke = useRevokePortalLink()
   const [freshUrl, setFreshUrl] = useState<string>()
@@ -102,6 +121,18 @@ export function ClientLinkPanel({ engagementId }: { engagementId: string }) {
             >
               <Copy /> {t('common.copy')}
             </Button>
+            {client?.whatsapp && (
+              <Button asChild size='sm' variant='outline'>
+                <a
+                  href={waLink(client.whatsapp, shareText(freshUrl))}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  aria-label={t('common.whatsapp')}
+                >
+                  <MessageCircle />
+                </a>
+              </Button>
+            )}
             <Button asChild size='sm' variant='ghost'>
               <a href={freshUrl} target='_blank' rel='noopener noreferrer'>
                 <ExternalLink /> {t('common.open')}

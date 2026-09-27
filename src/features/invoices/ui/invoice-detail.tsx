@@ -3,7 +3,6 @@ import { PageShell } from '@/app/client/layout/page-shell'
 import { RecordNotFound } from '@/app/client/layout/record-not-found'
 import { useDb } from '@/app/client/snapshot-query'
 import { Panel } from '@/shared/components/panel'
-import { useDateFormat } from '@/shared/lib/dates'
 import { waLink } from '@/shared/lib/whatsapp'
 import { todayIso } from '@/shared/model/dates'
 import { Ban, MessageCircle, Printer, Wallet } from 'lucide-react'
@@ -17,9 +16,10 @@ import {
 import type { Invoice } from '@/features/invoices/model/invoice.schema'
 import { InvoiceStatusBadge } from '@/features/invoices/ui/invoice-status-badge'
 import { RecordPaymentDialog } from '@/features/invoices/ui/record-payment-dialog'
-import { Money, useMoneyText } from '@/features/rates/ui/money'
+import { Money } from '@/features/rates/ui/money'
 import { InvoiceDocument } from './invoice-document'
 import { RemindersPanel } from './reminders-panel'
+import { useInvoiceMessage } from './use-invoice-message'
 import { VoidInvoiceDialog } from './void-invoice-dialog'
 
 export function InvoiceDetail({ id }: { id: string }) {
@@ -33,8 +33,7 @@ export function InvoiceDetail({ id }: { id: string }) {
 
 function InvoiceView({ invoice }: { invoice: Invoice }) {
   const { t } = useTranslation()
-  const fmt = useDateFormat()
-  const moneyText = useMoneyText()
+  const invoiceMessage = useInvoiceMessage()
   const db = useDb()
   const [isPaying, setIsPaying] = useState(false)
   const [isVoiding, setIsVoiding] = useState(false)
@@ -49,12 +48,7 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
     !db.payments.some(
       (p) => p.invoiceId === invoice.id && p.status !== 'rejected'
     )
-  const message = t('invoice.whatsappMessage', {
-    name: client.name,
-    number: invoice.number,
-    amount: moneyText(balance || invoice.amount, invoice.currency),
-    due: fmt(invoice.dueOn),
-  })
+  const message = invoiceMessage(invoice, 'invoice_send')
 
   return (
     <PageShell
@@ -138,11 +132,7 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
             </div>
           </Panel>
           {!isVoid && (
-            <RemindersPanel
-              invoice={invoice}
-              message={message}
-              whatsapp={client.whatsapp}
-            />
+            <RemindersPanel invoice={invoice} whatsapp={client.whatsapp} />
           )}
         </div>
       </div>

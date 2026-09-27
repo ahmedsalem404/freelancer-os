@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { AccountPanel, TeamPanel } from '@/features/auth'
 import { DailyRateEditor } from '@/features/rates/ui/daily-rate-editor'
 import { BackupPanel } from './ui/backup-panel'
+import { TemplatesPanel } from './ui/templates-panel'
 
 export function SettingsPage() {
   const { t } = useTranslation()
@@ -98,6 +99,8 @@ export function SettingsPage() {
         </Panel>
 
         <TeamPanel />
+
+        <TemplatesPanel />
 
         <BackupPanel />
 

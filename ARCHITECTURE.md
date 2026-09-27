@@ -155,6 +155,9 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | today | `POST /tasks` (owner may set `assigneeId`) · `/tasks/:id/toggle` · `/tasks/carry-over` · `PUT /reflections/today` · `POST /day/close` |
 | clients | `POST /clients` · `PUT /clients/:id` · `POST /clients/:id/{archive,unarchive}` · `DELETE /clients/:id` · vault (owner only): `POST /clients/:id/vault` · `PUT`/`DELETE /vault/:id` · `POST /vault/:id/reveal` (no-store) |
 | files | owner only: `POST /files` (multipart: `file` + `kind` + one of `clientId`/`engagementId`/`paymentId` + `note`; ≤ 15 MB; type from the bytes: PDF, PNG, JPG, WEBP, GIF) · `GET /files/:id` (inline, `nosniff`, no-store) · `DELETE /files/:id` |
+| templates | owner only: `PUT /templates/:key` (`{locale, body}`, upsert) · `DELETE /templates/:key/:locale` (back to the built-in text) |
+| reminders | owner only: `POST /reminders` (`sent`/`dismissed`, idempotent on `kind:target:occurrence:offset`) — the pending list itself is derived (`reminders/model/schedule.ts`) |
+| calendar | owner only: `POST`/`PUT`/`DELETE /calendar-events[/:id]` · `POST`/`PUT /important-dates[/:id]` · `POST /important-dates/:id/{handled,archive}` (handled rolls a recurring date forward) |
 | backup | `GET /backup` (owner only) — zip of a `VACUUM INTO` copy of the database, `data/files/` and `data/vault.key` |
 | finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` · `POST /own-subscriptions` · `PUT /own-subscriptions/:id` · `POST /own-subscriptions/:id/cancel` · `DELETE /own-subscriptions/:id` |
 | workspace | `GET /workspace` — the signed-in member's own tasks (open + last 14 days), time (14 days), today's note and the titles of their tasks' engagements; no money |
@@ -190,6 +193,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-27 | Vault: AES-256-GCM per entry (12-byte nonce, AAD = row id, fresh nonce on every save); the key is 32 random bytes in `data/vault.key` (created on first save, mode 600). Signing in as the owner is enough to reveal — no second passphrase. Assistants never reach the vault routes or the snapshot. Supersedes database.md §3.2 "KDF(owner passphrase)" | owner decision: sign-in only, owner only |
 | 2026-09-27 | Backup = one download in Settings (`GET /backup`): database + uploads + vault key in one zip. It opens the vault for whoever holds it, so the UI warns to keep it private. No restore button: restoring is replacing the `data/` folder while the server is stopped | owner decision: a button in Settings |
 | 2026-09-27 | Uploads live at `data/files/<yyyy>/<id>.<ext>`; the path is built by the server, the type is sniffed from the first bytes (a renamed file is refused), the name is only a label. A payment's proof is uploaded right after the payment is saved (a failed upload never loses the payment) | database.md §1 Files |
+| 2026-09-27 | Message templates: built-in Arabic/English texts in `settings/model/templates.ts`; `message_templates` stores only the owner's edits. Reminders: the schedule is derived from invoices (latest reached offset only), subscription cycles (`dueSoonDays` before the end), own subscriptions, important dates and lead follow-ups; `reminder_log` records each decision once. Migration `0003` adds `message_templates`, `reminder_log`, `calendar_events` | docs/database.md §3.1, §3.9 |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status

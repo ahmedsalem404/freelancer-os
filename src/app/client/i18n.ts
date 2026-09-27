@@ -32,6 +32,8 @@ import { pricingAr } from '@/features/pricing/i18n/ar'
 import { pricingEn } from '@/features/pricing/i18n/en'
 import { ratesAr } from '@/features/rates/i18n/ar'
 import { ratesEn } from '@/features/rates/i18n/en'
+import { remindersAr } from '@/features/reminders/i18n/ar'
+import { remindersEn } from '@/features/reminders/i18n/en'
 import { settingsAr } from '@/features/settings/i18n/ar'
 import { settingsEn } from '@/features/settings/i18n/en'
 import { timeAr } from '@/features/time/i18n/ar'
@@ -56,6 +58,7 @@ const ar = {
   ...authAr,
   ...myDayAr,
   ...filesAr,
+  ...remindersAr,
 }
 
 const en = {
@@ -75,6 +78,7 @@ const en = {
   ...authEn,
   ...myDayEn,
   ...filesEn,
+  ...remindersEn,
 }
 
 void i18n.use(initReactI18next).init({

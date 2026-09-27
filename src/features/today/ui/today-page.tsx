@@ -25,6 +25,7 @@ import {
   invoiceStatus,
 } from '@/features/invoices/model/invoice-status'
 import { BaseMoney, useMoneyText } from '@/features/rates/ui/money'
+import { RemindersCenter } from '@/features/reminders'
 import { NextActionsPanel } from './next-actions-panel'
 import { OverdueAlert } from './overdue-alert'
 import { ReflectionDialog } from './reflection-dialog'
@@ -203,6 +204,7 @@ export function Today() {
         </div>
 
         <div className='grid content-start gap-4'>
+          <RemindersCenter />
           <TasksPanel doneCount={doneCount} tasks={myTasks} />
           <TeamTasksPanel />
           <UpcomingPanel upcoming={upcoming} />

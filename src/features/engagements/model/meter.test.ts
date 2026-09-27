@@ -33,6 +33,9 @@ const emptyDb = (): Db => ({
   team: [],
   reflections: [],
   portalLinks: [],
+  templates: [],
+  calendarEvents: [],
+  reminderLog: [],
   settings: {
     invoicePrefix: 'INV',
     invoiceSeqYear: 2026,

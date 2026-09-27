@@ -89,6 +89,7 @@ export const sharedEn: Widen<typeof sharedAr> = {
     notFoundTitle: 'Page not found',
     notFoundHint: 'The page you asked for doesn’t exist or was removed.',
     backToList: 'Back to the list',
+    edit: 'Edit',
     mustBePositive: 'Enter a number above zero',
   },
   apiErrors: {

@@ -3,6 +3,7 @@ import { asc, isNull, sql } from 'drizzle-orm'
 import { billingIdentities, paymentMethods } from './identities.table'
 import { settings } from './settings.table'
 import { teamMembers } from './team.table'
+import { messageTemplates } from './templates.table'
 
 /** Snapshot slice owned by `settings`. Never exposes password hashes. */
 export function loadSettings(db: Database) {
@@ -34,6 +35,14 @@ export function loadSettings(db: Database) {
       })
       .from(teamMembers)
       .where(isNull(teamMembers.archivedAt))
+      .all(),
+    templates: db
+      .select({
+        key: messageTemplates.key,
+        locale: messageTemplates.locale,
+        body: messageTemplates.body,
+      })
+      .from(messageTemplates)
       .all(),
   }
 }

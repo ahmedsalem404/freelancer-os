@@ -1,6 +1,9 @@
 import { z } from 'zod'
 import { stripNulls } from '@/shared/model/schema'
-import { importantDateSchema } from '@/features/calendar/model/calendar.schema'
+import {
+  calendarEventSchema,
+  importantDateSchema,
+} from '@/features/calendar/model/calendar.schema'
 import {
   clientSchema,
   vaultEntrySchema,
@@ -28,12 +31,14 @@ import {
 import { leadSchema } from '@/features/leads/model/lead.schema'
 import { portalLinkSchema } from '@/features/portal/model/portal.schema'
 import { dailyRateSchema } from '@/features/rates/model/rates.schema'
+import { reminderLogSchema } from '@/features/reminders/model/reminder.schema'
 import {
   billingIdentitySchema,
   paymentMethodSchema,
   settingsSchema,
   teamMemberSchema,
 } from '@/features/settings/model/settings.schema'
+import { savedTemplateSchema } from '@/features/settings/model/template.schema'
 import { timeEntrySchema } from '@/features/time/model/time.schema'
 import {
   reflectionSchema,
@@ -50,6 +55,7 @@ export const snapshotSchema = z.object({
   identities: z.array(billingIdentitySchema),
   paymentMethods: z.array(paymentMethodSchema),
   team: z.array(teamMemberSchema),
+  templates: z.array(savedTemplateSchema),
   dailyRates: z.array(dailyRateSchema),
   clients: z.array(clientSchema),
   vault: z.array(vaultEntrySchema),
@@ -69,6 +75,8 @@ export const snapshotSchema = z.object({
   tasks: z.array(taskSchema),
   reflections: z.array(reflectionSchema),
   importantDates: z.array(importantDateSchema),
+  calendarEvents: z.array(calendarEventSchema),
+  reminderLog: z.array(reminderLogSchema),
   attachments: z.array(attachmentSchema),
   portalLinks: z.array(portalLinkSchema),
 })

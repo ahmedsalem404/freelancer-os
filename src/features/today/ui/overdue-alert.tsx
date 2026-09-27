@@ -1,10 +1,11 @@
 import { Link } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
-import { daysFrom, useDateFormat } from '@/shared/lib/dates'
+import { daysFrom } from '@/shared/lib/dates'
 import { waLink } from '@/shared/lib/whatsapp'
 import { todayIso } from '@/shared/model/dates'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { useInvoiceMessage } from '@/features/invoices'
 import { invoiceBalance } from '@/features/invoices/model/invoice-status'
 import type { Invoice } from '@/features/invoices/model/invoice.schema'
 import { useMoneyText } from '@/features/rates/ui/money'
@@ -12,19 +13,14 @@ import { useMoneyText } from '@/features/rates/ui/money'
 /** An overdue invoice with a one-tap WhatsApp reminder. */
 export function OverdueAlert({ invoice: inv }: { invoice: Invoice }) {
   const { t } = useTranslation()
-  const fmt = useDateFormat()
+  const invoiceMessage = useInvoiceMessage()
   const moneyText = useMoneyText()
   const db = useDb()
   const now = todayIso()
   const client = db.clients.find((c) => c.id === inv.clientId)
   if (!client) return null
   const balance = invoiceBalance(db, inv)
-  const text = t('invoice.whatsappMessage', {
-    name: client.name,
-    number: inv.number,
-    amount: moneyText(balance, inv.currency),
-    due: fmt(inv.dueOn),
-  })
+  const text = invoiceMessage(inv, 'reminder_overdue')
   return (
     <li
       key={inv.id}

@@ -11,6 +11,7 @@ import {
   sessionMember,
   teamRoutes,
 } from '@/features/auth/server'
+import { calendarRoutes } from '@/features/calendar/server'
 import { clientsRoutes, createVaultRoutes } from '@/features/clients/server'
 import { engagementsRoutes } from '@/features/engagements/server'
 import { createFilesRoutes } from '@/features/files/server'
@@ -22,6 +23,8 @@ import { invoicesRoutes } from '@/features/invoices/server'
 import { leadsRoutes } from '@/features/leads/server'
 import { createPortalRoutes } from '@/features/portal/server'
 import { ratesRoutes } from '@/features/rates/server'
+import { remindersRoutes } from '@/features/reminders/server'
+import { templatesRoutes } from '@/features/settings/server'
 import { timeRoutes } from '@/features/time/server'
 import { todayRoutes } from '@/features/today/server'
 import { buildBackup } from './backup'
@@ -62,6 +65,9 @@ const isAnyMember = (method: string, path: string) =>
   ANY_MEMBER.some((r) => r.method === method && r.pattern.test(path))
 
 const FEATURE_ROUTES = [
+  remindersRoutes,
+  calendarRoutes,
+  templatesRoutes,
   teamRoutes,
   ratesRoutes,
   invoicesRoutes,

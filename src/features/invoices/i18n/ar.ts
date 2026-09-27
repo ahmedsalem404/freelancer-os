@@ -34,8 +34,6 @@ export const invoicesAr = {
     total: 'الإجمالي المستحق',
     payWith: 'طرق الدفع',
     thanks: 'شكراً لثقتك.',
-    whatsappMessage:
-      'مرحباً {{name}}، هذه فاتورة {{number}} بمبلغ {{amount}}، تاريخ الاستحقاق {{due}}. شكراً لك.',
     reminders: 'تذكيرات تلقائية',
     remindersHint: 'رسالة جاهزة من النظام — بدون إحراج',
     reminderAt_zero: 'يوم الاستحقاق',

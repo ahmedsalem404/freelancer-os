@@ -804,6 +804,8 @@ export function seedDb(): Db {
         title: 'تجديد دومين nakhla.sa',
         kind: 'domain',
         dueOn: d(9),
+        recurrence: 'yearly',
+        remindDaysBefore: 14,
         clientId: 'c-nakhla',
       },
       {
@@ -811,10 +813,30 @@ export function seedDb(): Db {
         title: 'شهادة SSL — souqalreef.com',
         kind: 'ssl',
         dueOn: d(2),
+        recurrence: 'yearly',
+        remindDaysBefore: 14,
         clientId: 'c-souq',
       },
-      { id: 'id3', title: 'ترخيص خطوط Readex', kind: 'license', dueOn: d(45) },
+      {
+        id: 'id3',
+        title: 'ترخيص خطوط Readex',
+        kind: 'license',
+        dueOn: d(45),
+        recurrence: 'yearly',
+        remindDaysBefore: 14,
+      },
     ],
+    calendarEvents: [
+      {
+        id: 'ev1',
+        title: 'اجتماع مع مسار — مراجعة الشهر',
+        startsOn: d(3),
+        startTime: '11:00',
+        clientId: 'c-masar',
+      },
+    ],
+    templates: [],
+    reminderLog: [],
     tasks: [
       {
         id: 'tk1',
