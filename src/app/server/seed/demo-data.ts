@@ -159,12 +159,16 @@ export function seedDb(): Db {
         name: 'أحمد',
         role: 'owner',
         email: 'owner@freelancer-os.local',
+        isActive: true,
+        hasPassword: false,
       },
       {
         id: 'm-assistant',
         name: 'سلمى',
         role: 'assistant',
         email: 'assistant@freelancer-os.local',
+        isActive: true,
+        hasPassword: false,
       },
     ],
     identities: [

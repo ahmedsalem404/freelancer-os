@@ -1,5 +1,5 @@
 import type { Database } from '@/shared/db/database'
-import { asc, isNull } from 'drizzle-orm'
+import { asc, isNull, sql } from 'drizzle-orm'
 import { billingIdentities, paymentMethods } from './identities.table'
 import { settings } from './settings.table'
 import { teamMembers } from './team.table'
@@ -27,6 +27,10 @@ export function loadSettings(db: Database) {
         email: teamMembers.email,
         whatsapp: teamMembers.whatsapp,
         isActive: teamMembers.isActive,
+        hasPassword:
+          sql<boolean>`${teamMembers.passwordHash} IS NOT NULL`.mapWith(
+            Boolean
+          ),
       })
       .from(teamMembers)
       .where(isNull(teamMembers.archivedAt))

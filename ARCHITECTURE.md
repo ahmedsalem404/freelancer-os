@@ -146,7 +146,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 
 | Feature | Endpoints (all under `/api`) |
 |---|---|
-| auth | `POST /auth/sign-in` (rate-limited) · `POST /auth/sign-out` · `GET /auth/me` · `PUT /auth/account` (own name, login, password; needs the current password; rate-limited) |
+| auth | `POST /auth/sign-in` (rate-limited) · `POST /auth/sign-out` · `GET /auth/me` · `PUT /auth/account` (own name, login, password; needs the current password; rate-limited) · team (owner only): `POST /team` (new assistant + password) · `PUT /team/:id` · `PUT /team/:id/password` (signs them out everywhere) · `POST /team/:id/{deactivate,activate}` — never the owner row (`not_an_assistant`) |
 | rates | `PUT /rates/today` |
 | invoices | `POST /invoices` (manual, issued at once) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` |
 | engagements | `POST /engagements` · `PUT /engagements/:id` · `PUT /engagements/:id/terms` · `POST /engagements/:id/{archive,unarchive}` · `DELETE /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
@@ -205,9 +205,9 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 - Playwright Chromium: `npm run test:browser:install` can hang while unpacking on this
   machine; download and unzip the zips from `npx playwright install --dry-run chromium`
   by hand (plus an empty `INSTALLATION_COMPLETE` file in each folder).
-- The first password is set with `npm run auth:set-password -- <login>`; after that,
-  Settings → My account. The owner can't yet add or remove members, or reset an assistant's forgotten
-  password (use the command above).
+- The owner's first password is set with `npm run auth:set-password -- <login>`; after that,
+  Settings → My account. Assistants are added, renamed, given a new password and stopped
+  or restarted from Settings → Team (a stopped member keeps their records).
 - Own subscriptions don't record their renewal charge as an expense by themselves yet
   (the `expense_sub_charge` unique key is ready for it); no reminder before renewal yet
   (`remindDaysBefore` is stored — reminders are phase 3).

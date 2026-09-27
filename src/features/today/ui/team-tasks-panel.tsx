@@ -31,7 +31,7 @@ export function TeamTasksPanel() {
   const me = useCurrentMember()
   const addTask = useAddTask()
   const now = todayIso()
-  const team = db.team.filter((m) => m.id !== me.id)
+  const team = db.team.filter((m) => m.id !== me.id && m.isActive)
   const [form, setForm] = useState({
     title: '',
     assigneeId: team[0]?.id ?? '',

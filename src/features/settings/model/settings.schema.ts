@@ -28,6 +28,9 @@ export const teamMemberSchema = z.object({
   name: z.string(),
   role: z.enum(TEAM_ROLES),
   email: z.string(),
+  /** A stopped member can't sign in; their records stay. */
+  isActive: z.boolean().default(true),
+  hasPassword: z.boolean().default(false),
 })
 
 /** What the UI reads; services read the full row from the table. */

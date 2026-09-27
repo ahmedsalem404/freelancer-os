@@ -8,7 +8,7 @@ import { isArchived } from '@/shared/model/archive'
 import { Languages, Moon, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { AccountPanel } from '@/features/auth'
+import { AccountPanel, TeamPanel } from '@/features/auth'
 import { DailyRateEditor } from '@/features/rates/ui/daily-rate-editor'
 import { BackupPanel } from './ui/backup-panel'
 
@@ -97,24 +97,7 @@ export function SettingsPage() {
           />
         </Panel>
 
-        <Panel title={t('settings.team')} bodyClassName='grid gap-2'>
-          {db.team.map((member) => (
-            <div
-              key={member.id}
-              className='flex items-center justify-between gap-3 rounded-lg border p-3 text-sm'
-            >
-              <div className='flex items-center gap-3'>
-                <span className='grid size-8 place-items-center rounded-full bg-accent font-semibold text-accent-foreground'>
-                  {member.name.slice(0, 1)}
-                </span>
-                <span className='font-medium'>{member.name}</span>
-              </div>
-              <span className='text-xs text-muted-foreground'>
-                {t(`settings.roles.${member.role}`)}
-              </span>
-            </div>
-          ))}
-        </Panel>
+        <TeamPanel />
 
         <BackupPanel />
 

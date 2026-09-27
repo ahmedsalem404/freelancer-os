@@ -129,5 +129,6 @@ export const sharedEn: Widen<typeof sharedAr> = {
     forbidden: 'This account can’t do that',
     wrong_password: 'The current password is wrong',
     login_taken: 'Another member already uses this login',
+    not_an_assistant: 'Edit your own account in My account',
   },
 }

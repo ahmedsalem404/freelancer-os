@@ -122,5 +122,6 @@ export const sharedAr = {
     forbidden: 'هذا الحساب ما يقدر يسوي هذا',
     wrong_password: 'كلمة المرور الحالية غير صحيحة',
     login_taken: 'اسم الدخول مستخدم لعضو ثاني',
+    not_an_assistant: 'عدّل حسابك من «حسابي»',
   },
 }

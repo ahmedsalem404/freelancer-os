@@ -9,6 +9,7 @@ import {
   authGate,
   createAuthRoutes,
   sessionMember,
+  teamRoutes,
 } from '@/features/auth/server'
 import { clientsRoutes, createVaultRoutes } from '@/features/clients/server'
 import { engagementsRoutes } from '@/features/engagements/server'
@@ -60,6 +61,7 @@ const isAnyMember = (method: string, path: string) =>
   ANY_MEMBER.some((r) => r.method === method && r.pattern.test(path))
 
 const FEATURE_ROUTES = [
+  teamRoutes,
   ratesRoutes,
   invoicesRoutes,
   engagementsRoutes,

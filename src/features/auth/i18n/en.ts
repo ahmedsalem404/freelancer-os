@@ -28,4 +28,32 @@ export const authEn: Widen<typeof authAr> = {
       saved: 'Account saved',
     },
   },
+  team: {
+    add: 'Add assistant',
+    edit: 'Edit name and login',
+    setPassword: 'Set a new password',
+    stop: 'Stop account',
+    restart: 'Restart account',
+    addTitle: 'Add an assistant',
+    addHint:
+      'An assistant sees only their tasks and time — no money, no vault.',
+    editTitle: 'Edit {{name}}',
+    editHint: 'The login name is what the assistant signs in with.',
+    passwordTitle: 'New password for {{name}}',
+    passwordHint:
+      'They are signed out everywhere and sign in with the new one.',
+    stopTitle: 'Stop {{name}}’s account?',
+    stopHint:
+      'They can’t sign in and are signed out now. Their tasks and time stay; restart the account any time.',
+    added: 'Assistant added',
+    saved: 'Saved',
+    passwordSet: 'Password set',
+    stopped: 'Account stopped',
+    restarted: 'Account restarted',
+    status: {
+      active: 'Assistant — active',
+      noPassword: 'Assistant — no password',
+      stopped: 'Stopped',
+    },
+  },
 }
