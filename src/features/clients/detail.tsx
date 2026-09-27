@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
+import { RecordNotFound } from '@/app/client/layout/record-not-found'
 import { useDb } from '@/app/client/snapshot-query'
 import { useLifecycle } from '@/app/client/use-lifecycle'
 import { ArchiveActions } from '@/shared/components/archive-actions'
-import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { StatTile } from '@/shared/components/stat-tile'
 import { useDateFormat } from '@/shared/lib/dates'
@@ -33,11 +33,7 @@ export function ClientDetail({ id }: { id: string }) {
   const { t } = useTranslation()
   const client = useDb().clients.find((c) => c.id === id)
   if (!client) {
-    return (
-      <PageShell title={t('common.noResults')}>
-        <EmptyState>{t('common.empty')}</EmptyState>
-      </PageShell>
-    )
+    return <RecordNotFound title={t('common.noResults')} backTo='/clients' />
   }
   return <ClientView client={client} />
 }

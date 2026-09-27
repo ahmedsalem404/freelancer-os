@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
+import { useFieldErrors } from '@/shared/lib/use-field-errors'
 import { addDaysIso, todayIso } from '@/shared/model/dates'
 import { CURRENCIES, type Currency } from '@/shared/money/currency'
 import { toMajor, toMinor } from '@/shared/money/money'
@@ -36,10 +38,11 @@ type Props = {
 
 /**
  * Add one of the owner's tools, or correct one. Deleting (for mistakes
- * only — the server refuses one with recorded charges) takes two clicks.
+ * only — the server refuses one with recorded charges) asks first.
  */
 export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
   const { t } = useTranslation()
+  const { positive } = useFieldErrors()
   const save = useSaveOwnSubscription()
   const remove = useDeleteOwnSubscription()
   const [name, setName] = useState(s?.name ?? '')
@@ -83,11 +86,7 @@ export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
     )
   }
 
-  const deleteIt = (id: string) => {
-    if (!isConfirmingDelete) {
-      setIsConfirmingDelete(true)
-      return
-    }
+  const deleteIt = (id: string) =>
     remove.mutate(id, {
       onSuccess: () => {
         toast.success(t('finance.subForm.deleted'))
@@ -95,7 +94,6 @@ export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
       },
       onError: () => setIsConfirmingDelete(false),
     })
-  }
 
   return (
     <Dialog open onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -135,6 +133,7 @@ export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
               className='num'
               value={amount}
               onChange={setAmount}
+              error={positive(amount)}
             />
             <TextField
               id='sub-renewal'
@@ -165,16 +164,12 @@ export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
             {s ? (
               <Button
                 type='button'
-                variant={isConfirmingDelete ? 'destructive' : 'ghost'}
-                className={isConfirmingDelete ? '' : 'text-destructive'}
+                variant='ghost'
+                className='text-destructive'
                 disabled={isBusy}
-                onClick={() => deleteIt(s.id)}
+                onClick={() => setIsConfirmingDelete(true)}
               >
-                {t(
-                  isConfirmingDelete
-                    ? 'common.confirm'
-                    : 'finance.subForm.delete'
-                )}
+                {t('finance.subForm.delete')}
               </Button>
             ) : (
               <span />
@@ -193,6 +188,18 @@ export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
             </div>
           </DialogFooter>
         </form>
+        {s && (
+          <ConfirmDialog
+            open={isConfirmingDelete}
+            onOpenChange={setIsConfirmingDelete}
+            destructive
+            title={t('common.deleteTitle', { name: s.name })}
+            desc={t('common.deleteHint')}
+            confirmText={t('finance.subForm.delete')}
+            isLoading={remove.isPending}
+            handleConfirm={() => deleteIt(s.id)}
+          />
+        )}
       </DialogContent>
     </Dialog>
   )

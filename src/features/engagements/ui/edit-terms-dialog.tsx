@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChoiceRow } from '@/shared/components/choice-row'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
+import { useFieldErrors } from '@/shared/lib/use-field-errors'
 import { toMajor, toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -29,6 +30,7 @@ const initialPeriod = (e: Engagement): Period =>
 /** Changes the agreed amount, billing period and included hours. */
 export function EditTermsDialog({ engagement: e, onClose }: Props) {
   const { t } = useTranslation()
+  const { positive } = useFieldErrors()
   const update = useUpdateTerms()
   const [amount, setAmount] = useState(String(toMajor(e.amount)))
   const [period, setPeriod] = useState<Period>(initialPeriod(e))
@@ -90,6 +92,7 @@ export function EditTermsDialog({ engagement: e, onClose }: Props) {
             className='num'
             value={amount}
             onChange={setAmount}
+            error={positive(amount)}
           />
           {e.type === 'retainer' && (
             <TextField

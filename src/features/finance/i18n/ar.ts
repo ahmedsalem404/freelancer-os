@@ -25,6 +25,8 @@ export const financeAr = {
     proofAttached: 'مرفق إثبات',
     noProof: 'بدون إثبات',
     paymentSaved: 'سُجّلت الدفعة',
+    amountOverBalance:
+      'أكبر من المتبقي على الفاتورة ({{balance}} {{currency}})',
     number: 'الرقم',
     perMonth: 'شهرياً',
     perYear: 'سنوياً',

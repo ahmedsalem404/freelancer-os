@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ChoiceRow } from '@/shared/components/choice-row'
 import { PendingButton } from '@/shared/components/pending-button'
+import { useFieldErrors } from '@/shared/lib/use-field-errors'
 import { todayIso } from '@/shared/model/dates'
 import { toMajor, toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
@@ -32,6 +33,7 @@ type Props = { lead: Lead; onClose: () => void }
 /** Won → the client and the engagement it opens, in one step. */
 export function ConvertLeadDialog({ lead, onClose }: Props) {
   const { t } = useTranslation()
+  const { positive } = useFieldErrors()
   const navigate = useNavigate()
   const convert = useConvertLead()
   const [title, setTitle] = useState(lead.service)
@@ -113,8 +115,12 @@ export function ConvertLeadDialog({ lead, onClose }: Props) {
                 inputMode='decimal'
                 className='num'
                 value={amount}
+                aria-invalid={positive(amount) ? true : undefined}
                 onChange={(e) => setAmount(e.target.value)}
               />
+              {positive(amount) && (
+                <p className='text-xs text-destructive'>{positive(amount)}</p>
+              )}
             </div>
             {type === 'retainer' && (
               <div className='grid gap-2'>

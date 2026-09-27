@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { PageShell } from '@/app/client/layout/page-shell'
+import { RecordNotFound } from '@/app/client/layout/record-not-found'
 import { useDb } from '@/app/client/snapshot-query'
-import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { useDateFormat } from '@/shared/lib/dates'
 import { waLink } from '@/shared/lib/whatsapp'
@@ -26,11 +26,7 @@ export function InvoiceDetail({ id }: { id: string }) {
   const { t } = useTranslation()
   const invoice = useDb().invoices.find((i) => i.id === id)
   if (!invoice) {
-    return (
-      <PageShell title={t('invoice.notFound')}>
-        <EmptyState>{t('common.empty')}</EmptyState>
-      </PageShell>
-    )
+    return <RecordNotFound title={t('invoice.notFound')} backTo='/finance' />
   }
   return <InvoiceView invoice={invoice} />
 }

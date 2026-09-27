@@ -3,6 +3,7 @@ import { Panel } from '@/shared/components/panel'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { useDateFormat } from '@/shared/lib/dates'
+import { useFieldErrors } from '@/shared/lib/use-field-errors'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Label } from '@/components/ui/label'
@@ -26,6 +27,7 @@ type Props = { workspace: Workspace }
 /** Log today's work (hours) and see what was logged lately. */
 export function MyTime({ workspace }: Props) {
   const { t } = useTranslation()
+  const { positive } = useFieldErrors()
   const fmt = useDateFormat()
   const log = useLogMyTime()
   const [form, setForm] = useState({
@@ -101,6 +103,7 @@ export function MyTime({ workspace }: Props) {
           dir='ltr'
           value={form.hours}
           onChange={(hours) => setForm((prev) => ({ ...prev, hours }))}
+          error={positive(form.hours)}
         />
         <TextField
           id='my-time-note'

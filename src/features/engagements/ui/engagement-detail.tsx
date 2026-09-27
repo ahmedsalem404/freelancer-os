@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
+import { RecordNotFound } from '@/app/client/layout/record-not-found'
 import { useDb } from '@/app/client/snapshot-query'
 import { useLifecycle } from '@/app/client/use-lifecycle'
 import { ArchiveActions } from '@/shared/components/archive-actions'
-import { EmptyState } from '@/shared/components/empty-state'
 import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { ArrowRight, Pencil, Plus } from 'lucide-react'
@@ -13,32 +13,27 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import {
-  deliverablesOf,
   engagementCurrentValue,
   scopeGuard,
 } from '@/features/engagements/model/guard'
 import { engagementMeter } from '@/features/engagements/model/meter'
 import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
 import { TypeBadge } from '@/features/engagements/ui/badges'
-import { ClientLinkPanel } from '@/features/portal'
 import { Money } from '@/features/rates/ui/money'
 import { ChangeScopeDialog } from './change-scope-dialog'
 import { CyclePanel } from './cycle-panel'
-import { DeliverableCard } from './deliverable-card'
 import { EditEngagementDialog } from './edit-engagement-dialog'
 import { EditTermsDialog } from './edit-terms-dialog'
 import { FilesTab, MoneyTab, TimeTab } from './engagement-tabs'
 import { RetainerPanel } from './retainer-panel'
-import { StagesPanel } from './stages-panel'
+import { WorkTab } from './work-tab'
 
 export function EngagementDetail({ id }: { id: string }) {
   const { t } = useTranslation()
   const engagement = useDb().engagements.find((e) => e.id === id)
   if (!engagement) {
     return (
-      <PageShell title={t('common.noResults')}>
-        <EmptyState>{t('common.empty')}</EmptyState>
-      </PageShell>
+      <RecordNotFound title={t('common.noResults')} backTo='/engagements' />
     )
   }
   return <EngagementView engagement={engagement} />
@@ -184,17 +179,8 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
         </div>
 
         {e.type === 'project' && (
-          <TabsContent
-            value='work'
-            className='grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]'
-          >
-            <StagesPanel engagementId={e.id} />
-            <div className='grid content-start gap-3'>
-              {deliverablesOf(db, e.id).map((d) => (
-                <DeliverableCard key={d.id} deliverable={d} engagement={e} />
-              ))}
-              <ClientLinkPanel engagementId={e.id} />
-            </div>
+          <TabsContent value='work'>
+            <WorkTab engagement={e} />
           </TabsContent>
         )}
         {e.type === 'retainer' && (

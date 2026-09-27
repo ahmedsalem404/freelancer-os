@@ -4,6 +4,7 @@ import { useDb } from '@/app/client/snapshot-query'
 import { ChoiceRow } from '@/shared/components/choice-row'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
+import { useFieldErrors } from '@/shared/lib/use-field-errors'
 import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { toMinor } from '@/shared/money/money'
@@ -45,6 +46,7 @@ export function NewEngagementDialog({
   onClose,
 }: Props) {
   const { t } = useTranslation()
+  const { positive } = useFieldErrors()
   const navigate = useNavigate()
   const { clients } = useDb()
   const open = useOpenEngagement()
@@ -136,6 +138,7 @@ export function NewEngagementDialog({
               className='num'
               value={amount}
               onChange={setAmount}
+              error={positive(amount)}
             />
             <TextField
               id='engagement-start'

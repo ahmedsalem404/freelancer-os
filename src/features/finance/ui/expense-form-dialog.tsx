@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChoiceRow } from '@/shared/components/choice-row'
 import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
+import { useFieldErrors } from '@/shared/lib/use-field-errors'
 import { todayIso } from '@/shared/model/dates'
 import { CURRENCIES, type Currency } from '@/shared/money/currency'
 import { toMajor, toMinor } from '@/shared/money/money'
@@ -37,6 +38,7 @@ type Props = {
 /** Record an expense, or correct one. */
 export function ExpenseFormDialog({ expense, onClose }: Props) {
   const { t } = useTranslation()
+  const { positive } = useFieldErrors()
   const save = useSaveExpense()
   const [title, setTitle] = useState(expense?.title ?? '')
   const [category, setCategory] = useState<ExpenseCategory>(
@@ -118,6 +120,7 @@ export function ExpenseFormDialog({ expense, onClose }: Props) {
               className='num'
               value={amount}
               onChange={setAmount}
+              error={positive(amount)}
             />
             <TextField
               id='expense-date'

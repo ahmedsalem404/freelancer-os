@@ -27,6 +27,7 @@ export const financeEn: Widen<typeof financeAr> = {
     proofAttached: 'Proof attached',
     noProof: 'No proof',
     paymentSaved: 'Payment recorded',
+    amountOverBalance: 'More than the balance due ({{balance}} {{currency}})',
     number: 'Number',
     perMonth: 'monthly',
     perYear: 'yearly',

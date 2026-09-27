@@ -85,6 +85,17 @@ function PaymentForm({
     amountValue > 0 &&
     toMinor(amountValue) <= balance &&
     (!needsRate || rateValue > 0)
+  const amountError =
+    amount.trim() === ''
+      ? undefined
+      : !(amountValue > 0)
+        ? t('common.mustBePositive')
+        : toMinor(amountValue) > balance
+          ? t('finance.amountOverBalance', {
+              balance: toMajor(balance),
+              currency: invoice.currency,
+            })
+          : undefined
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -125,8 +136,15 @@ function PaymentForm({
           dir='ltr'
           className='num w-full'
           value={amount}
+          aria-invalid={amountError ? true : undefined}
+          aria-describedby={amountError ? 'pay-amount-error' : undefined}
           onChange={(e) => setAmount(e.target.value)}
         />
+        {amountError && (
+          <p id='pay-amount-error' className='text-xs text-destructive'>
+            {amountError}
+          </p>
+        )}
       </div>
 
       {needsRate && (

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PendingButton } from '@/shared/components/pending-button'
+import { useFieldErrors } from '@/shared/lib/use-field-errors'
 import { addDaysIso, todayIso } from '@/shared/model/dates'
 import { toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
@@ -30,6 +31,7 @@ type Props = {
 /** Change scope: raise value + add deliverable + issue invoice, in one step. */
 export function ChangeScopeDialog({ engagement, open, onOpenChange }: Props) {
   const { t } = useTranslation()
+  const { positive } = useFieldErrors()
   const changeScope = useChangeScope()
   const invoiceToast = useInvoiceToast()
   const [title, setTitle] = useState('')
@@ -89,8 +91,12 @@ export function ChangeScopeDialog({ engagement, open, onOpenChange }: Props) {
                 inputMode='decimal'
                 className='num w-full'
                 value={fee}
+                aria-invalid={positive(fee) ? true : undefined}
                 onChange={(e) => setFee(e.target.value)}
               />
+              {positive(fee) && (
+                <p className='text-xs text-destructive'>{positive(fee)}</p>
+              )}
             </div>
             <div className='grid gap-2'>
               <Label htmlFor='scope-due'>{t('engagements.scopeDue')}</Label>

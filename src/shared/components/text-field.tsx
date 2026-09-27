@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'react'
+import { cn } from '@/shared/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -11,6 +12,8 @@ type Props = Omit<ComponentProps<'input'>, 'onChange' | 'value'> & {
   /** Renders a textarea instead of a one-line input. */
   isMultiline?: boolean
   hint?: string
+  /** Shown instead of the hint, in red, and marks the field invalid. */
+  error?: string
 }
 
 /** A labelled text input for dialogs and forms. */
@@ -21,9 +24,12 @@ export function TextField({
   onChange,
   isMultiline,
   hint,
+  error,
   ...inputProps
 }: Props) {
-  const hintId = hint ? `${id}-hint` : undefined
+  const note = error ?? hint
+  const noteId = note ? `${id}-hint` : undefined
+  const isInvalid = error ? true : undefined
   return (
     <div className='grid gap-2'>
       <Label htmlFor={id}>{label}</Label>
@@ -32,21 +38,29 @@ export function TextField({
           id={id}
           rows={3}
           value={value}
-          aria-describedby={hintId}
+          aria-describedby={noteId}
+          aria-invalid={isInvalid}
           onChange={(e) => onChange(e.target.value)}
         />
       ) : (
         <Input
           id={id}
           value={value}
-          aria-describedby={hintId}
+          aria-describedby={noteId}
+          aria-invalid={isInvalid}
           onChange={(e) => onChange(e.target.value)}
           {...inputProps}
         />
       )}
-      {hint && (
-        <p id={hintId} className='text-xs text-muted-foreground'>
-          {hint}
+      {note && (
+        <p
+          id={noteId}
+          className={cn(
+            'text-xs',
+            error ? 'text-destructive' : 'text-muted-foreground'
+          )}
+        >
+          {note}
         </p>
       )}
     </div>

@@ -83,6 +83,8 @@ export const sharedAr = {
     backHome: 'العودة للرئيسية',
     notFoundTitle: 'الصفحة غير موجودة',
     notFoundHint: 'الصفحة المطلوبة غير موجودة أو تم حذفها.',
+    backToList: 'العودة للقائمة',
+    mustBePositive: 'اكتب رقماً أكبر من صفر',
   },
   apiErrors: {
     generic: 'صار خطأ — حاول مرة ثانية',
