@@ -6,6 +6,7 @@
 واجهة React + API (Hono) + قاعدة SQLite محلية في `data/`. الدخول بحساب وكلمة مرور.
 
 ## التشغيل
+
 ```bash
 npm install
 npm run db:reset
@@ -19,10 +20,12 @@ npm run dev
 - يفتح على `http://localhost:5180`. يحتاج Node 24.7 أو أحدث.
 
 ## المراجع
+
 - البنية والقواعد والقرارات: [ARCHITECTURE.md](ARCHITECTURE.md)
 - تصميم قاعدة البيانات وقرارات المالك: [docs/database.md](docs/database.md)
 
 ## الاختبارات
+
 ```bash
 npm test
 ```
