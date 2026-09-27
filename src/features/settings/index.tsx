@@ -5,19 +5,18 @@ import { useLocale } from '@/shared/context/direction-provider'
 import { useTheme } from '@/shared/context/theme-provider'
 import { cn } from '@/shared/lib/utils'
 import { isArchived } from '@/shared/model/archive'
-import { Download, Languages, Moon, Sun, Upload } from 'lucide-react'
+import { Languages, Moon, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { AccountPanel } from '@/features/auth'
 import { DailyRateEditor } from '@/features/rates/ui/daily-rate-editor'
+import { BackupPanel } from './ui/backup-panel'
 
 export function SettingsPage() {
   const { t } = useTranslation()
   const db = useDb()
   const { lang, setLang } = useLocale()
   const { resolvedTheme, setTheme } = useTheme()
-  const soon = () => toast(t('settings.backendSoon'))
   const year = new Date().getFullYear()
   const nextNumber = `${db.settings.invoicePrefix}-${year}-${String(
     db.settings.invoiceSeqNext
@@ -117,19 +116,7 @@ export function SettingsPage() {
           ))}
         </Panel>
 
-        <Panel title={t('settings.backup')} bodyClassName='grid gap-3'>
-          <p className='text-xs text-muted-foreground'>
-            {t('settings.backupHint')}
-          </p>
-          <div className='flex flex-wrap gap-2'>
-            <Button variant='outline' onClick={soon}>
-              <Download /> {t('settings.export')}
-            </Button>
-            <Button variant='outline' onClick={soon}>
-              <Upload /> {t('settings.restore')}
-            </Button>
-          </div>
-        </Panel>
+        <BackupPanel />
 
         <Panel
           title={t('settings.appearance')}

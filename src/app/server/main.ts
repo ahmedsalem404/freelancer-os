@@ -1,5 +1,6 @@
 import { serve } from '@hono/node-server'
 import { and, eq, isNull } from 'drizzle-orm'
+import { dirname } from 'node:path'
 import { settings, teamMembers } from '@/features/settings/server'
 import { createApp } from './app'
 import { openDatabase, runMigrations } from './db'
@@ -27,7 +28,11 @@ if (ownerWithoutPassword) {
 }
 
 const server = serve(
-  { fetch: createApp(db).fetch, port: env.API_PORT, hostname: env.API_HOST },
+  {
+    fetch: createApp(db, { storage: { dataDir: dirname(env.DB_FILE) } }).fetch,
+    port: env.API_PORT,
+    hostname: env.API_HOST,
+  },
   (info) => {
     process.stdout.write(
       `[api] http://${env.API_HOST}:${info.port}/api · db ${env.DB_FILE}\n`

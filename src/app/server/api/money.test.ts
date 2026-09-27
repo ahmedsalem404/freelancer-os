@@ -94,13 +94,6 @@ describe('POST /api/invoices/:id/payments', () => {
 })
 
 describe('shared API behaviour', () => {
-  it('keeps the vault locked until phase 3', async () => {
-    t = createTestApp()
-    const res = await t.call('POST', '/vault/v1/reveal')
-    expect(res.status).toBe(423)
-    expect(res.json.error?.code).toBe('vault_locked')
-  })
-
   it('answers unknown endpoints with the envelope', async () => {
     t = createTestApp()
     const res = await t.call('POST', '/nothing-here')

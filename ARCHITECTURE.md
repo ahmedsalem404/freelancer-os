@@ -153,7 +153,8 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | time | `POST /time` · `POST /engagements/:id/bill-hours` |
 | leads | `POST /leads/:id/stage` (not to `won`) · `POST /leads/:id/convert` |
 | today | `POST /tasks` (owner may set `assigneeId`) · `/tasks/:id/toggle` · `/tasks/carry-over` · `PUT /reflections/today` · `POST /day/close` |
-| clients | `POST /clients` · `PUT /clients/:id` · `POST /clients/:id/{archive,unarchive}` · `DELETE /clients/:id` · `POST /vault/:id/reveal` → 423 until phase 3 |
+| clients | `POST /clients` · `PUT /clients/:id` · `POST /clients/:id/{archive,unarchive}` · `DELETE /clients/:id` · vault (owner only): `POST /clients/:id/vault` · `PUT`/`DELETE /vault/:id` · `POST /vault/:id/reveal` (no-store) |
+| backup | `GET /backup` (owner only) — zip of a `VACUUM INTO` copy of the database, `data/files/` and `data/vault.key` |
 | finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` · `POST /own-subscriptions` · `PUT /own-subscriptions/:id` · `POST /own-subscriptions/:id/cancel` · `DELETE /own-subscriptions/:id` |
 | workspace | `GET /workspace` — the signed-in member's own tasks (open + last 14 days), time (14 days), today's note and the titles of their tasks' engagements; no money |
 | portal | owner: `POST`/`DELETE /engagements/:id/portal-link` · public (rate-limited): `GET /portal/:token` · `POST /portal/:token/deliverables/:id/{approval,rounds}` |
@@ -185,6 +186,8 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | Authentication: argon2id (Node's built-in `crypto.argon2`, no dependency) + server sessions in `auth_sessions` (SHA-256 of a 32-byte cookie token, 30-day sliding expiry). Cookie `fos_session`: HttpOnly, SameSite=Strict (the CSRF defence), Secure over HTTPS, Path=/api. Passwords are set from the terminal (`npm run auth:set-password`), never through a first-run web form | nobody who reaches the site first can claim the owner account |
 | 2026-09-25 | The login is free text (an email or any name, unique case-insensitively; stored in `team_members.email`). Passwords: 4–200 characters, no complexity rules (owner's choice). Editing one's account needs the current password — no email codes | owner instruction: full freedom, no verification step |
 | 2026-09-25 | Assistants get their own screen (`/my-day`) fed by `GET /api/workspace`, never the snapshot. They add/tick only their own tasks and log time only on engagements from their tasks; the owner assigns tasks from Today → Team tasks. Everything else answers 403. Signed-in endpoints never accept `source: client_link`; only the portal records it | the snapshot holds money and contacts |
+| 2026-09-27 | Vault: AES-256-GCM per entry (12-byte nonce, AAD = row id, fresh nonce on every save); the key is 32 random bytes in `data/vault.key` (created on first save, mode 600). Signing in as the owner is enough to reveal — no second passphrase. Assistants never reach the vault routes or the snapshot. Supersedes database.md §3.2 "KDF(owner passphrase)" | owner decision: sign-in only, owner only |
+| 2026-09-27 | Backup = one download in Settings (`GET /backup`): database + uploads + vault key in one zip. It opens the vault for whoever holds it, so the UI warns to keep it private. No restore button: restoring is replacing the `data/` folder while the server is stopped | owner decision: a button in Settings |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status

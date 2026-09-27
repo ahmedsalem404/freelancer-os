@@ -22,10 +22,13 @@ export const settingsEn: Widen<typeof settingsAr> = {
     },
     backup: 'Backup',
     backupHint:
-      'The database is one file on your machine. Export or restore it any time.',
-    export: 'Export backup',
-    restore: 'Restore backup',
+      'A full copy in one file: the data, uploaded files and the vault key. Keep it somewhere safe, off this machine.',
+    backupPrivate:
+      'The backup opens the vault for whoever holds it — never send it or upload it anywhere public.',
+    backupPreparing: 'Preparing…',
+    backupDone: 'Backup downloaded',
     backendSoon: 'Coming in the next phase',
+    export: 'Download backup',
     appearance: 'Appearance & language',
   },
 }

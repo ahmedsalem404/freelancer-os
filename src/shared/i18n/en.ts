@@ -102,7 +102,7 @@ export const sharedEn: Widen<typeof sharedAr> = {
     not_billable: 'This engagement type is not billed by the hour',
     not_a_project: 'Scope changes apply to projects only',
     invoice_not_open: 'This invoice is closed and takes no payments',
-    vault_locked: 'The vault stays locked until encryption ships (phase 3)',
+    vault_empty: 'No password is saved here yet — edit it to add one',
     no_owner: 'No owner account — run npm run db:reset',
     internal_error: 'Server error — check the server log',
     lead_needs_conversion: 'Winning a lead means converting it to a client',

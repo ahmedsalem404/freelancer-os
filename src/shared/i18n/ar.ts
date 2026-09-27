@@ -97,7 +97,7 @@ export const sharedAr = {
     not_billable: 'هذا النوع ما يُفوتر بالساعات',
     not_a_project: 'توسعة النطاق للمشاريع فقط',
     invoice_not_open: 'الفاتورة مغلقة — ما تقبل دفعات',
-    vault_locked: 'الخزنة مقفلة حتى يوصل التشفير (المرحلة 3)',
+    vault_empty: 'ما فيه كلمة مرور محفوظة هنا — عدّلها وأضفها',
     no_owner: 'ما فيه حساب مالك — شغّل npm run db:reset',
     internal_error: 'خطأ في الخادم — راجع سجل الخادم',
     lead_needs_conversion: 'الفوز يحتاج تحويل العميل المحتمل إلى عميل',

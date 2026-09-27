@@ -1,3 +1,6 @@
+import { mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { startSession } from '@/features/auth/server'
 import { parseSnapshot } from '../../client/snapshot.schema'
 import { createApp } from '../app'
@@ -24,7 +27,8 @@ export function createTestApp(at: Date = new Date()) {
   runMigrations(db, 'drizzle')
   seedDemo(db)
   let now = at
-  const app = createApp(db, { clock: () => now })
+  const dataDir = mkdtempSync(join(tmpdir(), 'fos-test-'))
+  const app = createApp(db, { clock: () => now, storage: { dataDir } })
   const ownerToken = startSession(db, OWNER_ID, at)
 
   async function callAs(
@@ -44,6 +48,18 @@ export function createTestApp(at: Date = new Date()) {
     return { status: res.status, json: (await res.json()) as Json, res }
   }
 
+  /** The raw response, for endpoints that don't answer JSON (downloads). */
+  const rawAs = (token: string | null, path: string, init: RequestInit = {}) =>
+    app.request(`/api${path}`, {
+      ...init,
+      headers: {
+        ...(init.headers as Record<string, string>),
+        ...(token ? { cookie: `fos_session=${token}` } : {}),
+      },
+    })
+  const raw = (path: string, init?: RequestInit) =>
+    rawAs(ownerToken, path, init)
+
   const call = (method: string, path: string, body?: unknown) =>
     callAs(ownerToken, method, path, body)
 
@@ -59,5 +75,16 @@ export function createTestApp(at: Date = new Date()) {
     now = next
   }
 
-  return { db, call, callAs, sessionFor, setNow, snapshot, close }
+  return {
+    db,
+    dataDir,
+    raw,
+    rawAs,
+    call,
+    callAs,
+    sessionFor,
+    setNow,
+    snapshot,
+    close,
+  }
 }

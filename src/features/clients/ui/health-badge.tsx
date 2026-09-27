@@ -1,7 +1,7 @@
 import { pill } from '@/shared/components/pill'
-import type { ClientHealth } from '@/features/clients/model/client-health'
-import { useTranslation } from 'react-i18next'
 import { cn } from '@/shared/lib/utils'
+import { useTranslation } from 'react-i18next'
+import type { ClientHealth } from '@/features/clients/model/client-health'
 
 const HEALTH_DOT: Record<ClientHealth, string> = {
   good: 'bg-success',
