@@ -90,7 +90,9 @@ export function DateDialog({ date, day, onClose }: Props) {
             options={DATE_KINDS}
             value={kind}
             onChange={setKind}
-            labelOf={(k) => t(`calendar.kinds.${k}`)}
+            labelOf={(k) =>
+              k === 'other' ? t('calendar.otherKind') : t(`calendar.kinds.${k}`)
+            }
           />
           <div className='grid grid-cols-2 gap-3'>
             <TextField

@@ -31,6 +31,7 @@ export const calendarAr = {
     editDate: 'تعديل التاريخ المهم',
     dateHint: 'دومين أو شهادة أو ترخيص — ويذكّرك قبل موعده.',
     dateKind: 'النوع',
+    otherKind: 'أخرى',
     dueOn: 'ينتهي في',
     remindDays: 'ذكّرني قبل (أيام)',
     recurrence: 'يتكرر',

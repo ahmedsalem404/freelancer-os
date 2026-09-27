@@ -35,6 +35,7 @@ export const calendarEn: Widen<typeof calendarAr> = {
     dateHint:
       'A domain, certificate or license — with a reminder before it lapses.',
     dateKind: 'Type',
+    otherKind: 'Other',
     dueOn: 'Expires on',
     remindDays: 'Remind me (days before)',
     recurrence: 'Repeats',
