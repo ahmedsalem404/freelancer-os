@@ -10,6 +10,11 @@ export const attachmentSchema = z.object({
   clientId: recordId.optional(),
   engagementId: recordId.optional(),
   paymentId: recordId.optional(),
+  mimeType: z.string().optional(),
+  sizeBytes: z.number().int().optional(),
+  note: z.string().optional(),
+  /** False for rows that only recorded a name (demo data). */
+  hasFile: z.boolean().default(false),
   uploadedOn: isoDate,
 })
 

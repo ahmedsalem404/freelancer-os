@@ -484,6 +484,7 @@ export function seedDb(): Db {
         kind: 'agreement_chat',
         fileName: 'اتفاق-واتساب-نخلة.png',
         uploadedOn: d(-21),
+        hasFile: false,
       },
       {
         id: 'at2',
@@ -491,6 +492,7 @@ export function seedDb(): Db {
         kind: 'contract',
         fileName: 'عقد-هوية-نخلة.pdf',
         uploadedOn: d(-20),
+        hasFile: false,
       },
       {
         id: 'at3',
@@ -498,6 +500,7 @@ export function seedDb(): Db {
         kind: 'contract',
         fileName: 'اتفاقية-ريتينر-مسار.pdf',
         uploadedOn: d(-200),
+        hasFile: false,
       },
       {
         id: 'at4',
@@ -505,6 +508,7 @@ export function seedDb(): Db {
         kind: 'agreement_chat',
         fileName: 'محادثة-الاتفاق-ريم.png',
         uploadedOn: d(-36),
+        hasFile: false,
       },
       {
         id: 'at5',
@@ -512,6 +516,7 @@ export function seedDb(): Db {
         kind: 'payment_proof',
         fileName: 'تحويل-نخلة.jpg',
         uploadedOn: d(-18),
+        hasFile: false,
       },
     ],
     invoices: [

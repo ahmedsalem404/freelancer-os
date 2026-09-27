@@ -1,19 +1,19 @@
-import { useMoneyText } from '@/features/rates/ui/money'
+import { useState } from 'react'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { Panel } from '@/shared/components/panel'
 import { StatTile } from '@/shared/components/stat-tile'
+import { cn } from '@/shared/lib/utils'
 import { toMinor } from '@/shared/money/money'
-import { useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useMoneyText } from '@/features/rates/ui/money'
 import {
   annualBaseline,
   shouldAccept,
   type BaselineInput,
 } from './model/pricing'
-import { AnimatePresence, motion } from 'motion/react'
-import { useTranslation } from 'react-i18next'
-import { cn } from '@/shared/lib/utils'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
 const FIELDS: { key: keyof BaselineInput; label: string }[] = [
   { key: 'income', label: 'pricing.income' },

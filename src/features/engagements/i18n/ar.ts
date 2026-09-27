@@ -114,12 +114,6 @@ export const engagementsAr = {
     overagePrice: 'سعر الوحدة الإضافية',
     attachments: 'المرفقات',
     attachmentsHint: 'العقود ولقطات اتفاق الواتساب — للمرجعية فقط',
-    attachmentKind: {
-      contract: 'عقد',
-      agreement_chat: 'لقطة اتفاق',
-      payment_proof: 'إثبات دفع',
-      other: 'ملف',
-    },
     noAttachments: 'لا توجد مرفقات. ارفع العقد أو لقطة الاتفاق من الواتساب.',
     renewsOn: 'يتجدد في {{date}}',
     graceDays: 'مهلة {{count}} أيام بعد الانتهاء',

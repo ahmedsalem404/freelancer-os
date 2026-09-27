@@ -3,7 +3,6 @@ import { DomainError, required } from '@/shared/http/errors'
 import { money } from '@/shared/money/money'
 import type { Ctx } from '@/shared/server/context'
 import { and, eq, sum } from 'drizzle-orm'
-import { addAttachment } from '@/features/files/server'
 import type { RecordPaymentInput } from '../model/invoice.input'
 import { invoices } from './invoices.table'
 import { payments } from './payments.table'
@@ -67,12 +66,5 @@ export function recordPayment(
     })
     .run()
 
-  if (input.proofName) {
-    addAttachment(ctx, {
-      kind: 'payment_proof',
-      fileName: input.proofName,
-      paymentId: id,
-    })
-  }
   return { id }
 }

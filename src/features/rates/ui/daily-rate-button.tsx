@@ -1,13 +1,17 @@
-import { DailyRateEditor } from './daily-rate-editor'
-import { quoteFormat } from './quote-format'
-import { useCurrentRate } from '@/features/rates/api/use-rates'
-import { todayIso } from '@/shared/model/dates'
 import { useState } from 'react'
+import { cn } from '@/shared/lib/utils'
+import { todayIso } from '@/shared/model/dates'
 import { ArrowLeftRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { useCurrentRate } from '@/features/rates/api/use-rates'
+import { DailyRateEditor } from './daily-rate-editor'
+import { quoteFormat } from './quote-format'
 
 /** Header chip: today's rate at a glance; opens the editor. */
 export function DailyRateButton() {

@@ -1,6 +1,6 @@
-import { toast } from 'sonner'
-import i18n from 'i18next'
 import { ApiError } from '@/shared/http/api-client'
+import i18n from 'i18next'
+import { toast } from 'sonner'
 
 /** Translated message for an API error code, else the generic one. */
 function apiErrorMessage(error: ApiError) {

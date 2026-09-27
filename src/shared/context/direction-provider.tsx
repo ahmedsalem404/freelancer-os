@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { DirectionProvider as RdxDirProvider } from '@radix-ui/react-direction'
-import i18n from 'i18next'
 import { LANG_COOKIE, type Lang, dirOf, initialLang } from '@/shared/i18n/lang'
 import { setCookie } from '@/shared/lib/cookies'
+import i18n from 'i18next'
 
 export type Direction = 'ltr' | 'rtl'
 

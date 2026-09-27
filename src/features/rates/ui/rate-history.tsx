@@ -1,6 +1,6 @@
-import { quoteFormat } from './quote-format'
 import { useDb } from '@/app/client/snapshot-query'
 import { useTranslation } from 'react-i18next'
+import { quoteFormat } from './quote-format'
 
 const HISTORY_SHOWN = 4
 

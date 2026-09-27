@@ -1,14 +1,14 @@
-import { DailyRateButton } from '@/features/rates/ui/daily-rate-button'
-import { CURRENCIES } from '@/shared/money/currency'
+import { Header } from '@/app/client/layout/header'
 import { useUiPrefs } from '@/app/client/ui-prefs'
-import { Languages, Moon, Sun } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { cn } from '@/shared/lib/utils'
+import { Search } from '@/shared/components/search'
 import { useLocale } from '@/shared/context/direction-provider'
 import { useTheme } from '@/shared/context/theme-provider'
+import { cn } from '@/shared/lib/utils'
+import { CURRENCIES } from '@/shared/money/currency'
+import { Languages, Moon, Sun } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { Header } from '@/app/client/layout/header'
-import { Search } from '@/shared/components/search'
+import { DailyRateButton } from '@/features/rates/ui/daily-rate-button'
 
 function CurrencyToggle() {
   const { t } = useTranslation()

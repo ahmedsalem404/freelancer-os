@@ -1,9 +1,9 @@
-import { currencySymbol, formatAmount, fromBase } from '@/shared/money/money'
-import type { Currency } from '@/shared/money/currency'
 import { useUiPrefs } from '@/app/client/ui-prefs'
-import { useLastRates } from '@/features/rates/api/use-rates'
 import { useLang } from '@/shared/lib/dates'
 import { cn } from '@/shared/lib/utils'
+import type { Currency } from '@/shared/money/currency'
+import { currencySymbol, formatAmount, fromBase } from '@/shared/money/money'
+import { useLastRates } from '@/features/rates/api/use-rates'
 
 type MoneyProps = {
   /** Minor units. */

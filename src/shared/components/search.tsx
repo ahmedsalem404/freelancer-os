@@ -1,6 +1,6 @@
-import { SearchIcon } from 'lucide-react'
-import { cn } from '@/shared/lib/utils'
 import { useSearch } from '@/shared/context/search-provider'
+import { cn } from '@/shared/lib/utils'
+import { SearchIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export function Search({

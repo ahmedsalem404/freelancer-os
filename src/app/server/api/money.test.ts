@@ -41,7 +41,7 @@ describe('PUT /api/rates/today', () => {
 })
 
 describe('POST /api/invoices/:id/payments', () => {
-  it('records a confirmed payment and its proof metadata', async () => {
+  it('records a confirmed payment', async () => {
     t = createTestApp()
     const before = await t.snapshot()
     const invoice = before.invoices.find((i) => invoiceBalance(before, i) > 0)!
@@ -51,20 +51,11 @@ describe('POST /api/invoices/:id/payments', () => {
       amountMinor: balance,
       rateToBase: invoice.rateToBase,
       method: 'bank',
-      proofName: 'transfer.jpg',
     })
     expect(res.status).toBe(201)
 
     const after = await t.snapshot()
-    const paymentId = String(res.json.data.id)
     expect(invoiceStatus(after, invoice, isoDay(new Date()))).toBe('paid')
-    expect(after.attachments).toContainEqual(
-      expect.objectContaining({
-        kind: 'payment_proof',
-        fileName: 'transfer.jpg',
-        paymentId,
-      })
-    )
   })
 
   it('refuses a payment above the remaining balance', async () => {

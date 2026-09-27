@@ -13,6 +13,7 @@ import {
 } from '@/features/auth/server'
 import { clientsRoutes, createVaultRoutes } from '@/features/clients/server'
 import { engagementsRoutes } from '@/features/engagements/server'
+import { createFilesRoutes } from '@/features/files/server'
 import {
   expensesRoutes,
   ownSubscriptionsRoutes,
@@ -100,6 +101,7 @@ export function createApp(
   })
   app.route('/', createAuthRoutes())
   app.route('/', createVaultRoutes(storage))
+  app.route('/', createFilesRoutes(storage))
   for (const routes of FEATURE_ROUTES) app.route('/', routes)
   app.route('/', createPortalRoutes())
 

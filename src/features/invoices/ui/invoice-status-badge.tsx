@@ -1,7 +1,7 @@
 import { pill } from '@/shared/components/pill'
-import type { InvoiceStatus } from '@/features/invoices/model/invoice-status'
-import { useTranslation } from 'react-i18next'
 import { cn } from '@/shared/lib/utils'
+import { useTranslation } from 'react-i18next'
+import type { InvoiceStatus } from '@/features/invoices/model/invoice-status'
 
 const INVOICE_STYLE: Record<InvoiceStatus, string> = {
   unpaid: 'bg-muted text-muted-foreground',

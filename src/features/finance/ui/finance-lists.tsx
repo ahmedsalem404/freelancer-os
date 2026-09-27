@@ -4,6 +4,7 @@ import { Panel } from '@/shared/components/panel'
 import { useDateFormat } from '@/shared/lib/dates'
 import { Paperclip } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { fileUrl } from '@/features/files'
 import { Money } from '@/features/rates/ui/money'
 
 export function PaymentsList() {
@@ -16,7 +17,8 @@ export function PaymentsList() {
         {db.payments.map((p) => {
           const invoice = db.invoices.find((i) => i.id === p.invoiceId)
           const client = db.clients.find((c) => c.id === invoice?.clientId)
-          const hasProof = db.attachments.some((a) => a.paymentId === p.id)
+          const proof = db.attachments.find((a) => a.paymentId === p.id)
+          const hasProof = proof !== undefined
           return (
             <li
               key={p.id}
@@ -32,16 +34,30 @@ export function PaymentsList() {
                 </span>
               </div>
               <div className='flex items-center gap-3'>
-                <span
-                  className={
-                    hasProof
-                      ? 'inline-flex items-center gap-1 text-xs text-success'
-                      : 'text-xs text-muted-foreground'
-                  }
-                >
-                  {hasProof && <Paperclip className='size-3.5' />}
-                  {hasProof ? t('finance.proofAttached') : t('finance.noProof')}
-                </span>
+                {proof?.hasFile ? (
+                  <a
+                    href={fileUrl(proof.id)}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='inline-flex items-center gap-1 text-xs text-success underline-offset-2 hover:underline'
+                  >
+                    <Paperclip className='size-3.5' />{' '}
+                    {t('finance.proofAttached')}
+                  </a>
+                ) : (
+                  <span
+                    className={
+                      hasProof
+                        ? 'inline-flex items-center gap-1 text-xs text-success'
+                        : 'text-xs text-muted-foreground'
+                    }
+                  >
+                    {hasProof && <Paperclip className='size-3.5' />}
+                    {hasProof
+                      ? t('finance.proofAttached')
+                      : t('finance.noProof')}
+                  </span>
+                )}
                 <Money
                   amount={p.amount}
                   currency={p.currency}

@@ -1,5 +1,5 @@
 import type { Database } from '@/shared/db/database'
-import { desc } from 'drizzle-orm'
+import { desc, sql } from 'drizzle-orm'
 import { attachments } from './attachments.table'
 
 /** Snapshot slice owned by `files`: metadata only, never file contents. */
@@ -16,6 +16,9 @@ export function loadFiles(db: Database) {
         engagementId: attachments.engagementId,
         paymentId: attachments.paymentId,
         note: attachments.note,
+        hasFile: sql<boolean>`${attachments.storagePath} IS NOT NULL`.mapWith(
+          Boolean
+        ),
         uploadedOn: attachments.uploadedOn,
       })
       .from(attachments)

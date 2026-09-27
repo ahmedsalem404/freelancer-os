@@ -37,7 +37,6 @@ export const recordPaymentInput = z.object({
   rateToBase: z.number().positive(),
   method: paymentMethodKindSchema,
   /** Proof file name — metadata only until uploads ship (phase 3). */
-  proofName: z.string().trim().min(1).max(255).optional(),
 })
 
 /** What every "bill this" action answers with. */

@@ -22,6 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  MAX_UPLOAD_BYTES,
+  UPLOAD_ACCEPT,
+  useUploadFile,
+} from '@/features/files'
 import { useRecordPayment } from '@/features/invoices/api/use-record-payment'
 import { invoiceBalance } from '@/features/invoices/model/invoice-status'
 import type { Invoice } from '@/features/invoices/model/invoice.schema'
@@ -61,6 +66,7 @@ function PaymentForm({
   const { t } = useTranslation()
   const db = useDb()
   const recordPayment = useRecordPayment()
+  const uploadProof = useUploadFile()
   const currentRate = useCurrentRate()
   const lastRates = useLastRates()
   const balance = invoiceBalance(db, invoice)
@@ -75,7 +81,9 @@ function PaymentForm({
     )
   )
   const [method, setMethod] = useState<PaymentMethodKind>('bank')
-  const [proofName, setProofName] = useState<string>()
+  const [proof, setProof] = useState<File>()
+  const isProofTooLarge = (proof?.size ?? 0) > MAX_UPLOAD_BYTES
+  const isSaving = recordPayment.isPending || uploadProof.isPending
 
   const needsRate = invoice.currency !== 'SAR'
   const amountValue = Number(amount)
@@ -99,19 +107,23 @@ function PaymentForm({
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
-    if (!isValid || recordPayment.isPending) return
+    if (!isValid || isProofTooLarge || isSaving) return
     recordPayment.mutate(
       {
         invoiceId: invoice.id,
         amountMinor: toMinor(amountValue),
         rateToBase: needsRate ? rateValue : 1,
         method,
-        proofName,
       },
       {
-        onSuccess: () => {
+        onSuccess: ({ id }) => {
           toast.success(t('finance.paymentSaved'))
-          onDone()
+          if (!proof) return onDone()
+          // The payment is saved either way; a failed proof shows its own error.
+          uploadProof.mutate(
+            { fields: { kind: 'payment_proof', paymentId: id }, file: proof },
+            { onSettled: onDone }
+          )
         },
       }
     )
@@ -186,14 +198,19 @@ function PaymentForm({
 
       <label className='flex cursor-pointer items-center gap-3 rounded-lg border border-dashed p-3 text-sm hover:bg-accent/40'>
         <Upload className='size-4 text-muted-foreground' />
-        <span className='flex-1'>{proofName ?? t('finance.proof')}</span>
+        <span className='min-w-0 flex-1 truncate'>
+          {proof?.name ?? t('finance.proof')}
+        </span>
         <input
           type='file'
-          accept='image/*,application/pdf'
+          accept={UPLOAD_ACCEPT}
           className='sr-only'
-          onChange={(e) => setProofName(e.target.files?.[0]?.name)}
+          onChange={(e) => setProof(e.target.files?.[0])}
         />
       </label>
+      {isProofTooLarge && (
+        <p className='text-xs text-destructive'>{t('files.tooLarge')}</p>
+      )}
 
       <DialogFooter>
         <Button type='button' variant='ghost' onClick={onDone}>
@@ -201,8 +218,8 @@ function PaymentForm({
         </Button>
         <PendingButton
           type='submit'
-          disabled={!isValid}
-          isPending={recordPayment.isPending}
+          disabled={!isValid || isProofTooLarge}
+          isPending={isSaving}
         >
           {t('finance.recordPayment')}
         </PendingButton>

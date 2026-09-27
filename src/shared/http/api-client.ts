@@ -33,12 +33,20 @@ export async function callApi<T>(
   body?: unknown
 ): Promise<T> {
   let response: Response
+  // A FormData body (file upload) sets its own multipart content type.
+  const isForm = body instanceof FormData
   try {
     response = await fetch(`/api${path}`, {
       method,
       headers:
-        body === undefined ? undefined : { 'content-type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body),
+        body === undefined || isForm
+          ? undefined
+          : { 'content-type': 'application/json' },
+      body: isForm
+        ? body
+        : body === undefined
+          ? undefined
+          : JSON.stringify(body),
     })
   } catch {
     throw new ApiError('network', 'The server is not reachable', 0)

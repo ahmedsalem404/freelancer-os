@@ -118,12 +118,6 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
     attachments: 'Attachments',
     attachmentsHint:
       'Contracts and WhatsApp agreement screenshots — for reference',
-    attachmentKind: {
-      contract: 'Contract',
-      agreement_chat: 'Chat agreement',
-      payment_proof: 'Payment proof',
-      other: 'File',
-    },
     noAttachments:
       'No attachments. Upload the contract or the WhatsApp agreement screenshot.',
     renewsOn: 'Renews on {{date}}',

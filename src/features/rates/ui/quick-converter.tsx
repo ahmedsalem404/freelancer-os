@@ -1,12 +1,17 @@
-import { CURRENCIES, type Currency } from '@/shared/money/currency'
-import { convert, currencySymbol, formatAmount, toMinor } from '@/shared/money/money'
-import { useLastRates } from '@/features/rates/api/use-rates'
 import { useState } from 'react'
-import { ArrowLeftRight } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
 import { useLang } from '@/shared/lib/dates'
 import { cn } from '@/shared/lib/utils'
+import { CURRENCIES, type Currency } from '@/shared/money/currency'
+import {
+  convert,
+  currencySymbol,
+  formatAmount,
+  toMinor,
+} from '@/shared/money/money'
+import { ArrowLeftRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
+import { useLastRates } from '@/features/rates/api/use-rates'
 
 export function QuickConverter() {
   const { t } = useTranslation()

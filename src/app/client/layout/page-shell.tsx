@@ -1,8 +1,8 @@
-import { AppHeader } from './app-header'
 import type { ReactNode } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
-import { cn } from '@/shared/lib/utils'
 import { Main } from '@/app/client/layout/main'
+import { cn } from '@/shared/lib/utils'
+import { motion, useReducedMotion } from 'motion/react'
+import { AppHeader } from './app-header'
 
 type PageShellProps = {
   title: ReactNode

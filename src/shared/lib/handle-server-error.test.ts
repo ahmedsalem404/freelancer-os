@@ -1,7 +1,7 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import '@/app/client/i18n'
-import i18n from 'i18next'
 import { ApiError } from '@/shared/http/api-client'
+import i18n from 'i18next'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { handleServerError } from './handle-server-error'
 
 const toastError = vi.hoisted(() => vi.fn())
