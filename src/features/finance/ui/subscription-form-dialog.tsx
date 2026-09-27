@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { addDaysIso, todayIso } from '@/shared/model/dates'
 import { CURRENCIES, type Currency } from '@/shared/money/currency'
@@ -182,9 +183,13 @@ export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
               <Button type='button' variant='ghost' onClick={onClose}>
                 {t('common.cancel')}
               </Button>
-              <Button type='submit' disabled={!isValid || isBusy}>
+              <PendingButton
+                type='submit'
+                disabled={!isValid || remove.isPending}
+                isPending={save.isPending}
+              >
                 {t('common.save')}
-              </Button>
+              </PendingButton>
             </div>
           </DialogFooter>
         </form>

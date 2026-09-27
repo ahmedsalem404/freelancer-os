@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { useDateFormat } from '@/shared/lib/dates'
 import { Check, MessageSquare } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -20,6 +21,7 @@ export function PortalDeliverable({ token, deliverable }: Props) {
   const approve = usePortalApprove(token)
   const feedback = usePortalFeedback(token)
   const [isRequesting, setIsRequesting] = useState(false)
+  const [isApproving, setIsApproving] = useState(false)
   const [note, setNote] = useState('')
 
   const requestChanges = (event: React.FormEvent) => {
@@ -63,18 +65,28 @@ export function PortalDeliverable({ token, deliverable }: Props) {
             >
               <MessageSquare /> {t('engagements.logFeedback')}
             </Button>
-            <Button
-              size='sm'
-              disabled={approve.isPending}
-              onClick={() =>
-                approve.mutate(
-                  { deliverableId: deliverable.id },
-                  { onSuccess: () => toast.success(t('portal.approvedToast')) }
-                )
-              }
-            >
+            <Button size='sm' onClick={() => setIsApproving(true)}>
               <Check /> {t('portal.approve')}
             </Button>
+            <ConfirmDialog
+              open={isApproving}
+              onOpenChange={setIsApproving}
+              title={t('portal.approveTitle')}
+              desc={t('portal.approveHint')}
+              confirmText={t('portal.approve')}
+              isLoading={approve.isPending}
+              handleConfirm={() =>
+                approve.mutate(
+                  { deliverableId: deliverable.id },
+                  {
+                    onSuccess: () => {
+                      setIsApproving(false)
+                      toast.success(t('portal.approvedToast'))
+                    },
+                  }
+                )
+              }
+            />
           </div>
         )}
       </div>

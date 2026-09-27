@@ -1,8 +1,12 @@
 import type { SubmitEvent } from 'react'
+import '@/app/client/i18n'
+import i18n from 'i18next'
 import { describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 import { ConfirmDialog } from './confirm-dialog'
+
+await i18n.changeLanguage('en')
 
 describe('ConfirmDialog', () => {
   it('renders title, description, and default buttons', async () => {
@@ -26,7 +30,7 @@ describe('ConfirmDialog', () => {
       .element(getByRole('button', { name: 'Cancel' }))
       .toBeInTheDocument()
     await expect
-      .element(getByRole('button', { name: 'Continue' }))
+      .element(getByRole('button', { name: 'Confirm' }))
       .toBeInTheDocument()
   })
 
@@ -60,7 +64,7 @@ describe('ConfirmDialog', () => {
       />
     )
 
-    const confirm = getByRole('button', { name: 'Continue' })
+    const confirm = getByRole('button', { name: 'Confirm' })
     await expect.element(confirm).toBeDisabled()
     expect(handleConfirm).not.toHaveBeenCalled()
   })
@@ -79,8 +83,9 @@ describe('ConfirmDialog', () => {
     )
 
     await expect.element(getByRole('button', { name: 'Cancel' })).toBeDisabled()
+    // While loading, the confirm button shows a spinner and 'Loading…'.
     await expect
-      .element(getByRole('button', { name: 'Continue' }))
+      .element(getByRole('button', { name: 'Loading…' }))
       .toBeDisabled()
   })
 

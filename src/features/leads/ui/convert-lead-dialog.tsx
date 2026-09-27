@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { ChoiceRow } from '@/shared/components/choice-row'
+import { PendingButton } from '@/shared/components/pending-button'
 import { todayIso } from '@/shared/model/dates'
 import { toMajor, toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
@@ -21,7 +23,6 @@ import {
 } from '@/features/engagements/model/enums'
 import { useConvertLead } from '../api/use-convert-lead'
 import type { Lead } from '../model/lead.schema'
-import { ChoiceRow } from '@/shared/components/choice-row'
 
 const PERIODS = ['monthly', 'yearly'] as const
 const DEFAULT_HOURS = '10'
@@ -135,9 +136,13 @@ export function ConvertLeadDialog({ lead, onClose }: Props) {
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}
             </Button>
-            <Button type='submit' disabled={!isValid || convert.isPending}>
+            <PendingButton
+              type='submit'
+              disabled={!isValid}
+              isPending={convert.isPending}
+            >
               {t('leads.convert.submit')}
-            </Button>
+            </PendingButton>
           </DialogFooter>
         </form>
       </DialogContent>

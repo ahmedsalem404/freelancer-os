@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PendingButton } from '@/shared/components/pending-button'
 import { addDaysIso, todayIso } from '@/shared/model/dates'
 import { toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
@@ -110,9 +111,13 @@ export function ChangeScopeDialog({ engagement, open, onOpenChange }: Props) {
             >
               {t('common.cancel')}
             </Button>
-            <Button type='submit' disabled={!isValid}>
+            <PendingButton
+              type='submit'
+              disabled={!isValid}
+              isPending={changeScope.isPending}
+            >
               {t('guard.billScope')}
-            </Button>
+            </PendingButton>
           </DialogFooter>
         </form>
       </DialogContent>

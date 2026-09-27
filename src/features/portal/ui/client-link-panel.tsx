@@ -25,18 +25,24 @@ export function ClientLinkPanel({ engagementId }: { engagementId: string }) {
   const revoke = useRevokePortalLink()
   const [freshUrl, setFreshUrl] = useState<string>()
   const [isRevoking, setIsRevoking] = useState(false)
+  const [isRegenerating, setIsRegenerating] = useState(false)
 
-  const copy = (url: string) => {
-    void navigator.clipboard?.writeText(url)
-    toast.success(t('common.copied'))
+  const copy = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success(t('common.copied'))
+    } catch {
+      toast.error(t('common.copyFailed'))
+    }
   }
 
   const openNew = () =>
     create.mutate(engagementId, {
       onSuccess: ({ token }) => {
         const url = portalUrl(token)
+        setIsRegenerating(false)
         setFreshUrl(url)
-        copy(url)
+        void copy(url)
       },
     })
 
@@ -58,7 +64,12 @@ export function ClientLinkPanel({ engagementId }: { engagementId: string }) {
           </span>
         </div>
         <div className='flex flex-wrap gap-2'>
-          <Button size='sm' onClick={openNew} disabled={create.isPending}>
+          <Button
+            size='sm'
+            // A new link kills the live one, so replacing it asks first.
+            onClick={() => (link ? setIsRegenerating(true) : openNew())}
+            disabled={create.isPending}
+          >
             {link ? <RefreshCw /> : <Link2 />}
             {link ? t('portal.link.regenerate') : t('portal.link.create')}
           </Button>
@@ -67,6 +78,7 @@ export function ClientLinkPanel({ engagementId }: { engagementId: string }) {
               size='sm'
               variant='ghost'
               onClick={() => setIsRevoking(true)}
+              disabled={revoke.isPending}
             >
               <Unlink /> {t('portal.link.revoke')}
             </Button>
@@ -83,7 +95,11 @@ export function ClientLinkPanel({ engagementId }: { engagementId: string }) {
             <code dir='ltr' className='min-w-0 flex-1 truncate text-xs'>
               {freshUrl}
             </code>
-            <Button size='sm' variant='outline' onClick={() => copy(freshUrl)}>
+            <Button
+              size='sm'
+              variant='outline'
+              onClick={() => void copy(freshUrl)}
+            >
               <Copy /> {t('common.copy')}
             </Button>
             <Button asChild size='sm' variant='ghost'>
@@ -95,6 +111,15 @@ export function ClientLinkPanel({ engagementId }: { engagementId: string }) {
         </div>
       )}
 
+      <ConfirmDialog
+        open={isRegenerating}
+        onOpenChange={setIsRegenerating}
+        title={t('portal.link.regenerate')}
+        desc={t('portal.link.regenerateHint')}
+        confirmText={t('portal.link.regenerate')}
+        isLoading={create.isPending}
+        handleConfirm={openNew}
+      />
       {isRevoking && (
         <ConfirmDialog
           open

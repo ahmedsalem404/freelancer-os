@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
+import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { useTranslation } from 'react-i18next'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
@@ -42,6 +43,11 @@ export function NextActionsPanel({ meters }: { meters: Row[] }) {
           </li>
         ))}
       </ul>
+      {meters.length === 0 && (
+        <div className='p-4'>
+          <EmptyState>{t('common.empty')}</EmptyState>
+        </div>
+      )}
     </Panel>
   )
 }

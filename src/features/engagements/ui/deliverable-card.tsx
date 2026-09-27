@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
+import { PendingButton } from '@/shared/components/pending-button'
 import { useDateFormat } from '@/shared/lib/dates'
 import { cn } from '@/shared/lib/utils'
 import { AlertTriangle, Check, MessageSquarePlus, Receipt } from 'lucide-react'
@@ -17,10 +18,10 @@ import {
 } from '@/features/engagements/model/guard'
 import type { Deliverable } from '@/features/engagements/model/work.schema'
 import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
+import { ApproveButton } from '@/features/engagements/ui/approve-button'
 import { useMoneyText } from '@/features/rates/ui/money'
 import {
   useAddFeedback,
-  useApproveDeliverable,
   useBillOverageRounds,
 } from '../api/use-deliverable-actions'
 
@@ -33,7 +34,6 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
   const navigate = useNavigate()
   const db = useDb()
   const addFeedback = useAddFeedback()
-  const approve = useApproveDeliverable()
   const billOverageRounds = useBillOverageRounds()
   const [isLogging, setIsLogging] = useState(false)
   const [note, setNote] = useState('')
@@ -108,15 +108,10 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
             <Check className='size-3.5' /> {t('engagements.approved')}
           </span>
         ) : (
-          <Button
-            size='sm'
-            variant='ghost'
-            onClick={() =>
-              approve.mutate({ deliverableId: deliverable.id, source: 'owner' })
-            }
-          >
-            <Check /> {t('engagements.approve')}
-          </Button>
+          <ApproveButton
+            deliverableId={deliverable.id}
+            name={deliverable.title}
+          />
         )}
       </header>
 
@@ -166,6 +161,7 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
           <Button
             size='sm'
             onClick={billRounds}
+            disabled={billOverageRounds.isPending}
             className='bg-billable text-[#241a00] hover:bg-billable/90'
           >
             <Receipt /> {t('guard.billRound')} ·{' '}
@@ -231,9 +227,14 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
               >
                 {t('common.cancel')}
               </Button>
-              <Button type='submit' size='sm' disabled={!note.trim()}>
+              <PendingButton
+                type='submit'
+                size='sm'
+                disabled={!note.trim()}
+                isPending={addFeedback.isPending}
+              >
                 {t('engagements.saveFeedback')}
-              </Button>
+              </PendingButton>
             </div>
           </motion.form>
         ) : (

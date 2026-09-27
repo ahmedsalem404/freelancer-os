@@ -19,6 +19,8 @@ export function TasksPanel({
 }) {
   const { t } = useTranslation()
   const toggleTask = useToggleTask()
+  const isFlipping = (id: string) =>
+    toggleTask.isPending && toggleTask.variables === id
   const addTask = useAddTask()
   const [draft, setDraft] = useState('')
 
@@ -57,7 +59,11 @@ export function TasksPanel({
             className='flex cursor-pointer items-start gap-3 rounded-md px-2 py-2 hover:bg-accent/40'
           >
             <Checkbox
-              checked={!!task.completedAt}
+              // Flip at once while saving; the refetch confirms it.
+              checked={
+                isFlipping(task.id) ? !task.completedAt : !!task.completedAt
+              }
+              disabled={isFlipping(task.id)}
               onCheckedChange={() => toggleTask.mutate(task.id)}
               className='mt-0.5'
             />

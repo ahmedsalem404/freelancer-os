@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
+import { EmptyState } from '@/shared/components/empty-state'
 import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { Archive, Plus } from 'lucide-react'
@@ -147,6 +148,13 @@ export function Clients() {
                 </motion.tr>
               )
             })}
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={6} className='p-4'>
+                  <EmptyState>{t('common.empty')}</EmptyState>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

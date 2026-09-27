@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
@@ -160,9 +161,13 @@ export function NewEngagementDialog({
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}
             </Button>
-            <Button type='submit' disabled={!isValid || open.isPending}>
+            <PendingButton
+              type='submit'
+              disabled={!isValid}
+              isPending={open.isPending}
+            >
               {t('engagements.form.submit')}
-            </Button>
+            </PendingButton>
           </DialogFooter>
         </form>
       </DialogContent>

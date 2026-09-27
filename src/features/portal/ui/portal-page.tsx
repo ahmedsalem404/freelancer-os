@@ -1,3 +1,4 @@
+import { EmptyState } from '@/shared/components/empty-state'
 import { useLocale } from '@/shared/context/direction-provider'
 import { cn } from '@/shared/lib/utils'
 import { Languages, Link2Off } from 'lucide-react'
@@ -86,6 +87,9 @@ export function Portal({ token }: { token: string }) {
           {view.deliverables.map((d) => (
             <PortalDeliverable key={d.id} token={token} deliverable={d} />
           ))}
+          {view.deliverables.length === 0 && (
+            <EmptyState>{t('portal.noDeliverables')}</EmptyState>
+          )}
         </section>
       </main>
     </div>

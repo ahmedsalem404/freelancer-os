@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -58,13 +59,14 @@ export function VoidInvoiceDialog({ invoice, onClose }: Props) {
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}
             </Button>
-            <Button
+            <PendingButton
               type='submit'
               variant='destructive'
-              disabled={!isValid || cancel.isPending}
+              disabled={!isValid}
+              isPending={cancel.isPending}
             >
               {t('invoice.void.submit')}
-            </Button>
+            </PendingButton>
           </DialogFooter>
         </form>
       </DialogContent>

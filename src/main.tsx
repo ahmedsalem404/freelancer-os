@@ -64,6 +64,9 @@ const router = createRouter({
   context: { queryClient },
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
+  // Fast loads skip the skeleton; slow ones show it instead of a blank page.
+  defaultPendingMs: 300,
+  defaultPendingMinMs: 300,
 })
 
 // Register the router instance for type safety

@@ -1,5 +1,6 @@
 import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
+import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { StatTile } from '@/shared/components/stat-tile'
 import { daysFrom, useDateFormat } from '@/shared/lib/dates'
@@ -56,6 +57,9 @@ export function TimePage() {
 
       <div className='grid gap-4 lg:grid-cols-2'>
         <Panel title={t('time.byEngagement')} bodyClassName='grid gap-3'>
+          {byEngagement.length === 0 && (
+            <EmptyState>{t('common.empty')}</EmptyState>
+          )}
           {byEngagement.map(([id, minutes], index) => (
             <div key={id} className='grid gap-1 text-sm'>
               <div className='flex justify-between gap-2'>
@@ -107,6 +111,11 @@ export function TimePage() {
               </li>
             ))}
           </ul>
+          {db.timeEntries.length === 0 && (
+            <div className='p-4'>
+              <EmptyState>{t('common.empty')}</EmptyState>
+            </div>
+          )}
         </Panel>
       </div>
     </PageShell>

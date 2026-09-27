@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { todayIso } from '@/shared/model/dates'
 import { CURRENCIES, type Currency } from '@/shared/money/currency'
@@ -151,9 +152,13 @@ export function ExpenseFormDialog({ expense, onClose }: Props) {
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}
             </Button>
-            <Button type='submit' disabled={!isValid || save.isPending}>
+            <PendingButton
+              type='submit'
+              disabled={!isValid}
+              isPending={save.isPending}
+            >
               {t('common.save')}
-            </Button>
+            </PendingButton>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { CURRENCIES, type Currency } from '@/shared/money/currency'
 import { useTranslation } from 'react-i18next'
@@ -156,9 +157,13 @@ export function ClientFormDialog({ client, onClose }: Props) {
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}
             </Button>
-            <Button type='submit' disabled={!parsed.success || save.isPending}>
+            <PendingButton
+              type='submit'
+              disabled={!parsed.success}
+              isPending={save.isPending}
+            >
               {t('common.save')}
-            </Button>
+            </PendingButton>
           </DialogFooter>
         </form>
       </DialogContent>

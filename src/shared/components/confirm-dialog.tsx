@@ -1,4 +1,6 @@
+import { PendingButton } from '@/shared/components/pending-button'
 import { cn } from '@/shared/lib/utils'
+import { useTranslation } from 'react-i18next'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -8,7 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
 
 type ConfirmDialogProps = {
   open: boolean
@@ -42,8 +43,13 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
     handleConfirm,
     ...actions
   } = props
+  const { t } = useTranslation()
   return (
-    <AlertDialog {...actions}>
+    <AlertDialog
+      {...actions}
+      // Keep the dialog open while the request runs.
+      onOpenChange={(open) => !isLoading && actions.onOpenChange(open)}
+    >
       <AlertDialogContent className={cn(className && className)}>
         <AlertDialogHeader className='text-start'>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -54,17 +60,19 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         {children}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>
-            {cancelBtnText ?? 'Cancel'}
+            {cancelBtnText ?? t('common.cancel')}
           </AlertDialogCancel>
-          <Button
+          <PendingButton
             type={form ? 'submit' : 'button'}
             form={form}
             onClick={handleConfirm}
             variant={destructive ? 'destructive' : 'default'}
-            disabled={disabled || isLoading}
+            disabled={disabled}
+            isPending={isLoading}
+            pendingText={t('common.loading')}
           >
-            {confirmText ?? 'Continue'}
-          </Button>
+            {confirmText ?? t('common.confirm')}
+          </PendingButton>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChoiceRow } from '@/shared/components/choice-row'
+import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { toMajor, toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
@@ -105,9 +106,13 @@ export function EditTermsDialog({ engagement: e, onClose }: Props) {
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}
             </Button>
-            <Button type='submit' disabled={!isValid || update.isPending}>
+            <PendingButton
+              type='submit'
+              disabled={!isValid}
+              isPending={update.isPending}
+            >
               {t('common.save')}
-            </Button>
+            </PendingButton>
           </DialogFooter>
         </form>
       </DialogContent>

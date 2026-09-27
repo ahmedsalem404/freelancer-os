@@ -1,4 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { LoadError } from '@/shared/components/load-error'
+import { PageSkeleton } from '@/shared/components/page-skeleton'
 import { sessionQuery } from '@/features/auth'
 import { MyDayPage, workspaceQuery } from '@/features/my-day'
 
@@ -12,5 +14,7 @@ export const Route = createFileRoute('/my-day')({
     if (member.role === 'owner') throw redirect({ to: '/' })
   },
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceQuery),
+  pendingComponent: PageSkeleton,
+  errorComponent: LoadError,
   component: MyDayPage,
 })

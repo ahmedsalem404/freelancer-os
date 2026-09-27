@@ -1,3 +1,4 @@
+import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { cn } from '@/shared/lib/utils'
 import { useTranslation } from 'react-i18next'
@@ -31,6 +32,11 @@ export function UpcomingPanel({ upcoming }: { upcoming: Upcoming[] }) {
           </li>
         ))}
       </ul>
+      {upcoming.length === 0 && (
+        <div className='p-4'>
+          <EmptyState>{t('common.empty')}</EmptyState>
+        </div>
+      )}
     </Panel>
   )
 }

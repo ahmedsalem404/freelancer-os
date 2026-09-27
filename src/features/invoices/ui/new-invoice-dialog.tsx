@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
+import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { isArchived } from '@/shared/model/archive'
 import { toMinor } from '@/shared/money/money'
@@ -176,9 +177,13 @@ export function NewInvoiceDialog({ clientId: initialClient, onClose }: Props) {
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}
             </Button>
-            <Button type='submit' disabled={!isValid || create.isPending}>
+            <PendingButton
+              type='submit'
+              disabled={!isValid}
+              isPending={create.isPending}
+            >
               {t('invoice.form.submit')}
-            </Button>
+            </PendingButton>
           </DialogFooter>
         </form>
       </DialogContent>

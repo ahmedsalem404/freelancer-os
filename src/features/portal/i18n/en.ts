@@ -6,9 +6,13 @@ export const portalEn: Widen<typeof portalAr> = {
     preparedBy: 'From {{name}}',
     progress: 'Progress',
     deliverables: 'Deliverables',
+    noDeliverables: 'No deliverables to review yet.',
     approve: 'Approve this deliverable',
     approved: 'Approved',
     approvedToast: 'Approved — thank you',
+    approveTitle: 'Approve this deliverable?',
+    approveHint:
+      'Approval is final — no more changes can be requested on it after this.',
     awaiting: 'Waiting for your approval',
     unavailable: 'This link is not available',
     unavailableHint:
@@ -16,6 +20,8 @@ export const portalEn: Widen<typeof portalAr> = {
     link: {
       create: 'Create client link',
       regenerate: 'New link',
+      regenerateHint:
+        'The current link stops working right away. Send the new one to the client.',
       revoke: 'Turn off link',
       active_one:
         'Active link ending in {{hint}} · opened once · since {{date}}',

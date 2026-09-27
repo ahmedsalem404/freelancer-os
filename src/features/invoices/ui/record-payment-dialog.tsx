@@ -1,11 +1,7 @@
-import { toMajor, toMinor } from '@/shared/money/money'
-import { invoiceBalance } from '@/features/invoices/model/invoice-status'
-import type { Invoice } from '@/features/invoices/model/invoice.schema'
-import type { PaymentMethodKind } from '@/features/settings/model/enums'
-import { useRecordPayment } from '@/features/invoices/api/use-record-payment'
-import { useCurrentRate, useLastRates } from '@/features/rates/api/use-rates'
-import { useDb } from '@/app/client/snapshot-query'
 import { useState } from 'react'
+import { useDb } from '@/app/client/snapshot-query'
+import { PendingButton } from '@/shared/components/pending-button'
+import { toMajor, toMinor } from '@/shared/money/money'
 import { Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -26,6 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useRecordPayment } from '@/features/invoices/api/use-record-payment'
+import { invoiceBalance } from '@/features/invoices/model/invoice-status'
+import type { Invoice } from '@/features/invoices/model/invoice.schema'
+import { useCurrentRate, useLastRates } from '@/features/rates/api/use-rates'
+import type { PaymentMethodKind } from '@/features/settings/model/enums'
 
 const METHODS: PaymentMethodKind[] = ['bank', 'kuraimi', 'usdt', 'cash']
 
@@ -180,9 +181,13 @@ function PaymentForm({
         <Button type='button' variant='ghost' onClick={onDone}>
           {t('common.cancel')}
         </Button>
-        <Button type='submit' disabled={!isValid}>
+        <PendingButton
+          type='submit'
+          disabled={!isValid}
+          isPending={recordPayment.isPending}
+        >
           {t('finance.recordPayment')}
-        </Button>
+        </PendingButton>
       </DialogFooter>
     </form>
   )

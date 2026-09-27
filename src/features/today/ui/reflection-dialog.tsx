@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDb } from '@/app/client/snapshot-query'
 import { useCurrentMember } from '@/app/client/use-current-member'
+import { PendingButton } from '@/shared/components/pending-button'
 import { todayIso } from '@/shared/model/dates'
 import { Check, CircleDashed } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -106,7 +107,9 @@ export function ReflectionDialog({ open, onOpenChange }: Props) {
           <Button variant='ghost' onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={complete}>{t('reflection.complete')}</Button>
+          <PendingButton onClick={complete} isPending={closeDay.isPending}>
+            {t('reflection.complete')}
+          </PendingButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Panel } from '@/shared/components/panel'
+import { PendingButton } from '@/shared/components/pending-button'
 import { Moon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useCloseMyDay } from '../api/use-my-day-actions'
 import type { Workspace } from '../model/workspace.schema'
@@ -39,9 +39,13 @@ export function MyCloseDay({ workspace }: Props) {
           onChange={(e) => setNote(e.target.value)}
         />
         <p className='text-xs text-muted-foreground'>{t('myDay.closeHint')}</p>
-        <Button type='submit' variant='outline' disabled={closeDay.isPending}>
+        <PendingButton
+          type='submit'
+          variant='outline'
+          isPending={closeDay.isPending}
+        >
           <Moon /> {t('reflection.complete')}
-        </Button>
+        </PendingButton>
       </form>
     </Panel>
   )

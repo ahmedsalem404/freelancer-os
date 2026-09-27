@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { useDb } from '@/app/client/snapshot-query'
+import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { Panel } from '@/shared/components/panel'
 import { useDateFormat } from '@/shared/lib/dates'
 import { cn } from '@/shared/lib/utils'
@@ -37,6 +39,9 @@ export function CyclePanel({ engagement }: { engagement: Engagement }) {
   const stop = useStopCycle()
   const invoiceToast = useInvoiceToast()
   const isBusy = renew.isPending || extendGrace.isPending || stop.isPending
+  // Renew issues an invoice and pause stops the plan: both ask first.
+  const [asking, setAsking] = useState<'renew' | 'pause' | null>(null)
+  const done = () => setAsking(null)
 
   const cycle = currentCycle(db, engagement.id)
   if (!cycle) return null
@@ -81,15 +86,7 @@ export function CyclePanel({ engagement }: { engagement: Engagement }) {
               : 'bg-muted/60'
           )}
         >
-          <Button
-            disabled={isBusy}
-            onClick={() =>
-              renew.mutate(engagement.id, {
-                onSuccess: (invoice) =>
-                  invoiceToast(invoice, 'engagements.renewed'),
-              })
-            }
-          >
+          <Button disabled={isBusy} onClick={() => setAsking('renew')}>
             <Receipt /> {t('engagements.renew')}
           </Button>
           <Button
@@ -111,11 +108,7 @@ export function CyclePanel({ engagement }: { engagement: Engagement }) {
             variant='outline'
             className='text-overdue hover:text-overdue'
             disabled={isBusy}
-            onClick={() =>
-              stop.mutate(engagement.id, {
-                onSuccess: () => toast(t('engagements.paused')),
-              })
-            }
+            onClick={() => setAsking('pause')}
           >
             <Pause /> {t('engagements.pause')}
           </Button>
@@ -125,6 +118,41 @@ export function CyclePanel({ engagement }: { engagement: Engagement }) {
           </p>
         </div>
       )}
+      <ConfirmDialog
+        open={asking === 'renew'}
+        onOpenChange={(open) => !open && done()}
+        title={t('engagements.renewConfirm')}
+        desc={t('engagements.renewConfirmHint', {
+          amount: moneyText(engagement.amount, engagement.currency),
+        })}
+        confirmText={t('engagements.renew')}
+        isLoading={renew.isPending}
+        handleConfirm={() =>
+          renew.mutate(engagement.id, {
+            onSuccess: (invoice) => {
+              done()
+              invoiceToast(invoice, 'engagements.renewed')
+            },
+          })
+        }
+      />
+      <ConfirmDialog
+        open={asking === 'pause'}
+        onOpenChange={(open) => !open && done()}
+        destructive
+        title={t('engagements.pauseConfirm')}
+        desc={t('engagements.pauseHint')}
+        confirmText={t('engagements.pause')}
+        isLoading={stop.isPending}
+        handleConfirm={() =>
+          stop.mutate(engagement.id, {
+            onSuccess: () => {
+              done()
+              toast.success(t('engagements.paused'))
+            },
+          })
+        }
+      />
     </Panel>
   )
 }

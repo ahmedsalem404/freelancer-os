@@ -1,4 +1,5 @@
 import { useDb } from '@/app/client/snapshot-query'
+import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { cn } from '@/shared/lib/utils'
 import { useTranslation } from 'react-i18next'
@@ -24,7 +25,13 @@ export function StagesPanel({ engagementId }: { engagementId: string }) {
           <li key={stage.id}>
             <button
               onClick={() => toggleStage.mutate(stage.id)}
-              className='flex w-full items-center gap-3 rounded-md px-2 py-2 text-start text-sm hover:bg-accent/40'
+              disabled={
+                toggleStage.isPending && toggleStage.variables === stage.id
+              }
+              aria-busy={
+                toggleStage.isPending && toggleStage.variables === stage.id
+              }
+              className='flex w-full items-center gap-3 rounded-md px-2 py-2 text-start text-sm hover:bg-accent/40 disabled:opacity-60'
             >
               <span
                 className={cn(
@@ -48,6 +55,7 @@ export function StagesPanel({ engagementId }: { engagementId: string }) {
           </li>
         ))}
       </ol>
+      {list.length === 0 && <EmptyState>{t('common.empty')}</EmptyState>}
     </Panel>
   )
 }

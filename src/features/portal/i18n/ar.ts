@@ -4,9 +4,12 @@ export const portalAr = {
     preparedBy: 'من {{name}}',
     progress: 'سير العمل',
     deliverables: 'المخرجات',
+    noDeliverables: 'ما فيه مخرجات للمراجعة بعد.',
     approve: 'أعتمد هذا المخرج',
     approved: 'معتمد',
     approvedToast: 'تم الاعتماد — شكراً لك',
+    approveTitle: 'اعتماد هذا المخرج؟',
+    approveHint: 'الاعتماد نهائي — ما تقدر تطلب تعديلات عليه بعدها.',
     awaiting: 'بانتظار اعتمادك',
     unavailable: 'هذا الرابط غير متاح',
     unavailableHint:
@@ -14,6 +17,7 @@ export const portalAr = {
     link: {
       create: 'أنشئ رابط العميل',
       regenerate: 'رابط جديد',
+      regenerateHint: 'الرابط الحالي بيتوقف فوراً. أرسل الرابط الجديد للعميل.',
       revoke: 'أوقف الرابط',
       active_one:
         'رابط فعّال ينتهي بـ {{hint}} · فُتح مرة واحدة · منذ {{date}}',

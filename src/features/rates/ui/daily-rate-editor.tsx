@@ -1,14 +1,17 @@
-import { QuickConverter } from './quick-converter'
-import { RateHistory } from './rate-history'
-import { currencySymbol } from '@/shared/money/money'
-import { useCurrentRate, useSaveDailyRate } from '@/features/rates/api/use-rates'
 import { useState } from 'react'
+import { PendingButton } from '@/shared/components/pending-button'
+import { useLang } from '@/shared/lib/dates'
+import { currencySymbol } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { useLang } from '@/shared/lib/dates'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  useCurrentRate,
+  useSaveDailyRate,
+} from '@/features/rates/api/use-rates'
+import { QuickConverter } from './quick-converter'
+import { RateHistory } from './rate-history'
 
 /** Today's rate form (both quotes in YER) + history + quick converter. */
 export function DailyRateEditor({ onSaved }: { onSaved?: () => void }) {
@@ -24,6 +27,7 @@ export function DailyRateEditor({ onSaved }: { onSaved?: () => void }) {
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
+    if (saveRate.isPending) return
     if (!isValid) {
       toast.error(t('rates.invalid'))
       return
@@ -63,9 +67,9 @@ export function DailyRateEditor({ onSaved }: { onSaved?: () => void }) {
             </span>
           </p>
         )}
-        <Button type='submit' size='sm' disabled={!isValid}>
+        <PendingButton type='submit' size='sm' isPending={saveRate.isPending}>
           {t('rates.save')}
-        </Button>
+        </PendingButton>
       </form>
 
       <RateHistory />

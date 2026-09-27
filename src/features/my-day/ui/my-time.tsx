@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Panel } from '@/shared/components/panel'
+import { PendingButton } from '@/shared/components/pending-button'
 import { TextField } from '@/shared/components/text-field'
 import { useDateFormat } from '@/shared/lib/dates'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -108,13 +108,14 @@ export function MyTime({ workspace }: Props) {
           value={form.note}
           onChange={(note) => setForm((prev) => ({ ...prev, note }))}
         />
-        <Button
+        <PendingButton
           type='submit'
           className='sm:col-span-2'
-          disabled={!parsed.success || log.isPending}
+          disabled={!parsed.success}
+          isPending={log.isPending}
         >
           {t('myDay.log')}
-        </Button>
+        </PendingButton>
       </form>
       {workspace.timeEntries.length > 0 && (
         <ul className='grid gap-1 border-t pt-3 text-sm'>

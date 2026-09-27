@@ -2,3 +2,4 @@
 export { portalQuery } from './api/portal-query'
 export { ClientLinkPanel } from './ui/client-link-panel'
 export { Portal, PortalUnavailable } from './ui/portal-page'
+export { PortalError } from './ui/portal-error'

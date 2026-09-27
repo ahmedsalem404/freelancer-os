@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
+import { EmptyState } from '@/shared/components/empty-state'
 import { cn } from '@/shared/lib/utils'
 import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
@@ -155,6 +156,7 @@ export function Engagements() {
           )
         })}
       </motion.ul>
+      {rows.length === 0 && <EmptyState>{t('common.empty')}</EmptyState>}
     </PageShell>
   )
 }

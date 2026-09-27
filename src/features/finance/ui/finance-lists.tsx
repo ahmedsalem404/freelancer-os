@@ -1,4 +1,5 @@
 import { useDb } from '@/app/client/snapshot-query'
+import { EmptyState } from '@/shared/components/empty-state'
 import { Panel } from '@/shared/components/panel'
 import { useDateFormat } from '@/shared/lib/dates'
 import { Paperclip } from 'lucide-react'
@@ -52,6 +53,11 @@ export function PaymentsList() {
           )
         })}
       </ul>
+      {db.payments.length === 0 && (
+        <div className='p-4'>
+          <EmptyState>{t('common.empty')}</EmptyState>
+        </div>
+      )}
     </Panel>
   )
 }

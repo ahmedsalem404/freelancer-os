@@ -38,33 +38,38 @@ export function MyTasks({ workspace }: Props) {
     add.mutate({ title }, { onSuccess: () => setDraft('') })
   }
 
-  const row = (task: Workspace['tasks'][number]) => (
-    <label
-      key={task.id}
-      className='flex cursor-pointer items-start gap-3 rounded-md px-2 py-2 hover:bg-accent/40'
-    >
-      <Checkbox
-        checked={!!task.completedAt}
-        onCheckedChange={() => toggle.mutate(task.id)}
-        className='mt-0.5'
-      />
-      <span className='grid gap-0.5'>
-        <span
-          className={cn(
-            'text-sm',
-            task.completedAt && 'text-muted-foreground line-through'
-          )}
-        >
-          {task.title}
-        </span>
-        {task.engagementId && (
-          <span className='text-xs text-muted-foreground'>
-            {titleOf(task.engagementId)}
+  const row = (task: Workspace['tasks'][number]) => {
+    const isFlipping = toggle.isPending && toggle.variables === task.id
+    return (
+      <label
+        key={task.id}
+        className='flex cursor-pointer items-start gap-3 rounded-md px-2 py-2 hover:bg-accent/40'
+      >
+        <Checkbox
+          // Flip at once while saving; the refetch confirms it.
+          checked={isFlipping ? !task.completedAt : !!task.completedAt}
+          disabled={isFlipping}
+          onCheckedChange={() => toggle.mutate(task.id)}
+          className='mt-0.5'
+        />
+        <span className='grid gap-0.5'>
+          <span
+            className={cn(
+              'text-sm',
+              task.completedAt && 'text-muted-foreground line-through'
+            )}
+          >
+            {task.title}
           </span>
-        )}
-      </span>
-    </label>
-  )
+          {task.engagementId && (
+            <span className='text-xs text-muted-foreground'>
+              {titleOf(task.engagementId)}
+            </span>
+          )}
+        </span>
+      </label>
+    )
+  }
 
   return (
     <Panel

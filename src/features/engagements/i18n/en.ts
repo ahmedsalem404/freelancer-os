@@ -92,6 +92,10 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
     deliverables: 'Deliverables',
     approved: 'Approved',
     approve: 'Approve',
+    approveTitle: 'Approve “{{name}}”?',
+    approveHint:
+      'Approval is final: the deliverable closes and takes no more revision rounds.',
+    approvedToast: 'Deliverable approved',
     dueOn: 'Due {{date}}',
     logFeedback: 'Log feedback',
     feedbackPlaceholder: "Paste the client's feedback for this round…",
@@ -125,6 +129,10 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
     renewsOn: 'Renews on {{date}}',
     graceDays: '{{count}}-day grace after expiry',
     renew: 'Issue renewal invoice',
+    renewConfirm: 'Issue the renewal invoice?',
+    renewConfirmHint:
+      'A new invoice of {{amount}} is created and a new cycle opens.',
+    pauseConfirm: 'Stop this subscription?',
     extendGrace: 'Give 5 more days',
     pause: 'Stop the service',
     pauseHint:
