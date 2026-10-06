@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useDb } from '@/app/client/snapshot-query'
 import { PendingButton } from '@/shared/components/pending-button'
 import { toMajor, toMinor } from '@/shared/money/money'
-import { Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -15,25 +14,13 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  MAX_UPLOAD_BYTES,
-  UPLOAD_ACCEPT,
-  useUploadFile,
-} from '@/features/files'
+import { MAX_UPLOAD_BYTES, useUploadFile } from '@/features/files'
 import { useRecordPayment } from '@/features/invoices/api/use-record-payment'
 import { invoiceBalance } from '@/features/invoices/model/invoice-status'
 import type { Invoice } from '@/features/invoices/model/invoice.schema'
 import { useCurrentRate, useLastRates } from '@/features/rates/api/use-rates'
 import type { PaymentMethodKind } from '@/features/settings/model/enums'
-
-const METHODS: PaymentMethodKind[] = ['bank', 'kuraimi', 'usdt', 'cash']
+import { PaymentMethodSelect, ProofPicker } from './payment-fields'
 
 type Props = {
   invoice: Invoice | undefined
@@ -82,7 +69,7 @@ function PaymentForm({
   )
   const [method, setMethod] = useState<PaymentMethodKind>('bank')
   const [proof, setProof] = useState<File>()
-  const isProofTooLarge = (proof?.size ?? 0) > MAX_UPLOAD_BYTES
+  const isTooLarge = (proof?.size ?? 0) > MAX_UPLOAD_BYTES
   const isSaving = recordPayment.isPending || uploadProof.isPending
 
   const needsRate = invoice.currency !== 'SAR'
@@ -107,7 +94,7 @@ function PaymentForm({
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
-    if (!isValid || isProofTooLarge || isSaving) return
+    if (!isValid || isTooLarge || isSaving) return
     recordPayment.mutate(
       {
         invoiceId: invoice.id,
@@ -177,40 +164,9 @@ function PaymentForm({
         </div>
       )}
 
-      <div className='grid gap-2'>
-        <Label>{t('finance.paymentMethod')}</Label>
-        <Select
-          value={method}
-          onValueChange={(v) => setMethod(v as PaymentMethodKind)}
-        >
-          <SelectTrigger className='w-full'>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {METHODS.map((m) => (
-              <SelectItem key={m} value={m}>
-                {t(`payMethod.${m}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <PaymentMethodSelect value={method} onChange={setMethod} />
 
-      <label className='flex cursor-pointer items-center gap-3 rounded-lg border border-dashed p-3 text-sm hover:bg-accent/40'>
-        <Upload className='size-4 text-muted-foreground' />
-        <span className='min-w-0 flex-1 truncate'>
-          {proof?.name ?? t('finance.proof')}
-        </span>
-        <input
-          type='file'
-          accept={UPLOAD_ACCEPT}
-          className='sr-only'
-          onChange={(e) => setProof(e.target.files?.[0])}
-        />
-      </label>
-      {isProofTooLarge && (
-        <p className='text-xs text-destructive'>{t('files.tooLarge')}</p>
-      )}
+      <ProofPicker file={proof} onChange={setProof} />
 
       <DialogFooter>
         <Button type='button' variant='ghost' onClick={onDone}>
@@ -218,7 +174,7 @@ function PaymentForm({
         </Button>
         <PendingButton
           type='submit'
-          disabled={!isValid || isProofTooLarge}
+          disabled={!isValid || isTooLarge}
           isPending={isSaving}
         >
           {t('finance.recordPayment')}

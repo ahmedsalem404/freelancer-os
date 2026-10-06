@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
-import { PendingButton } from '@/shared/components/pending-button'
 import { useDateFormat } from '@/shared/lib/dates'
 import { cn } from '@/shared/lib/utils'
-import { AlertTriangle, Check, MessageSquarePlus, Receipt } from 'lucide-react'
+import { Check, MessageSquarePlus, Receipt } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import {
   deliverableApproval,
@@ -24,6 +22,7 @@ import {
   useAddFeedback,
   useBillOverageRounds,
 } from '../api/use-deliverable-actions'
+import { FeedbackForm } from './feedback-form'
 
 type Props = { deliverable: Deliverable; engagement: Engagement }
 
@@ -175,68 +174,16 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
 
       <AnimatePresence initial={false} mode='wait'>
         {isLogging ? (
-          <motion.form
+          <FeedbackForm
             key='form'
+            guard={guard}
+            price={price}
+            note={note}
+            onNoteChange={setNote}
+            isPending={addFeedback.isPending}
             onSubmit={save}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className='grid gap-2 overflow-hidden'
-          >
-            <div
-              className={cn(
-                'flex items-start gap-2 rounded-lg px-3 py-2 text-xs',
-                guard.inScope
-                  ? 'bg-muted text-muted-foreground'
-                  : 'bg-billable-soft text-billable-foreground ring-1 ring-billable/50 dark:text-billable'
-              )}
-            >
-              {!guard.inScope && (
-                <AlertTriangle className='mt-0.5 size-4 shrink-0' />
-              )}
-              <div>
-                <div className='font-medium'>
-                  {guard.inScope
-                    ? t('guard.revisionIn', {
-                        n: guard.nextRound,
-                        limit: guard.limit,
-                      })
-                    : t('guard.revisionOver', {
-                        n: guard.nextRound,
-                        limit: guard.limit,
-                      })}
-                </div>
-                {!guard.inScope && (
-                  <div>{t('guard.revisionOverHint', { price })}</div>
-                )}
-              </div>
-            </div>
-            <Textarea
-              autoFocus
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder={t('engagements.feedbackPlaceholder')}
-              rows={3}
-            />
-            <div className='flex justify-end gap-2'>
-              <Button
-                type='button'
-                variant='ghost'
-                size='sm'
-                onClick={() => setIsLogging(false)}
-              >
-                {t('common.cancel')}
-              </Button>
-              <PendingButton
-                type='submit'
-                size='sm'
-                disabled={!note.trim()}
-                isPending={addFeedback.isPending}
-              >
-                {t('engagements.saveFeedback')}
-              </PendingButton>
-            </div>
-          </motion.form>
+            onCancel={() => setIsLogging(false)}
+          />
         ) : (
           <motion.div
             key='button'

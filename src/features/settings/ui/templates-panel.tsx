@@ -27,18 +27,32 @@ import {
   templateBody,
 } from '../model/templates'
 
-/** Sample values for the preview under the editor. */
-const SAMPLE: Record<string, string> = {
-  client_name: 'Sara',
-  invoice_number: 'INV-2026-018',
-  amount: '1,500 SAR',
-  balance: '750 SAR',
-  due_on: '2026-10-05',
-  days_late: '7',
-  pay_methods: '• Bank: SA00 0000 0000',
-  service: 'Social media',
-  ends_on: '2026-10-30',
-  link: 'https://example.com/p/…',
+/** Sample values for the preview under the editor, in the template's language. */
+const SAMPLES: Record<TemplateLocale, Record<string, string>> = {
+  ar: {
+    client_name: 'سارة',
+    invoice_number: 'INV-2026-018',
+    amount: '1,500 ر.س',
+    balance: '750 ر.س',
+    due_on: '5 أكتوبر 2026',
+    days_late: '7',
+    pay_methods: '• تحويل بنكي: SA00 0000 0000',
+    service: 'إدارة حسابات التواصل',
+    ends_on: '30 أكتوبر 2026',
+    link: 'https://example.com/p/…',
+  },
+  en: {
+    client_name: 'Sara',
+    invoice_number: 'INV-2026-018',
+    amount: '1,500 SAR',
+    balance: '750 SAR',
+    due_on: '5 October 2026',
+    days_late: '7',
+    pay_methods: '• Bank transfer: SA00 0000 0000',
+    service: 'Social media management',
+    ends_on: '30 October 2026',
+    link: 'https://example.com/p/…',
+  },
 }
 
 /** Edit the WhatsApp texts the app sends, per language. */
@@ -126,7 +140,7 @@ export function TemplatesPanel() {
           dir={locale === 'ar' ? 'rtl' : 'ltr'}
           className='rounded-lg bg-muted/60 p-3 text-sm whitespace-pre-wrap'
         >
-          {renderTemplate(body, SAMPLE)}
+          {renderTemplate(body, SAMPLES[locale])}
         </p>
       </div>
       <div className='flex flex-wrap justify-end gap-2'>

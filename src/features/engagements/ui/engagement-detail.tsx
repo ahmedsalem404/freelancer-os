@@ -10,7 +10,6 @@ import { todayIso } from '@/shared/model/dates'
 import { ArrowRight, Pencil, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
 import {
   engagementCurrentValue,
@@ -21,13 +20,9 @@ import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
 import { TypeBadge } from '@/features/engagements/ui/badges'
 import { Money } from '@/features/rates/ui/money'
 import { ChangeScopeDialog } from './change-scope-dialog'
-import { CyclePanel } from './cycle-panel'
 import { EditEngagementDialog } from './edit-engagement-dialog'
 import { EditTermsDialog } from './edit-terms-dialog'
-import { MoneyTab, TimeTab } from './engagement-tabs'
-import { FilesTab } from './files-tab'
-import { RetainerPanel } from './retainer-panel'
-import { WorkTab } from './work-tab'
+import { EngagementTabList } from './engagement-tab-list'
 
 export function EngagementDetail({ id }: { id: string }) {
   const { t } = useTranslation()
@@ -53,8 +48,6 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
   const client = db.clients.find((c) => c.id === e.clientId)!
   const meter = engagementMeter(db, e, todayIso())
   const scope = scopeGuard(db, e)
-  const firstTab =
-    e.type === 'project' ? 'work' : e.type === 'retainer' ? 'usage' : 'cycle'
 
   return (
     <PageShell
@@ -151,59 +144,7 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
         </div>
       )}
 
-      <Tabs defaultValue={firstTab} className='gap-4'>
-        <div className='overflow-x-auto pb-1'>
-          <TabsList>
-            {e.type === 'project' && (
-              <TabsTrigger value='work'>
-                {t('engagements.tabs.work')}
-              </TabsTrigger>
-            )}
-            {e.type === 'retainer' && (
-              <TabsTrigger value='usage'>
-                {t('engagements.tabs.usage')}
-              </TabsTrigger>
-            )}
-            {e.type === 'subscription' && (
-              <TabsTrigger value='cycle'>
-                {t('engagements.tabs.cycle')}
-              </TabsTrigger>
-            )}
-            <TabsTrigger value='money'>
-              {t('engagements.tabs.money')}
-            </TabsTrigger>
-            <TabsTrigger value='time'>{t('engagements.tabs.time')}</TabsTrigger>
-            <TabsTrigger value='files'>
-              {t('engagements.tabs.files')}
-            </TabsTrigger>
-          </TabsList>
-        </div>
-
-        {e.type === 'project' && (
-          <TabsContent value='work'>
-            <WorkTab engagement={e} />
-          </TabsContent>
-        )}
-        {e.type === 'retainer' && (
-          <TabsContent value='usage'>
-            <RetainerPanel engagement={e} />
-          </TabsContent>
-        )}
-        {e.type === 'subscription' && (
-          <TabsContent value='cycle'>
-            <CyclePanel engagement={e} />
-          </TabsContent>
-        )}
-        <TabsContent value='money'>
-          <MoneyTab engagement={e} />
-        </TabsContent>
-        <TabsContent value='time'>
-          <TimeTab engagementId={e.id} />
-        </TabsContent>
-        <TabsContent value='files'>
-          <FilesTab engagementId={e.id} />
-        </TabsContent>
-      </Tabs>
+      <EngagementTabList engagement={e} />
 
       <ChangeScopeDialog
         engagement={e}

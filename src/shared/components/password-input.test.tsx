@@ -1,9 +1,15 @@
-import { describe, expect, it } from 'vitest'
+import '@/app/client/i18n'
+import i18n from 'i18next'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 import { PasswordInput } from './password-input'
 
 describe('PasswordInput', () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage('en')
+  })
+
   it('renders the password input correctly', async () => {
     const { getByPlaceholder, getByRole } = await render(
       <PasswordInput placeholder='password' />

@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { Link } from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { useDb } from '@/app/client/snapshot-query'
 import { useCurrentMember } from '@/app/client/use-current-member'
-import { Panel } from '@/shared/components/panel'
 import { StatTile } from '@/shared/components/stat-tile'
 import { daysFrom, useLang } from '@/shared/lib/dates'
 import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
 import { ar as arLocale, enUS } from 'date-fns/locale'
-import { ArrowUpLeft, Moon } from 'lucide-react'
+import { Moon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,16 +16,14 @@ import {
   subscriptionState,
 } from '@/features/engagements/model/cycles'
 import { engagementMeter } from '@/features/engagements/model/meter'
-import { AllowanceMeter } from '@/features/engagements/ui/allowance-meter'
-import { SubStateBadge } from '@/features/engagements/ui/badges'
 import {
   invoiceBalance,
   invoiceStatus,
 } from '@/features/invoices/model/invoice-status'
-import { BaseMoney, useMoneyText } from '@/features/rates/ui/money'
+import { BaseMoney } from '@/features/rates/ui/money'
 import { RemindersCenter } from '@/features/reminders'
+import { AlertsPanel } from './alerts-panel'
 import { NextActionsPanel } from './next-actions-panel'
-import { OverdueAlert } from './overdue-alert'
 import { ReflectionDialog } from './reflection-dialog'
 import { TasksPanel } from './tasks-panel'
 import { TeamTasksPanel } from './team-tasks-panel'
@@ -36,7 +32,6 @@ import { UpcomingPanel } from './upcoming-panel'
 export function Today() {
   const { t } = useTranslation()
   const lang = useLang()
-  const moneyText = useMoneyText()
   const db = useDb()
   const [reflectOpen, setReflectOpen] = useState(false)
   const now = todayIso()
@@ -92,7 +87,6 @@ export function Today() {
   const dateLine = format(new Date(), 'EEEE d MMMM', {
     locale: lang === 'ar' ? arLocale : enUS,
   })
-  const hasAlerts = billable.length + decisions.length + overdue.length > 0
 
   return (
     <PageShell
@@ -127,78 +121,11 @@ export function Today() {
 
       <div className='grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]'>
         <div className='grid content-start gap-4'>
-          <Panel title={t('today.alerts')} bodyClassName='p-0'>
-            {!hasAlerts ? (
-              <p className='p-4 text-sm text-muted-foreground'>
-                {t('today.noAlerts')}
-              </p>
-            ) : (
-              <ul className='divide-y'>
-                {billable.map(({ e, meter }) => (
-                  <li
-                    key={e.id}
-                    className='grid gap-3 p-4 sm:grid-cols-[1fr_auto] sm:items-center'
-                  >
-                    <div className='grid gap-1.5'>
-                      <Link
-                        to='/engagements/$id'
-                        params={{ id: e.id }}
-                        className='font-medium hover:underline'
-                      >
-                        {e.title}
-                      </Link>
-                      <AllowanceMeter meter={meter} size='sm' />
-                    </div>
-                    <Button
-                      asChild
-                      size='sm'
-                      className='bg-billable text-[#241a00] hover:bg-billable/90'
-                    >
-                      <Link to='/engagements/$id' params={{ id: e.id }}>
-                        {moneyText(
-                          meter.unbilled * e.overageUnitPrice,
-                          e.currency
-                        )}
-                        <ArrowUpLeft className='ltr:-scale-x-100' />
-                      </Link>
-                    </Button>
-                  </li>
-                ))}
-                {decisions.map(({ e, state, daysLeft }) => (
-                  <li
-                    key={e.id}
-                    className='flex flex-wrap items-center justify-between gap-3 p-4'
-                  >
-                    <div className='grid gap-1'>
-                      <div className='flex flex-wrap items-center gap-2'>
-                        <Link
-                          to='/engagements/$id'
-                          params={{ id: e.id }}
-                          className='font-medium hover:underline'
-                        >
-                          {e.title}
-                        </Link>
-                        <SubStateBadge state={state} />
-                      </div>
-                      <span className='text-xs text-muted-foreground'>
-                        {daysLeft >= 0
-                          ? t('common.daysLeft', { count: daysLeft })
-                          : t('common.daysAgo', { count: -daysLeft })}
-                      </span>
-                    </div>
-                    <Button asChild size='sm' variant='outline'>
-                      <Link to='/engagements/$id' params={{ id: e.id }}>
-                        {t('engagements.tabs.cycle')}
-                      </Link>
-                    </Button>
-                  </li>
-                ))}
-                {overdue.map((inv) => (
-                  <OverdueAlert key={inv.id} invoice={inv} />
-                ))}
-              </ul>
-            )}
-          </Panel>
+          <AlertsPanel
+            billable={billable}
+            decisions={decisions}
+            overdue={overdue}
+          />
 
           <NextActionsPanel meters={meters} />
         </div>
