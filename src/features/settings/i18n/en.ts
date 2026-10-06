@@ -27,6 +27,14 @@ export const settingsEn: Widen<typeof settingsAr> = {
       'The backup opens the vault for whoever holds it — never send it or upload it anywhere public.',
     backupPreparing: 'Preparing…',
     backupDone: 'Backup downloaded',
+    restore: 'Restore from a backup',
+    restoreHint:
+      'Puts the system back as it was when the backup was taken. Everything added since is replaced.',
+    restoreConfirm: 'Restore this backup?',
+    restoreConfirmHint:
+      'All current data and files are replaced by what is in “{{name}}”. A copy of the current state is saved first in the backups folder inside the data folder. Afterwards, sign in again with the password from the time of the backup.',
+    restoring: 'Restoring…',
+    restoreDone: 'Restored. Sign in again.',
     backendSoon: 'Coming in the next phase',
     export: 'Download backup',
     appearance: 'Appearance & language',

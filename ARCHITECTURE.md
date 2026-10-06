@@ -148,7 +148,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 |---|---|
 | auth | `POST /auth/sign-in` (rate-limited) · `POST /auth/sign-out` · `GET /auth/me` · `PUT /auth/account` (own name, login, password; needs the current password; rate-limited) · team (owner only): `POST /team` (new assistant + password) · `PUT /team/:id` · `PUT /team/:id/password` (signs them out everywhere) · `POST /team/:id/{deactivate,activate}` — never the owner row (`not_an_assistant`) |
 | rates | `PUT /rates/today` |
-| invoices | `POST /invoices` (manual, issued at once) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` |
+| invoices | `POST /invoices` (manual, issued at once) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` (on a renewal invoice this also undoes the renewal — `renewal_superseded` / `renewal_cycle_billed` when something was built on it) |
 | engagements | `POST /engagements` · `PUT /engagements/:id` · `PUT /engagements/:id/terms` · `POST /engagements/:id/{archive,unarchive}` · `DELETE /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
 | time | `POST /time` · `POST /engagements/:id/bill-hours` |
 | leads | `POST /leads/:id/stage` (not to `won`) · `POST /leads/:id/convert` |
@@ -158,7 +158,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | templates | owner only: `PUT /templates/:key` (`{locale, body}`, upsert) · `DELETE /templates/:key/:locale` (back to the built-in text) |
 | reminders | owner only: `POST /reminders` (`sent`/`dismissed`, idempotent on `kind:target:occurrence:offset`) — the pending list itself is derived (`reminders/model/schedule.ts`) |
 | calendar | owner only: `POST`/`PUT`/`DELETE /calendar-events[/:id]` · `POST`/`PUT /important-dates[/:id]` · `POST /important-dates/:id/{handled,archive}` (handled rolls a recurring date forward) |
-| backup | `GET /backup` (owner only) — zip of a `VACUUM INTO` copy of the database, `data/files/` and `data/vault.key` |
+| backup | `GET /backup` (owner only) — zip of a `VACUUM INTO` copy of the database, `data/files/` and `data/vault.key` · `POST /backup/restore` (owner only, multipart `file`, ≤ 200 MB) — replaces all rows, `data/files/` and the vault key with the zip's; saves `data/backups/before-restore-<time>.zip` first and signs everyone out (`backup_invalid` for anything that isn't a backup) |
 | finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` · `POST /own-subscriptions` · `PUT /own-subscriptions/:id` · `POST /own-subscriptions/:id/renew` (records the period's charge as an expense on the renewal day and moves the renewal on; a period is charged once — `already_charged`) · `POST /own-subscriptions/:id/cancel` · `DELETE /own-subscriptions/:id` |
 | workspace | `GET /workspace` — the signed-in member's own tasks (open + last 14 days), time (14 days), today's note and the titles of their tasks' engagements; no money |
 | portal | owner: `POST`/`DELETE /engagements/:id/portal-link` · public (rate-limited): `GET /portal/:token` · `POST /portal/:token/deliverables/:id/{approval,rounds}` |
@@ -182,7 +182,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-25 | End of day (`POST /day/close`) saves the reflection and carries tasks over atomically | both or neither |
 | 2026-09-25 | Features may import `app/client/*` (snapshot, useAction, prefs, page shell); shared code uses the global `i18next` instance instead of importing app | the composed snapshot schema needs every feature, so it lives in app |
 | 2026-09-25 | Issued invoices are never edited: they are voided with a reason (blocked once payments exist) and reissued | the number sequence and the record stay intact |
-| 2026-09-25 | Voiding frees the revision rounds billed on it (billable again); renewal invoices can't be voided; a client link can't approve or request changes once a deliverable is approved | a void must not lose or double-bill work; undoing a renewal is its own flow |
+| 2026-09-25 | Voiding frees the revision rounds billed on it (billable again); renewal invoices can't be voided (superseded 2026-09-30); a client link can't approve or request changes once a deliverable is approved | a void must not lose or double-bill work; undoing a renewal is its own flow |
 | 2026-09-25 | Archive hides, delete removes mistakes only: the snapshot keeps archived clients/engagements (`archivedAt`) and lists filter them; a hard delete relies on the foreign keys and answers 409 `*_in_use` for anything with records. Engagement type is fixed after opening; new terms reach the open cycle only while nothing bills it | history must always resolve; the DB already knows every reference |
 | 2026-09-25 | Expenses snapshot the daily rate on create and keep it on edit unless the currency changes | a typo fix never revalues past spending |
 | 2026-09-25 | Client portal links: 32-byte token, only its SHA-256 stored, shown once; one active link per engagement; the public view carries no money or contacts; per-IP limit keyed on `cf-connecting-ip` only (X-Forwarded-For is spoofable) | docs/database.md §3.6 |
@@ -194,6 +194,8 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-27 | Backup = one download in Settings (`GET /backup`): database + uploads + vault key in one zip. It opens the vault for whoever holds it, so the UI warns to keep it private. No restore button: restoring is replacing the `data/` folder while the server is stopped | owner decision: a button in Settings |
 | 2026-09-27 | Uploads live at `data/files/<yyyy>/<id>.<ext>`; the path is built by the server, the type is sniffed from the first bytes (a renamed file is refused), the name is only a label. A payment's proof is uploaded right after the payment is saved (a failed upload never loses the payment) | database.md §1 Files |
 | 2026-09-27 | Message templates: built-in Arabic/English texts in `settings/model/templates.ts`; `message_templates` stores only the owner's edits. Reminders: the schedule is derived from invoices (latest reached offset only), subscription cycles (`dueSoonDays` before the end), own subscriptions, important dates and lead follow-ups; `reminder_log` records each decision once. Migration `0003` adds `message_templates`, `reminder_log`, `calendar_events` | docs/database.md §3.1, §3.9 |
+| 2026-09-30 | Undo a renewal = void its invoice (`invoices/server/undo-renewal.ts`): the cycle it opened is deleted and the renewed cycle reopens (`pending`, or `grace` if grace was granted). Refused once the new cycle is closed or another live invoice bills it. The voided renewal line is re-pointed at the reopened cycle so it stays on record | owner request; no second flow to learn |
+| 2026-09-30 | Restore from backup in Settings (`POST /backup/restore`), replacing the 2026-09-27 "no restore button" decision. Checked before anything is touched (known zip entries only, fixed `files/<yyyy>/<id>.<ext>` paths, SQLite integrity, migrated to this version, has an owner); rows are swapped in one transaction on the live connection (`ATTACH`, foreign keys off, `foreign_key_check` before commit). Sessions are not restored: everyone signs in again with the passwords from the backup | owner request; a safety zip makes a wrong restore undoable |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status
@@ -214,7 +216,6 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 - The owner's first password is set with `npm run auth:set-password -- <login>`; after that,
   Settings → My account. Assistants are added, renamed, given a new password and stopped
   or restarted from Settings → Team (a stopped member keeps their records).
-- A renewal can't be undone (its invoice can't be voided).
 - Retainer `tickets` (docs/database.md §3.5) have no table or screen yet: retainers are
   created with hours only, so nothing can reach the tickets unit today.
 - Reminders are shown when the app is opened (Today); nothing is pushed while it is closed.

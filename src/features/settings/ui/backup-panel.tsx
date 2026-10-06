@@ -5,8 +5,9 @@ import { Download, ShieldAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { downloadBackup } from '../api/download-backup'
+import { RestoreBackup } from './restore-backup'
 
-/** One click: the whole system (data, files, vault key) as a zip. */
+/** One click: the whole system (data, files, vault key) as a zip — and back. */
 export function BackupPanel() {
   const { t } = useTranslation()
   const backup = useMutation({
@@ -31,6 +32,7 @@ export function BackupPanel() {
       >
         <Download /> {t('settings.export')}
       </PendingButton>
+      <RestoreBackup />
     </Panel>
   )
 }

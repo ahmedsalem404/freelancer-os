@@ -29,7 +29,10 @@ if (ownerWithoutPassword) {
 
 const server = serve(
   {
-    fetch: createApp(db, { storage: { dataDir: dirname(env.DB_FILE) } }).fetch,
+    fetch: createApp(db, {
+      storage: { dataDir: dirname(env.DB_FILE) },
+      migrationsDir: env.MIGRATIONS_DIR,
+    }).fetch,
     port: env.API_PORT,
     hostname: env.API_HOST,
   },

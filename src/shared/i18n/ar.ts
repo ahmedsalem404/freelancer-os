@@ -23,6 +23,8 @@ export const sharedAr = {
     cancel: 'إلغاء',
     close: 'إغلاق',
     confirm: 'تأكيد',
+    showPassword: 'إظهار كلمة السر',
+    hidePassword: 'إخفاء كلمة السر',
     all: 'الكل',
     back: 'رجوع',
     viewAll: 'عرض الكل',
@@ -113,7 +115,13 @@ export const sharedAr = {
     already_approved: 'تم اعتماد هذا المخرج مسبقاً',
     already_charged: 'هذا التجديد مسجّل من قبل',
     rate_limited: 'طلبات كثيرة — حاول بعد دقيقة',
-    invoice_is_renewal: 'فاتورة التجديد ما تُلغى — الدورة الجديدة مفتوحة عليها',
+    renewal_superseded:
+      'ما يمكن إلغاء هذا التجديد — الدورة اللي بعده انقفلت أو تجددت',
+    renewal_cycle_billed:
+      'ما يمكن إلغاء هذا التجديد — في فاتورة ثانية على الدورة الجديدة، ألغها أولاً',
+    file_too_large: 'الملف أكبر من الحد المسموح',
+    backup_invalid: 'هذا الملف مو نسخة احتياطية صالحة من النظام',
+    renewal_not_found: 'ما لقينا التجديد المرتبط بهذه الفاتورة',
     client_has_engagements: 'أرشف اتفاقات العميل أولاً',
     client_in_use: 'للعميل سجلات — أرشفه بدل الحذف',
     engagement_running: 'أوقف الدورة المفتوحة قبل الأرشفة',

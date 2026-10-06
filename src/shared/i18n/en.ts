@@ -28,6 +28,8 @@ export const sharedEn: Widen<typeof sharedAr> = {
     cancel: 'Cancel',
     close: 'Close',
     confirm: 'Confirm',
+    showPassword: 'Show password',
+    hidePassword: 'Hide password',
     all: 'All',
     back: 'Back',
     viewAll: 'View all',
@@ -118,8 +120,13 @@ export const sharedEn: Widen<typeof sharedAr> = {
     already_approved: 'This deliverable is already approved',
     already_charged: 'This renewal is already recorded',
     rate_limited: 'Too many requests — try again in a minute',
-    invoice_is_renewal:
-      'A renewal invoice can’t be voided — its new cycle is open',
+    renewal_superseded:
+      'This renewal can’t be undone — the cycle after it is already closed or renewed',
+    renewal_cycle_billed:
+      'This renewal can’t be undone — another invoice bills the new cycle; void it first',
+    file_too_large: 'The file is over the size limit',
+    backup_invalid: 'This file is not a valid Freelancer OS backup',
+    renewal_not_found: 'No renewal is linked to this invoice',
     client_has_engagements: 'Archive the client’s engagements first',
     client_in_use: 'This client has records — archive it instead',
     engagement_running: 'Stop the open cycle before archiving',
