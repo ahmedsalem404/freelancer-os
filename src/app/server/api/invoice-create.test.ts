@@ -124,14 +124,40 @@ describe('voiding invoices', () => {
     expect(again.status).toBe(201)
   })
 
-  it('refuses to void a renewal invoice', async () => {
+  it('undoes a renewal: the new cycle goes, the old one reopens', async () => {
     t = createTestApp()
+    const before = (await t.snapshot()).cycles.filter(
+      (c) => c.engagementId === 'e-souq'
+    )
     const renewal = await t.call('POST', '/engagements/e-souq/renew')
     const res = await t.call('POST', `/invoices/${renewal.json.data.id}/void`, {
-      reason: 'Client cancelled',
+      reason: 'Renewed by mistake',
+    })
+    expect(res.status).toBe(200)
+
+    const db = await t.snapshot()
+    const cycles = db.cycles.filter((c) => c.engagementId === 'e-souq')
+    expect(cycles).toHaveLength(before.length)
+    const reopened = cycles.find((c) => c.decision === 'pending')!
+    expect(reopened.renewalInvoiceId).toBeUndefined()
+    expect(reopened.seq).toBe(Math.max(...before.map((c) => c.seq)))
+    expect(db.invoices.find((i) => i.id === renewal.json.data.id)?.state).toBe(
+      'void'
+    )
+    // It can be renewed again, with the same cycle number.
+    const again = await t.call('POST', '/engagements/e-souq/renew')
+    expect(again.status).toBe(201)
+  })
+
+  it('refuses to undo a renewal once the next cycle was renewed too', async () => {
+    t = createTestApp()
+    const first = await t.call('POST', '/engagements/e-souq/renew')
+    await t.call('POST', '/engagements/e-souq/renew')
+    const res = await t.call('POST', `/invoices/${first.json.data.id}/void`, {
+      reason: 'Too late',
     })
     expect(res.status).toBe(409)
-    expect(res.json.error?.code).toBe('invoice_is_renewal')
+    expect(res.json.error?.code).toBe('renewal_superseded')
   })
 
   it('refuses to void twice', async () => {

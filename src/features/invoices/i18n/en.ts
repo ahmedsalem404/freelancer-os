@@ -62,6 +62,9 @@ export const invoicesEn: Widen<typeof invoicesAr> = {
       submit: 'Void invoice',
       done: 'Invoice {{number}} voided',
       reasonLabel: 'Void reason:',
+      renewalHint:
+        'This is a renewal invoice: voiding it undoes the renewal. The new cycle is removed and the previous one opens again, as if it was never renewed.',
+      renewalDone: 'Renewal undone, invoice {{number}} voided',
     },
   },
 }

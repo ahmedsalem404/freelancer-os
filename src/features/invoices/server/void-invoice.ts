@@ -4,6 +4,7 @@ import { and, eq, ne, sql } from 'drizzle-orm'
 import type { VoidInvoiceInput } from '../model/invoice.input'
 import { invoices } from './invoices.table'
 import { payments } from './payments.table'
+import { undoRenewal } from './undo-renewal'
 
 /**
  * Billed revision rounds point at their invoice line; a void frees them so
@@ -21,8 +22,8 @@ function releaseRevisionRounds(ctx: Ctx, invoiceId: string) {
 /**
  * Cancels an issued invoice instead of editing it: the number stays used
  * and the invoice stays on record. Money already received blocks this —
- * refund or reassign the payment first. A renewal invoice is refused: its
- * new cycle is already open, and undoing a renewal is its own flow.
+ * refund or reassign the payment first. Voiding a renewal invoice also undoes
+ * the renewal (`undoRenewal`).
  */
 export function voidInvoice(ctx: Ctx, id: string, input: VoidInvoiceInput) {
   const invoice = required(
@@ -41,13 +42,6 @@ export function voidInvoice(ctx: Ctx, id: string, input: VoidInvoiceInput) {
       409
     )
   }
-  if (invoice.kind === 'renewal') {
-    throw new DomainError(
-      'invoice_is_renewal',
-      'A renewal invoice cannot be voided',
-      409
-    )
-  }
   const paid = ctx.db
     .select({ id: payments.id })
     .from(payments)
@@ -61,6 +55,7 @@ export function voidInvoice(ctx: Ctx, id: string, input: VoidInvoiceInput) {
     )
   }
 
+  if (invoice.kind === 'renewal') undoRenewal(ctx, id)
   ctx.db
     .update(invoices)
     .set({ state: 'void', voidedAt: ctx.now, voidReason: input.reason })

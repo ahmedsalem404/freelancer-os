@@ -41,10 +41,9 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
   const status = invoiceStatus(db, invoice, todayIso())
   const isVoid = invoice.state === 'void'
   const balance = isVoid ? 0 : invoiceBalance(db, invoice)
-  // Mirrors the server: renewals and invoices with payments stay on record.
+  // Mirrors the server: invoices with payments stay on record.
   const canVoid =
     invoice.state === 'issued' &&
-    invoice.kind !== 'renewal' &&
     !db.payments.some(
       (p) => p.invoiceId === invoice.id && p.status !== 'rejected'
     )

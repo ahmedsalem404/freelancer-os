@@ -23,6 +23,8 @@ export function VoidInvoiceDialog({ invoice, onClose }: Props) {
   const cancel = useVoidInvoice()
   const [reason, setReason] = useState('')
   const isValid = reason.trim().length > 0
+  // Voiding a renewal also undoes it (server: undo-renewal.ts).
+  const isRenewal = invoice.kind === 'renewal'
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -31,7 +33,10 @@ export function VoidInvoiceDialog({ invoice, onClose }: Props) {
       { id: invoice.id, reason: reason.trim() },
       {
         onSuccess: () => {
-          toast.success(t('invoice.void.done', { number: invoice.number }))
+          const done = isRenewal
+            ? 'invoice.void.renewalDone'
+            : 'invoice.void.done'
+          toast.success(t(done, { number: invoice.number }))
           onClose()
         },
       }
@@ -46,7 +51,9 @@ export function VoidInvoiceDialog({ invoice, onClose }: Props) {
             <DialogTitle>
               {t('invoice.void.title', { number: invoice.number })}
             </DialogTitle>
-            <DialogDescription>{t('invoice.void.hint')}</DialogDescription>
+            <DialogDescription>
+              {t(isRenewal ? 'invoice.void.renewalHint' : 'invoice.void.hint')}
+            </DialogDescription>
           </DialogHeader>
           <TextField
             id='void-reason'
