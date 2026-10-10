@@ -11,7 +11,7 @@ import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
-  currentCycle,
+  latestCycle,
   subscriptionState,
 } from '@/features/engagements/model/cycles'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
@@ -25,13 +25,7 @@ import { NewEngagementDialog } from './ui/new-engagement-dialog'
 
 type Filter = 'all' | EngagementType | 'archived'
 
-const FILTERS: Filter[] = [
-  'all',
-  'project',
-  'retainer',
-  'subscription',
-  'archived',
-]
+const FILTERS: Filter[] = ['all', 'project', 'subscription', 'archived']
 
 /** Type filters show live engagements; "archived" shows only archived. */
 const matches = (e: Engagement, f: Filter) =>
@@ -52,7 +46,7 @@ export function Engagements() {
       e,
       client: db.clients.find((c) => c.id === e.clientId)!,
       meter: engagementMeter(db, e, now),
-      cycle: currentCycle(db, e.id),
+      cycle: latestCycle(db, e.id),
     }))
     .sort((a, b) => b.meter.unbilled - a.meter.unbilled)
 

@@ -9,8 +9,6 @@ export const todayAr = {
     unpaid: 'بانتظار التحصيل',
     unpaidCount_one: 'فاتورة واحدة',
     unpaidCount: '{{count}} فواتير',
-    billable: 'عمل خارج الاتفاق',
-    billableHint: 'لم يُفوتر بعد',
     renewals: 'تجديدات هذا الأسبوع',
     nextActions: 'الخطوة التالية لكل اتفاق',
     alerts: 'تحتاج قراراً',

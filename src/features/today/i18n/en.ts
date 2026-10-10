@@ -11,8 +11,6 @@ export const todayEn: Widen<typeof todayAr> = {
     unpaid: 'Waiting to be collected',
     unpaidCount_one: '1 invoice',
     unpaidCount: '{{count}} invoices',
-    billable: 'Out-of-scope work',
-    billableHint: 'Not billed yet',
     renewals: 'Renewals this week',
     nextActions: 'Next step per engagement',
     alerts: 'Needs a decision',

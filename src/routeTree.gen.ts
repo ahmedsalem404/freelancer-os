@@ -23,7 +23,6 @@ import { Route as AuthenticatedFinanceRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedPricingRouteImport } from './routes/_authenticated/pricing'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedTimeRouteImport } from './routes/_authenticated/time'
 import { Route as PTokenRouteImport } from './routes/p/$token'
 import { Route as AuthenticatedClientsIndexRouteImport } from './routes/_authenticated/clients/index'
 import { Route as AuthenticatedClientsIdRouteImport } from './routes/_authenticated/clients/$id'
@@ -100,11 +99,6 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTimeRoute = AuthenticatedTimeRouteImport.update({
-  id: '/time',
-  path: '/time',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const PTokenRoute = PTokenRouteImport.update({
   id: '/p/$token',
   path: '/p/$token',
@@ -153,7 +147,6 @@ export interface FileRoutesByFullPath {
   '/leads': typeof AuthenticatedLeadsRoute
   '/pricing': typeof AuthenticatedPricingRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/time': typeof AuthenticatedTimeRoute
   '/p/$token': typeof PTokenRoute
   '/clients/$id': typeof AuthenticatedClientsIdRoute
   '/engagements/$id': typeof AuthenticatedEngagementsIdRoute
@@ -174,7 +167,6 @@ export interface FileRoutesByTo {
   '/leads': typeof AuthenticatedLeadsRoute
   '/pricing': typeof AuthenticatedPricingRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/time': typeof AuthenticatedTimeRoute
   '/p/$token': typeof PTokenRoute
   '/': typeof AuthenticatedIndexRoute
   '/clients/$id': typeof AuthenticatedClientsIdRoute
@@ -198,7 +190,6 @@ export interface FileRoutesById {
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/pricing': typeof AuthenticatedPricingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/time': typeof AuthenticatedTimeRoute
   '/p/$token': typeof PTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/clients/$id': typeof AuthenticatedClientsIdRoute
@@ -223,7 +214,6 @@ export interface FileRouteTypes {
     | '/leads'
     | '/pricing'
     | '/settings'
-    | '/time'
     | '/p/$token'
     | '/clients/$id'
     | '/engagements/$id'
@@ -244,7 +234,6 @@ export interface FileRouteTypes {
     | '/leads'
     | '/pricing'
     | '/settings'
-    | '/time'
     | '/p/$token'
     | '/'
     | '/clients/$id'
@@ -267,7 +256,6 @@ export interface FileRouteTypes {
     | '/_authenticated/leads'
     | '/_authenticated/pricing'
     | '/_authenticated/settings'
-    | '/_authenticated/time'
     | '/p/$token'
     | '/_authenticated/'
     | '/_authenticated/clients/$id'
@@ -389,13 +377,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/time': {
-      id: '/_authenticated/time'
-      path: '/time'
-      fullPath: '/time'
-      preLoaderRoute: typeof AuthenticatedTimeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/p/$token': {
       id: '/p/$token'
       path: '/p/$token'
@@ -447,7 +428,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedPricingRoute: typeof AuthenticatedPricingRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedTimeRoute: typeof AuthenticatedTimeRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedClientsIdRoute: typeof AuthenticatedClientsIdRoute
   AuthenticatedEngagementsIdRoute: typeof AuthenticatedEngagementsIdRoute
@@ -462,7 +442,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedPricingRoute: AuthenticatedPricingRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedTimeRoute: AuthenticatedTimeRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedClientsIdRoute: AuthenticatedClientsIdRoute,
   AuthenticatedEngagementsIdRoute: AuthenticatedEngagementsIdRoute,

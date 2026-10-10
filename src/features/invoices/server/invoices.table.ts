@@ -19,6 +19,16 @@ import {
   INVOICE_STATES,
 } from '../model/enums'
 
+/** Still lists the retired `retainer_overage` — see engagements.table.ts. */
+const DB_ITEM_SOURCES = [
+  'manual',
+  'deposit',
+  'revision_overage',
+  'retainer_overage',
+  'scope_change',
+  'renewal',
+] as const
+
 /** Invoices. Status / paid / balance are derived from payments (§5.1). */
 export const invoices = sqliteTable(
   'invoices',
@@ -84,10 +94,7 @@ export const invoiceItems = sqliteTable(
     ...timestamps(),
   },
   (t) => [
-    check(
-      'item_source',
-      sql`${t.sourceKind} IN ${inList(INVOICE_ITEM_SOURCES)}`
-    ),
+    check('item_source', sql`${t.sourceKind} IN ${inList(DB_ITEM_SOURCES)}`),
     check('item_quantity', sql`${t.quantity} > 0`),
     check(
       'item_cycle_link',

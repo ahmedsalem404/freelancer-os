@@ -7,7 +7,7 @@ import {
 } from '@/shared/model/schema'
 
 /**
- * What an assistant sees (`GET /api/workspace`): their own tasks, time and
+ * What an assistant sees (`GET /api/workspace`): their own tasks and
  * note, and only the titles of the engagements their tasks belong to.
  * No money, clients, invoices or settings (docs/database.md §3.1).
  */
@@ -23,15 +23,6 @@ export const workspaceSchema = z.object({
     })
   ),
   engagements: z.array(z.object({ id: recordId, title: z.string() })),
-  timeEntries: z.array(
-    z.object({
-      id: recordId,
-      engagementId: recordId.optional(),
-      description: z.string(),
-      minutes: z.number().int(),
-      workOn: isoDate,
-    })
-  ),
   reflection: z.string(),
 })
 

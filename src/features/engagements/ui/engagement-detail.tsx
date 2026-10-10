@@ -123,6 +123,11 @@ function EngagementView({ engagement: e }: { engagement: Engagement }) {
             showBase
             className='text-xl font-semibold'
           />
+          {e.paymentChannel && (
+            <span className='text-xs text-muted-foreground'>
+              {t(`channels.${e.paymentChannel}`)}
+            </span>
+          )}
         </div>
       </div>
 

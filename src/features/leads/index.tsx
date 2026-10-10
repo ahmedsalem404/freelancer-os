@@ -14,15 +14,17 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import { GripVertical } from 'lucide-react'
+import { GripVertical, Pencil, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
 import type { LeadStage } from '@/features/leads/model/enums'
 import type { Lead } from '@/features/leads/model/lead.schema'
 import { LEAD_TONE } from '@/features/leads/ui/lead-tone'
 import { BaseMoney, Money } from '@/features/rates/ui/money'
 import { useMoveLead } from './api/use-move-lead'
 import { ConvertLeadDialog } from './ui/convert-lead-dialog'
+import { LeadFormDialog } from './ui/lead-form-dialog'
 
 const STAGES: LeadStage[] = ['lead', 'proposal', 'negotiation', 'won', 'lost']
 const STALE_DAYS = 7
@@ -32,6 +34,8 @@ export function Leads() {
   const leads = useDb().leads
   const moveLead = useMoveLead()
   const [converting, setConverting] = useState<Lead>()
+  // `null` = adding a new lead; a lead = editing it; undefined = closed.
+  const [editing, setEditing] = useState<Lead | null>()
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor)
@@ -57,7 +61,15 @@ export function Leads() {
   }
 
   return (
-    <PageShell title={t('leads.title')} subtitle={t('leads.subtitle')}>
+    <PageShell
+      title={t('leads.title')}
+      subtitle={t('leads.subtitle')}
+      actions={
+        <Button size='sm' onClick={() => setEditing(null)}>
+          <Plus /> {t('leads.form.add')}
+        </Button>
+      }
+    >
       <p className='-mt-3 text-xs text-muted-foreground'>
         {t('leads.dragHint')}
       </p>
@@ -68,10 +80,17 @@ export function Leads() {
               key={stage}
               stage={stage}
               leads={leads.filter((l) => l.stage === stage)}
+              onEdit={setEditing}
             />
           ))}
         </div>
       </DndContext>
+      {editing !== undefined && (
+        <LeadFormDialog
+          lead={editing ?? undefined}
+          onClose={() => setEditing(undefined)}
+        />
+      )}
       {converting && (
         <ConvertLeadDialog
           lead={converting}
@@ -82,7 +101,13 @@ export function Leads() {
   )
 }
 
-function Column({ stage, leads }: { stage: LeadStage; leads: Lead[] }) {
+type ColumnProps = {
+  stage: LeadStage
+  leads: Lead[]
+  onEdit: (lead: Lead) => void
+}
+
+function Column({ stage, leads, onEdit }: ColumnProps) {
   const { t } = useTranslation()
   const { setNodeRef, isOver } = useDroppable({ id: stage })
   const total = leads.reduce((s, l) => s + l.baseAmount, 0)
@@ -106,13 +131,19 @@ function Column({ stage, leads }: { stage: LeadStage; leads: Lead[] }) {
         <BaseMoney base={total} className='text-xs text-muted-foreground' />
       </header>
       {leads.map((lead) => (
-        <LeadCard key={lead.id} lead={lead} />
+        <LeadCard key={lead.id} lead={lead} onEdit={onEdit} />
       ))}
     </section>
   )
 }
 
-function LeadCard({ lead }: { lead: Lead }) {
+function LeadCard({
+  lead,
+  onEdit,
+}: {
+  lead: Lead
+  onEdit: (lead: Lead) => void
+}) {
   const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: lead.id })
@@ -142,7 +173,22 @@ function LeadCard({ lead }: { lead: Lead }) {
           <span className='font-medium'>{lead.company ?? lead.name}</span>
           <span className='text-xs text-muted-foreground'>{lead.service}</span>
         </div>
-        <GripVertical className='size-4 shrink-0 text-muted-foreground' />
+        <div className='flex shrink-0 items-center gap-1'>
+          {lead.stage !== 'won' && (
+            <Button
+              size='icon'
+              variant='ghost'
+              className='size-7'
+              aria-label={t('leads.form.editTitle')}
+              // Keep a click on the pencil from starting a drag.
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={() => onEdit(lead)}
+            >
+              <Pencil />
+            </Button>
+          )}
+          <GripVertical className='size-4 text-muted-foreground' />
+        </div>
       </div>
       <div className='flex items-center justify-between gap-2 text-xs'>
         <Money

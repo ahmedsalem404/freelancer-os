@@ -31,6 +31,7 @@ export const createFilesRoutes = (storage: Storage) =>
           clientId: form.clientId || undefined,
           engagementId: form.engagementId || undefined,
           paymentId: form.paymentId || undefined,
+          invoiceId: form.invoiceId || undefined,
           note: form.note || undefined,
         })
         if (!(file instanceof File) || !fields.success) {

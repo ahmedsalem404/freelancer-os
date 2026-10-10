@@ -13,7 +13,9 @@ import {
 } from '@/components/ui/dialog'
 import { useUpdateEngagement } from '../api/use-save-engagement'
 import type { Engagement } from '../model/engagement.schema'
+import type { PaymentChannel } from '../model/enums'
 import { updateEngagementInput } from '../model/terms.input'
+import { PaymentChannelSelect } from './payment-channel-select'
 
 type Props = { engagement: Engagement; onClose: () => void }
 
@@ -26,10 +28,14 @@ export function EditEngagementDialog({ engagement, onClose }: Props) {
   const [nextActionOn, setNextActionOn] = useState(
     engagement.nextActionOn ?? ''
   )
+  const [paymentChannel, setPaymentChannel] = useState<
+    PaymentChannel | undefined
+  >(engagement.paymentChannel)
   const body = {
     title,
     nextAction,
     nextActionOn: nextActionOn || undefined,
+    paymentChannel,
   }
   const isValid = updateEngagementInput.safeParse(body).success
 
@@ -74,6 +80,11 @@ export function EditEngagementDialog({ engagement, onClose }: Props) {
             dir='ltr'
             value={nextActionOn}
             onChange={setNextActionOn}
+          />
+          <PaymentChannelSelect
+            id='engagement-edit-channel'
+            value={paymentChannel}
+            onChange={setPaymentChannel}
           />
           <DialogFooter>
             <Button type='button' variant='ghost' onClick={onClose}>

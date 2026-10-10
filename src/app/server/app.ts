@@ -25,7 +25,6 @@ import { createPortalRoutes } from '@/features/portal/server'
 import { ratesRoutes } from '@/features/rates/server'
 import { remindersRoutes } from '@/features/reminders/server'
 import { templatesRoutes } from '@/features/settings/server'
-import { timeRoutes } from '@/features/time/server'
 import { todayRoutes } from '@/features/today/server'
 import { createBackupRoutes } from './backup.routes'
 import { type Clock, createRunner } from './context'
@@ -49,7 +48,7 @@ const isPublic = (path: string) =>
   PUBLIC_PATHS.has(path) || path.startsWith('/api/portal/')
 /**
  * Every signed-in member may call these; the rest is owner-only. The
- * services themselves keep an assistant to their own tasks, time and notes.
+ * services themselves keep an assistant to their own tasks and notes.
  */
 const ANY_MEMBER = [
   'GET /api/auth/me',
@@ -60,7 +59,6 @@ const ANY_MEMBER = [
   'POST /api/tasks/:id/toggle',
   'PUT /api/reflections/today',
   'POST /api/day/close',
-  'POST /api/time',
 ].map((rule) => {
   const [method, path] = rule.split(' ')
   const pattern = new RegExp(`^${path.replace(/:[a-z]+/g, '[^/]+')}$`)
@@ -77,7 +75,6 @@ const FEATURE_ROUTES = [
   ratesRoutes,
   invoicesRoutes,
   engagementsRoutes,
-  timeRoutes,
   leadsRoutes,
   todayRoutes,
   clientsRoutes,

@@ -7,7 +7,7 @@ import { engagementCycles } from './cycles.table'
 import { engagements } from './engagements.table'
 import { findEngagement, openCycle } from './lookup'
 
-/** A non-void invoice line already bills this cycle (renewal or overage). */
+/** A non-void invoice line already bills this cycle (renewal). */
 function isCycleBilled(ctx: Ctx, cycleId: string) {
   const row = ctx.db.get<{ n: number }>(
     sql`SELECT count(*) AS n FROM invoice_items AS item
@@ -19,7 +19,7 @@ function isCycleBilled(ctx: Ctx, cycleId: string) {
 
 /**
  * Changes what an engagement is agreed at. The type is fixed. The open
- * cycle takes the new amount and hours only while nothing bills it yet;
+ * cycle takes the new amount only while nothing bills it yet;
  * otherwise they start with the next renewal. Issued invoices never change,
  * and the stored exchange rate stays (a typo fix never revalues).
  */
@@ -32,12 +32,10 @@ export function updateTerms(ctx: Ctx, id: string, input: UpdateTermsInput) {
       409
     )
   }
-  const isRetainer = e.type === 'retainer'
   ctx.db
     .update(engagements)
     .set({
       ...money(input.amountMinor, e.currency, e.rateToBase),
-      allowanceIncluded: isRetainer ? input.includedHours : e.allowanceIncluded,
       cyclePeriod: e.type === 'project' ? null : input.cyclePeriod,
     })
     .where(eq(engagements.id, id))
@@ -49,10 +47,7 @@ export function updateTerms(ctx: Ctx, id: string, input: UpdateTermsInput) {
   if (cycle && appliesToOpenCycle) {
     ctx.db
       .update(engagementCycles)
-      .set({
-        amount: input.amountMinor,
-        ...(isRetainer && { includedUnits: input.includedHours }),
-      })
+      .set({ amount: input.amountMinor })
       .where(eq(engagementCycles.id, cycle.id))
       .run()
   }

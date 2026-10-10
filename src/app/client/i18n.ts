@@ -36,8 +36,6 @@ import { remindersAr } from '@/features/reminders/i18n/ar'
 import { remindersEn } from '@/features/reminders/i18n/en'
 import { settingsAr } from '@/features/settings/i18n/ar'
 import { settingsEn } from '@/features/settings/i18n/en'
-import { timeAr } from '@/features/time/i18n/ar'
-import { timeEn } from '@/features/time/i18n/en'
 import { todayAr } from '@/features/today/i18n/ar'
 import { todayEn } from '@/features/today/i18n/en'
 
@@ -50,7 +48,6 @@ const ar = {
   ...calendarAr,
   ...financeAr,
   ...invoicesAr,
-  ...timeAr,
   ...pricingAr,
   ...ratesAr,
   ...settingsAr,
@@ -70,7 +67,6 @@ const en = {
   ...calendarEn,
   ...financeEn,
   ...invoicesEn,
-  ...timeEn,
   ...pricingEn,
   ...ratesEn,
   ...settingsEn,

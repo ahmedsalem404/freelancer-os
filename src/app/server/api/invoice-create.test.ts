@@ -77,6 +77,27 @@ describe('manual invoices', () => {
     expect(res.json.error?.code).toBe('engagement_mismatch')
   })
 
+  it("invoices in the engagement's currency when it differs from the client's", async () => {
+    t = createTestApp()
+    const opened = await t.call('POST', '/engagements', {
+      clientId: 'c-nakhla',
+      title: 'Dollar job',
+      type: 'project',
+      amountMinor: 100_000,
+      startOn: today,
+      currency: 'USD',
+    })
+    const res = await t.call('POST', '/invoices', {
+      ...MANUAL,
+      engagementId: opened.json.data.id,
+    })
+    expect(res.status).toBe(201)
+    const invoice = (await t.snapshot()).invoices.find(
+      (i) => i.id === res.json.data.id
+    )
+    expect(invoice?.currency).toBe('USD')
+  })
+
   it('rejects an invoice without lines', async () => {
     t = createTestApp()
     const res = await t.call('POST', '/invoices', { ...MANUAL, items: [] })

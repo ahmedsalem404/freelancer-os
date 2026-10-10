@@ -9,6 +9,7 @@ import {
 import { id, inList, timestamps } from '../../../shared/db/columns'
 import { clients } from '../../clients/server/clients.table'
 import { engagements } from '../../engagements/server/engagements.table'
+import { invoices } from '../../invoices/server/invoices.table'
 import { payments } from '../../invoices/server/payments.table'
 import { teamMembers } from '../../settings/server/team.table'
 import { ATTACHMENT_KINDS } from '../model/enums'
@@ -31,6 +32,8 @@ export const attachments = sqliteTable(
     clientId: text().references(() => clients.id),
     engagementId: text().references(() => engagements.id),
     paymentId: text().references(() => payments.id),
+    /** A saved PDF copy of this invoice (kind `invoice`). */
+    invoiceId: text().references(() => invoices.id),
     note: text(),
     uploadedOn: text().notNull(),
     uploadedBy: text()
@@ -47,6 +50,10 @@ export const attachments = sqliteTable(
     check(
       'attachment_proof_owner',
       sql`${t.kind} <> 'payment_proof' OR ${t.paymentId} IS NOT NULL`
+    ),
+    check(
+      'attachment_invoice_owner',
+      sql`${t.kind} <> 'invoice' OR ${t.invoiceId} IS NOT NULL`
     ),
     index('attachments_client').on(t.clientId),
     index('attachments_engagement').on(t.engagementId),

@@ -27,7 +27,6 @@ const emptyDb = (): Db => ({
   payments: [],
   expenses: [],
   ownSubscriptions: [],
-  timeEntries: [],
   importantDates: [],
   tasks: [],
   team: [],
@@ -197,44 +196,25 @@ describe('engagementMeter', () => {
     })
   })
 
-  it('derives retainer hours from time entries inside the current cycle', () => {
+  it('measures a subscription by the days used in its cycle', () => {
     const cycle: EngagementCycle = {
       id: 'cy1',
       engagementId: 'e1',
       seq: 1,
       startsOn: '2026-09-01',
       endsOn: '2026-10-01',
-      includedUnits: 10,
+      includedUnits: 0,
       graceDays: 0,
       graceExtendedDays: 0,
       decision: 'pending',
     }
-    const entry = (id: string, minutes: number, workOn: string) => ({
-      id,
-      memberId: 'm1',
-      engagementId: 'e1',
-      description: '',
-      minutes,
-      workOn,
-      billable: true,
-      countsToAllowance: true,
-    })
-    const db = {
-      ...emptyDb(),
-      cycles: [cycle],
-      timeEntries: [
-        entry('t1', 480, '2026-09-05'),
-        entry('t2', 300, '2026-09-12'),
-        entry('t3', 600, '2026-08-20'), // previous cycle — ignored
-      ],
-    }
-    const e = engagement({ type: 'retainer', allowanceUnit: 'hours' })
+    const db = { ...emptyDb(), cycles: [cycle] }
+    const e = engagement({ type: 'subscription', allowanceUnit: 'days' })
     expect(engagementMeter(db, e, '2026-09-15')).toMatchObject({
-      used: 13,
-      included: 10,
-      overage: 3,
-      unbilled: 3,
-      state: 'over',
+      unit: 'days',
+      used: 14,
+      included: 30,
+      overage: 0,
     })
   })
 })

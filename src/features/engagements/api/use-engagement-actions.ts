@@ -37,6 +37,15 @@ export const useStopCycle = () =>
     )
   )
 
+export const useResumeCycle = () =>
+  useAction((engagementId: string) =>
+    callApi(
+      'POST',
+      path(engagementId, 'resume'),
+      z.object({ status: z.string() })
+    )
+  )
+
 export const useToggleStage = () =>
   useAction((stageId: string) =>
     callApi(

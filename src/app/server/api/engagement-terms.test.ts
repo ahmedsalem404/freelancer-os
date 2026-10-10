@@ -1,22 +1,26 @@
 import { isoDay } from '@/shared/model/dates'
+import { eq } from 'drizzle-orm'
 import { afterEach, describe, expect, it } from 'vitest'
+import { engagementCycles } from '@/features/engagements/server/cycles.table'
 import { createTestApp } from './test-app'
+
+const cycleAmount = (db: ReturnType<typeof createTestApp>['db'], id: string) =>
+  db.select().from(engagementCycles).where(eq(engagementCycles.id, id)).get()
+    ?.amount
 
 let t: ReturnType<typeof createTestApp>
 afterEach(() => t.close())
 
 const today = isoDay(new Date())
-const FULL_DAY = 8 * 60
 
-async function openRetainer() {
+async function openSubscription() {
   const res = await t.call('POST', '/engagements', {
     clientId: 'c-nakhla',
     title: 'Monthly support',
-    type: 'retainer',
+    type: 'subscription',
     amountMinor: 100_000,
     startOn: today,
     cyclePeriod: 'monthly',
-    includedHours: 10,
   })
   return String(res.json.data.id)
 }
@@ -36,12 +40,11 @@ describe('editing engagement terms', () => {
 
   it('applies new terms to an open cycle with nothing billed', async () => {
     t = createTestApp()
-    const id = await openRetainer()
+    const id = await openSubscription()
     const res = await t.call('PUT', `/engagements/${id}/terms`, {
-      type: 'retainer',
+      type: 'subscription',
       amountMinor: 150_000,
       cyclePeriod: 'monthly',
-      includedHours: 15,
     })
     expect(res.status).toBe(200)
     expect(res.json.data.appliesToOpenCycle).toBe(true)
@@ -49,40 +52,29 @@ describe('editing engagement terms', () => {
     const snap = await t.snapshot()
     expect(snap.engagements.find((e) => e.id === id)).toMatchObject({
       amount: 150_000,
-      allowanceIncluded: 15,
     })
-    const cycle = snap.cycles.find((c) => c.engagementId === id)
-    expect(cycle?.includedUnits).toBe(15)
+    const cycle = snap.cycles.find((c) => c.engagementId === id)!
+    expect(cycleAmount(t.db, cycle.id)).toBe(150_000)
   })
 
   it('keeps a billed cycle as agreed; new terms start next cycle', async () => {
     t = createTestApp()
-    for (const _ of [1, 2]) {
-      await t.call('POST', '/time', {
-        engagementId: 'e-masar',
-        minutes: FULL_DAY,
-        description: 'Migration',
-        billable: true,
-      })
-    }
-    await t.call('POST', '/engagements/e-masar/bill-hours')
     const before = (await t.snapshot()).cycles.find(
       (c) => c.engagementId === 'e-masar' && c.decision === 'pending'
     )!
+    const amountBefore = cycleAmount(t.db, before.id)
 
     const res = await t.call('PUT', '/engagements/e-masar/terms', {
-      type: 'retainer',
+      type: 'subscription',
       amountMinor: 200_000,
       cyclePeriod: 'monthly',
-      includedHours: 40,
     })
     expect(res.json.data.appliesToOpenCycle).toBe(false)
     const snap = await t.snapshot()
-    const cycle = snap.cycles.find((c) => c.id === before.id)
-    expect(cycle?.includedUnits).toBe(before.includedUnits)
-    expect(
-      snap.engagements.find((e) => e.id === 'e-masar')?.allowanceIncluded
-    ).toBe(40)
+    expect(cycleAmount(t.db, before.id)).toBe(amountBefore)
+    expect(snap.engagements.find((e) => e.id === 'e-masar')?.amount).toBe(
+      200_000
+    )
   })
 
   it('bills the new amount on the next renewal', async () => {
@@ -102,22 +94,11 @@ describe('editing engagement terms', () => {
   it('keeps the engagement type', async () => {
     t = createTestApp()
     const res = await t.call('PUT', '/engagements/e-nakhla/terms', {
-      type: 'retainer',
+      type: 'subscription',
       amountMinor: 100_000,
       cyclePeriod: 'monthly',
-      includedHours: 10,
     })
     expect(res.status).toBe(409)
     expect(res.json.error?.code).toBe('type_locked')
-  })
-
-  it('rejects a retainer without included hours', async () => {
-    t = createTestApp()
-    const res = await t.call('PUT', '/engagements/e-masar/terms', {
-      type: 'retainer',
-      amountMinor: 100_000,
-      cyclePeriod: 'monthly',
-    })
-    expect(res.status).toBe(400)
   })
 })

@@ -31,16 +31,65 @@ describe('engagement setup', () => {
     })
   })
 
-  it('opens a retainer with its first cycle', async () => {
+  it('opens an engagement in another currency with a payment channel', async () => {
+    t = createTestApp()
+    const res = await t.call('POST', '/engagements', {
+      clientId: 'c-nakhla',
+      title: 'Dollar job',
+      type: 'project',
+      amountMinor: 100_000,
+      startOn: today,
+      currency: 'USD',
+      paymentChannel: 'qutaibi',
+    })
+    expect(res.status).toBe(201)
+    const e = (await t.snapshot()).engagements.find(
+      (x) => x.id === res.json.data.id
+    )
+    expect(e).toMatchObject({ currency: 'USD', paymentChannel: 'qutaibi' })
+  })
+
+  it('rejects an unknown payment channel', async () => {
+    t = createTestApp()
+    const res = await t.call('POST', '/engagements', {
+      clientId: 'c-nakhla',
+      title: 'X',
+      type: 'project',
+      amountMinor: 100,
+      startOn: today,
+      paymentChannel: 'paypal',
+    })
+    expect(res.status).toBe(400)
+  })
+
+  it('changes and clears the payment channel when editing', async () => {
+    t = createTestApp()
+    const set = await t.call('PUT', '/engagements/e-nakhla', {
+      title: 'Brand',
+      nextAction: '',
+      paymentChannel: 'aden',
+    })
+    expect(set.status).toBe(200)
+    const channel = async () =>
+      (await t.snapshot()).engagements.find((e) => e.id === 'e-nakhla')
+        ?.paymentChannel
+    expect(await channel()).toBe('aden')
+    await t.call('PUT', '/engagements/e-nakhla', {
+      title: 'Brand',
+      nextAction: '',
+    })
+    expect(await channel()).toBeUndefined()
+  })
+
+  it('opens a subscription with its first cycle', async () => {
     t = createTestApp()
     const res = await t.call('POST', '/engagements', {
       clientId: 'c-nakhla',
       title: 'Monthly support',
-      type: 'retainer',
+      type: 'subscription',
       amountMinor: 100_000,
       startOn: today,
       cyclePeriod: 'monthly',
-      includedHours: 12,
     })
     expect(res.status).toBe(201)
     const snap = await t.snapshot()
@@ -50,12 +99,11 @@ describe('engagement setup', () => {
     expect(cycles).toHaveLength(1)
     expect(cycles[0]).toMatchObject({
       seq: 1,
-      includedUnits: 12,
       startsOn: today,
     })
   })
 
-  it('rejects a retainer without included hours', async () => {
+  it('rejects the retired retainer type', async () => {
     t = createTestApp()
     const res = await t.call('POST', '/engagements', {
       clientId: 'c-nakhla',
@@ -64,6 +112,18 @@ describe('engagement setup', () => {
       amountMinor: 100_000,
       startOn: today,
       cyclePeriod: 'monthly',
+    })
+    expect(res.status).toBe(400)
+  })
+
+  it('rejects a subscription without a billing period', async () => {
+    t = createTestApp()
+    const res = await t.call('POST', '/engagements', {
+      clientId: 'c-nakhla',
+      title: 'Support',
+      type: 'subscription',
+      amountMinor: 100_000,
+      startOn: today,
     })
     expect(res.status).toBe(400)
   })
@@ -108,7 +168,7 @@ describe('engagement setup', () => {
   it('clears the next action date when left blank', async () => {
     t = createTestApp()
     const res = await t.call('PUT', '/engagements/e-masar', {
-      title: 'Masar retainer',
+      title: 'Masar support',
       nextAction: '',
     })
     expect(res.status).toBe(200)

@@ -13,6 +13,7 @@ export const leadSchema = moneyFieldsSchema.extend({
   service: z.string(),
   stage: leadStageSchema,
   source: z.string().default(''),
+  notes: z.string().optional(),
   lastContactOn: isoDate.optional(),
   nextFollowUpOn: isoDate.optional(),
   clientId: recordId.optional(),

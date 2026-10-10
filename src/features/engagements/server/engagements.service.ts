@@ -9,7 +9,8 @@ import type {
 import { engagements } from './engagements.table'
 import { openEngagement } from './open-engagement'
 
-/** Opens an engagement for an existing client, in its currency and identity. */
+/** Opens an engagement for an existing client, in the chosen currency (the
+ * client's by default) and the client's billing identity. */
 export function createEngagement(ctx: Ctx, input: OpenEngagementInput) {
   const client = required(
     ctx.db
@@ -23,15 +24,19 @@ export function createEngagement(ctx: Ctx, input: OpenEngagementInput) {
     'client',
     input.clientId
   )
-  return openEngagement(ctx, { ...input, ...client })
+  return openEngagement(ctx, {
+    ...input,
+    billingIdentityId: client.billingIdentityId,
+    currency: input.currency ?? client.currency,
+  })
 }
 
-/** Renames an engagement and sets its next action. Terms stay as agreed. */
+/** Renames an engagement; sets its next action and payment channel. Terms stay as agreed. */
 export function updateEngagement(
   ctx: Ctx,
   id: string,
   input: Required<Pick<UpdateEngagementInput, 'title' | 'nextAction'>> &
-    Pick<UpdateEngagementInput, 'nextActionOn'>
+    Pick<UpdateEngagementInput, 'nextActionOn' | 'paymentChannel'>
 ) {
   required(
     ctx.db
@@ -48,6 +53,7 @@ export function updateEngagement(
       title: input.title,
       nextAction: input.nextAction,
       nextActionOn: input.nextActionOn ?? null,
+      paymentChannel: input.paymentChannel ?? null,
     })
     .where(eq(engagements.id, id))
     .run()

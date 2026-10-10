@@ -15,10 +15,20 @@ import {
   CYCLE_PERIODS,
   ENGAGEMENT_STATUSES,
   ENGAGEMENT_TYPES,
+  PAYMENT_CHANNELS,
 } from '../model/enums'
 
 /**
- * One table for project / retainer / subscription (database.md §3.5).
+ * The CHECK lists below still name the retired `retainer` type and its
+ * units: SQLite can't alter a CHECK without rebuilding the table (which would
+ * cascade-delete its children), and rows of that type are deleted by
+ * migration 0005 anyway. The app never writes them.
+ */
+const DB_TYPES = ['project', 'retainer', 'subscription'] as const
+const DB_UNITS = ['revisions', 'hours', 'tickets', 'days'] as const
+
+/**
+ * One table for project / subscription (database.md §3.5).
  * `leadId` is a plain id (no FK) to keep the leads → engagements direction.
  */
 export const engagements = sqliteTable(
@@ -35,6 +45,8 @@ export const engagements = sqliteTable(
     title: text().notNull(),
     description: text(),
     ...moneyQuad(),
+    /** Agreed way to pay; validated by the API (no CHECK: ADD COLUMN only). */
+    paymentChannel: text({ enum: PAYMENT_CHANNELS }),
     startOn: text().notNull(),
     endOn: text(),
     allowanceUnit: text({ enum: ALLOWANCE_UNITS }).notNull(),
@@ -52,15 +64,12 @@ export const engagements = sqliteTable(
     ...timestamps(),
   },
   (t) => [
-    check('engagement_type', sql`${t.type} IN ${inList(ENGAGEMENT_TYPES)}`),
+    check('engagement_type', sql`${t.type} IN ${inList(DB_TYPES)}`),
     check(
       'engagement_status',
       sql`${t.status} IN ${inList(ENGAGEMENT_STATUSES)}`
     ),
-    check(
-      'engagement_unit',
-      sql`${t.allowanceUnit} IN ${inList(ALLOWANCE_UNITS)}`
-    ),
+    check('engagement_unit', sql`${t.allowanceUnit} IN ${inList(DB_UNITS)}`),
     check(
       'engagement_type_shape',
       sql`(${t.type} = 'project' AND ${t.allowanceUnit} = 'revisions'

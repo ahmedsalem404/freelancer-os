@@ -78,13 +78,12 @@ freelancer-os/
 | `engagements` | engagements, engagement_cycles, engagement_stages, deliverables, review_rounds, approvals | Engagements list/detail, guard |
 | `invoices` | invoices, invoice_items, payments | Invoice detail, payment dialog |
 | `finance` | expenses, own_subscriptions | Finance overview |
-| `time` | time_entries | Time |
 | `today` | tasks, daily_reflections | Today, end-of-day |
 | `calendar` | important_dates | Calendar (derived view) |
 | `files` | attachments | attachment lists / upload |
 | `pricing` | — (pure calculator) | Pricing |
 | `portal` | — (reads engagements) | Public client link `/p/$token` |
-| `my-day` | — (reads `GET /api/workspace`) | Assistant's whole app `/my-day`: own tasks, time, end-of-day note, account |
+| `my-day` | — (reads `GET /api/workspace`) | Assistant's whole app `/my-day`: own tasks, end-of-day note, account |
 
 ## 3. Boundaries & dependency rules
 
@@ -93,8 +92,7 @@ freelancer-os/
    (server code only) or its **pure `model/` files** (the shared contract: schemas,
    types, selectors). Type-only imports may cross freely; runtime cycles are
    forbidden. Service dependency direction:
-   `time/today/leads → engagements → invoices → clients · settings · rates · files`
-   (e.g. billing extra retainer hours lives in `time` because it reads time entries).
+   `today/leads → engagements → invoices → clients · settings · rates · files`
 3. `features/*` → `shared/*` allowed; `shared/*` → `features/*` and `app/*` forbidden.
 4. `app/` may import every feature (it composes them). Features import from `app/`
    only `app/client/*` — the snapshot query, `useAction`, UI prefs, current member
@@ -113,7 +111,7 @@ freelancer-os/
 8. Every `/api` route needs a signed-in **owner** session except `/health`,
    `/auth/sign-in`, `/auth/sign-out` and the public `/portal/*`. Assistants reach only
    the `ANY_MEMBER` list in `app.ts` (`/auth/me`, `/auth/account`, `/workspace`, own
-   tasks, time, end of day); the services keep them to their own rows
+   tasks, end of day); the services keep them to their own rows
    (`today/server/assistant-scope.ts`). The gate lives in `app/server/app.ts` (`authGate`). The API still
    listens on `127.0.0.1` by default (`API_HOST`); the site is reached through Vite
    or a tunnel.
@@ -148,19 +146,18 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 |---|---|
 | auth | `POST /auth/sign-in` (rate-limited) · `POST /auth/sign-out` · `GET /auth/me` · `PUT /auth/account` (own name, login, password; needs the current password; rate-limited) · team (owner only): `POST /team` (new assistant + password) · `PUT /team/:id` · `PUT /team/:id/password` (signs them out everywhere) · `POST /team/:id/{deactivate,activate}` — never the owner row (`not_an_assistant`) |
 | rates | `PUT /rates/today` |
-| invoices | `POST /invoices` (manual, issued at once) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` (on a renewal invoice this also undoes the renewal — `renewal_superseded` / `renewal_cycle_billed` when something was built on it) |
-| engagements | `POST /engagements` · `PUT /engagements/:id` · `PUT /engagements/:id/terms` · `POST /engagements/:id/{archive,unarchive}` · `DELETE /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
-| time | `POST /time` · `POST /engagements/:id/bill-hours` |
-| leads | `POST /leads/:id/stage` (not to `won`) · `POST /leads/:id/convert` |
+| invoices | `POST /invoices` (manual, issued at once; the client sees a preview first; in the engagement's currency when it has one) · `POST /invoices/:id/payments` · `POST /invoices/:id/void` (on a renewal invoice this also undoes the renewal — `renewal_superseded` / `renewal_cycle_billed` when something was built on it) |
+| engagements | `POST /engagements` (optional `currency`, `paymentChannel`) · `PUT /engagements/:id` (title, next step, `paymentChannel`) · `PUT /engagements/:id/terms` · `POST /engagements/:id/{archive,unarchive}` · `DELETE /engagements/:id` · `POST /deliverables/:id/{rounds,approval,bill-overage}` · `POST /engagements/:id/{scope,renew,grace,stop}` · `POST /stages/:id/toggle` |
+| leads | `POST /leads` · `PUT`/`DELETE /leads/:id` (not once `won`: `lead_won`) · `POST /leads/:id/stage` (not to `won`) · `POST /leads/:id/convert` |
 | today | `POST /tasks` (owner may set `assigneeId`) · `/tasks/:id/toggle` · `/tasks/carry-over` · `PUT /reflections/today` · `POST /day/close` |
 | clients | `POST /clients` · `PUT /clients/:id` · `POST /clients/:id/{archive,unarchive}` · `DELETE /clients/:id` · vault (owner only): `POST /clients/:id/vault` · `PUT`/`DELETE /vault/:id` · `POST /vault/:id/reveal` (no-store) |
-| files | owner only: `POST /files` (multipart: `file` + `kind` + one of `clientId`/`engagementId`/`paymentId` + `note`; ≤ 15 MB; type from the bytes: PDF, PNG, JPG, WEBP, GIF) · `GET /files/:id` (inline, `nosniff`, no-store) · `DELETE /files/:id` |
+| files | owner only: `POST /files` (multipart: `file` + `kind` + one of `clientId`/`engagementId`/`paymentId`/`invoiceId` + `note`; ≤ 15 MB; type from the bytes: PDF, PNG, JPG, WEBP, GIF) · `GET /files/:id` (inline, `nosniff`, no-store) · `DELETE /files/:id` |
 | templates | owner only: `PUT /templates/:key` (`{locale, body}`, upsert) · `DELETE /templates/:key/:locale` (back to the built-in text) |
 | reminders | owner only: `POST /reminders` (`sent`/`dismissed`, idempotent on `kind:target:occurrence:offset`) — the pending list itself is derived (`reminders/model/schedule.ts`) |
 | calendar | owner only: `POST`/`PUT`/`DELETE /calendar-events[/:id]` · `POST`/`PUT /important-dates[/:id]` · `POST /important-dates/:id/{handled,archive}` (handled rolls a recurring date forward) |
 | backup | `GET /backup` (owner only) — zip of a `VACUUM INTO` copy of the database, `data/files/` and `data/vault.key` · `POST /backup/restore` (owner only, multipart `file`, ≤ 200 MB) — replaces all rows, `data/files/` and the vault key with the zip's; saves `data/backups/before-restore-<time>.zip` first and signs everyone out (`backup_invalid` for anything that isn't a backup) |
 | finance | `POST /expenses` · `PUT /expenses/:id` · `DELETE /expenses/:id` · `POST /own-subscriptions` · `PUT /own-subscriptions/:id` · `POST /own-subscriptions/:id/renew` (records the period's charge as an expense on the renewal day and moves the renewal on; a period is charged once — `already_charged`) · `POST /own-subscriptions/:id/cancel` · `DELETE /own-subscriptions/:id` |
-| workspace | `GET /workspace` — the signed-in member's own tasks (open + last 14 days), time (14 days), today's note and the titles of their tasks' engagements; no money |
+| workspace | `GET /workspace` — the signed-in member's own tasks (open + last 14 days), today's note and the titles of their tasks' engagements; no money |
 | portal | owner: `POST`/`DELETE /engagements/:id/portal-link` · public (rate-limited): `GET /portal/:token` · `POST /portal/:token/deliverables/:id/{approval,rounds}` |
 - **Derived values are never stored** (invoice status, balances, meters, health) —
   see docs/database.md §5.
@@ -196,6 +193,10 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-09-27 | Message templates: built-in Arabic/English texts in `settings/model/templates.ts`; `message_templates` stores only the owner's edits. Reminders: the schedule is derived from invoices (latest reached offset only), subscription cycles (`dueSoonDays` before the end), own subscriptions, important dates and lead follow-ups; `reminder_log` records each decision once. Migration `0003` adds `message_templates`, `reminder_log`, `calendar_events` | docs/database.md §3.1, §3.9 |
 | 2026-09-30 | Undo a renewal = void its invoice (`invoices/server/undo-renewal.ts`): the cycle it opened is deleted and the renewed cycle reopens (`pending`, or `grace` if grace was granted). Refused once the new cycle is closed or another live invoice bills it. The voided renewal line is re-pointed at the reopened cycle so it stays on record | owner request; no second flow to learn |
 | 2026-09-30 | Restore from backup in Settings (`POST /backup/restore`), replacing the 2026-09-27 "no restore button" decision. Checked before anything is touched (known zip entries only, fixed `files/<yyyy>/<id>.<ext>` paths, SQLite integrity, migrated to this version, has an owner); rows are swapped in one transaction on the live connection (`ATTACH`, foreign keys off, `foreign_key_check` before commit). Sessions are not restored: everyone signs in again with the passwords from the backup | owner request; a safety zip makes a wrong restore undoable |
+| 2026-10-06 | **Retainer type and the Time section are gone** (owner: nothing in their work is counted by time). Migration `0004` drops `time_entries`; `0005` deletes every retainer engagement with its invoices, payments, deliverables, rounds, links and cycles (expenses and calendar dates only lose the link). The `engagements`/`invoice_items` CHECK lists still name `retainer`: SQLite can only change a CHECK by rebuilding the table, and dropping a parent table with foreign keys on would cascade-delete its children. The app never writes them (Zod rejects the type). Assistants lose time logging; "My day" keeps tasks and the end-of-day note | owner request; data deletion confirmed by the owner |
+| 2026-10-06 | An engagement has its own **currency** (default: the client's) and an agreed **payment channel** (`cash`, `kuraimi`, `qutaibi`, `aden`, `unified`; nullable column, validated by the API, no CHECK). A manual invoice for an engagement uses the engagement's currency. The channel is printed on the invoice and put first in the WhatsApp payment lines. The client's currency lock (2026-09-27) is unchanged; `PaymentMethodKind` (bank / kuraimi / usdt / cash) is unchanged | owner request |
+| 2026-10-06 | A manual invoice is **previewed before it is issued** (same `InvoiceSheet` the saved invoice uses). Issued from an engagement, a **PDF copy is saved in its files** (made in the browser with html2canvas-pro + jsPDF, uploaded as kind `invoice` with `invoiceId`; migration `0007` rebuilds the leaf table `attachments`) and the engagement's files tab lists its invoices as links. A "Save PDF" button covers the rest; the invoice page has a Back button | owner request |
+| 2026-10-06 | Leads can be added, edited and deleted (`POST /leads`, `PUT`/`DELETE /leads/:id`); a won lead is a client and is edited there | leads only came from seed data before |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status
@@ -216,8 +217,6 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 - The owner's first password is set with `npm run auth:set-password -- <login>`; after that,
   Settings → My account. Assistants are added, renamed, given a new password and stopped
   or restarted from Settings → Team (a stopped member keeps their records).
-- Retainer `tickets` (docs/database.md §3.5) have no table or screen yet: retainers are
-  created with hours only, so nothing can reach the tickets unit today.
 - Reminders are shown when the app is opened (Today); nothing is pushed while it is closed.
 
 ## 7. Commands

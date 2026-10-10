@@ -26,6 +26,7 @@ export const uploadFields = z
     clientId: z.string().min(1).optional(),
     engagementId: z.string().min(1).optional(),
     paymentId: z.string().min(1).optional(),
+    invoiceId: z.string().min(1).optional(),
     note: optionalText(500),
   })
   .refine((f) => f.clientId ?? f.engagementId ?? f.paymentId, {
@@ -33,6 +34,9 @@ export const uploadFields = z
   })
   .refine((f) => f.kind !== 'payment_proof' || f.paymentId, {
     message: 'A payment proof needs its payment',
+  })
+  .refine((f) => f.kind !== 'invoice' || (f.invoiceId && f.engagementId), {
+    message: 'An invoice copy needs its invoice and engagement',
   })
 
 export type UploadFields = z.input<typeof uploadFields>

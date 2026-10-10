@@ -1,0 +1,1 @@
+ALTER TABLE `engagements` ADD `payment_channel` text;

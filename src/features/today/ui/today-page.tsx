@@ -53,15 +53,6 @@ export function Today() {
     (i) => invoiceStatus(db, i, now) === 'overdue'
   )
 
-  const billable = meters.filter(
-    ({ e, meter }) => e.type !== 'subscription' && meter.unbilled > 0
-  )
-  const billableBase = billable.reduce(
-    (s, { e, meter }) =>
-      s + Math.round(meter.unbilled * e.overageUnitPrice * e.rateToBase),
-    0
-  )
-
   const decisions = active
     .filter((e) => e.type === 'subscription')
     .flatMap((e) => {
@@ -99,13 +90,7 @@ export function Today() {
         </Button>
       }
     >
-      <div className='grid gap-3 sm:grid-cols-3'>
-        <StatTile
-          tone='billable'
-          label={t('today.billable')}
-          value={<BaseMoney base={billableBase} />}
-          hint={t('today.billableHint')}
-        />
+      <div className='grid gap-3 sm:grid-cols-2'>
         <StatTile
           tone={overdue.length > 0 ? 'overdue' : 'default'}
           label={t('today.unpaid')}
@@ -121,11 +106,7 @@ export function Today() {
 
       <div className='grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]'>
         <div className='grid content-start gap-4'>
-          <AlertsPanel
-            billable={billable}
-            decisions={decisions}
-            overdue={overdue}
-          />
+          <AlertsPanel decisions={decisions} overdue={overdue} />
 
           <NextActionsPanel meters={meters} />
         </div>

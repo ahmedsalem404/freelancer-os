@@ -1,7 +1,6 @@
 import { addDaysIso, isoDay } from '@/shared/model/dates'
 import { eq } from 'drizzle-orm'
 import { afterEach, describe, expect, it } from 'vitest'
-import { engagementMeter } from '@/features/engagements/model/meter'
 import { leads } from '@/features/leads/server/leads.table'
 import { createTestApp } from './test-app'
 
@@ -9,65 +8,6 @@ let t: ReturnType<typeof createTestApp>
 afterEach(() => t.close())
 
 const today = isoDay(new Date())
-const FULL_DAY = 24 * 60
-
-describe('time', () => {
-  it('logs retainer time against the allowance', async () => {
-    t = createTestApp()
-    const res = await t.call('POST', '/time', {
-      engagementId: 'e-masar',
-      minutes: 90,
-      description: 'Server updates',
-      billable: true,
-    })
-    expect(res.status).toBe(201)
-    const entry = (await t.snapshot()).timeEntries.find(
-      (e) => e.id === res.json.data.id
-    )
-    expect(entry).toMatchObject({
-      clientId: 'c-masar',
-      countsToAllowance: true,
-      workOn: today,
-    })
-  })
-
-  it('bills extra retainer hours exactly once', async () => {
-    t = createTestApp()
-    for (const _ of [1, 2]) {
-      await t.call('POST', '/time', {
-        engagementId: 'e-masar',
-        minutes: FULL_DAY,
-        description: 'Migration',
-        billable: true,
-      })
-    }
-    const before = await t.snapshot()
-    const e = before.engagements.find((x) => x.id === 'e-masar')!
-    const expected = engagementMeter(before, e, today).unbilled
-    expect(expected).toBeGreaterThan(0)
-
-    const res = await t.call('POST', '/engagements/e-masar/bill-hours')
-    expect(res.status).toBe(201)
-    const after = await t.snapshot()
-    const line = after.invoiceItems.find(
-      (i) => i.invoiceId === res.json.data.id
-    )
-    expect(line).toMatchObject({
-      sourceKind: 'retainer_overage',
-      quantity: expected,
-    })
-    expect(engagementMeter(after, e, today).unbilled).toBe(0)
-
-    const again = await t.call('POST', '/engagements/e-masar/bill-hours')
-    expect(again.status).toBe(409)
-  })
-
-  it('refuses to bill hours on a project', async () => {
-    t = createTestApp()
-    const res = await t.call('POST', '/engagements/e-nakhla/bill-hours')
-    expect(res.status).toBe(409)
-  })
-})
 
 describe('today', () => {
   it('adds, completes and carries over tasks', async () => {
@@ -185,8 +125,7 @@ describe('lead conversion (won ⇒ client + engagement)', () => {
     t = createTestApp()
     const res = await t.call('POST', '/leads/l1/convert', {
       ...body,
-      type: 'retainer',
-      cyclePeriod: 'monthly',
+      type: 'subscription',
     })
     expect(res.status).toBe(400)
     expect((await t.snapshot()).leads.find((l) => l.id === 'l1')?.stage).toBe(

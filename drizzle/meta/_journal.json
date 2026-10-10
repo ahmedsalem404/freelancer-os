@@ -29,6 +29,34 @@
       "when": 1790506683511,
       "tag": "0003_colossal_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1791315695320,
+      "tag": "0004_drop_time_entries",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1791315711524,
+      "tag": "0005_remove_retainers",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1791315900437,
+      "tag": "0006_engagement_payment_channel",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1791316325486,
+      "tag": "0007_attachment_invoice_copy",
+      "breakpoints": true
     }
   ]
 }

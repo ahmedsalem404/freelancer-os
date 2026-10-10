@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { callApi, seg } from '@/shared/http/api-client'
-import type { LogTimeInput } from '@/features/time/model/time.schema'
 import type {
   AddTaskInput,
   SaveReflectionInput,
@@ -34,11 +33,6 @@ export const useToggleMyTask = () =>
       `/tasks/${seg(taskId)}/toggle`,
       z.object({ completed: z.boolean() })
     )
-  )
-
-export const useLogMyTime = () =>
-  useWorkspaceAction((input: LogTimeInput) =>
-    callApi('POST', '/time', idResult, input)
   )
 
 export const useCloseMyDay = () =>

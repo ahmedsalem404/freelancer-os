@@ -1,7 +1,6 @@
 import {
   CalendarDays,
   Calculator,
-  Clock3,
   Handshake,
   Inbox,
   type LucideIcon,
@@ -33,10 +32,7 @@ export const navSections: NavSection[] = [
   },
   {
     key: 'money',
-    items: [
-      { key: 'finance', url: '/finance', icon: Wallet },
-      { key: 'time', url: '/time', icon: Clock3 },
-    ],
+    items: [{ key: 'finance', url: '/finance', icon: Wallet }],
   },
   {
     key: 'tools',

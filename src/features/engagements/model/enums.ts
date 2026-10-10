@@ -1,16 +1,19 @@
-export const ENGAGEMENT_TYPES = ['project', 'retainer', 'subscription'] as const
+export const ENGAGEMENT_TYPES = ['project', 'subscription'] as const
 export const ENGAGEMENT_STATUSES = [
   'active',
   'paused',
   'completed',
   'cancelled',
 ] as const
-export const ALLOWANCE_UNITS = [
-  'revisions',
-  'hours',
-  'tickets',
-  'days',
+/** How the client agreed to pay: cash, or a transfer through one of these. */
+export const PAYMENT_CHANNELS = [
+  'cash',
+  'kuraimi',
+  'qutaibi',
+  'aden',
+  'unified',
 ] as const
+export const ALLOWANCE_UNITS = ['revisions', 'days'] as const
 export const CYCLE_PERIODS = ['monthly', 'quarterly', 'yearly'] as const
 export const CYCLE_DECISIONS = [
   'pending',
@@ -25,6 +28,7 @@ export const APPROVAL_DECISIONS = ['approved', 'changes_requested'] as const
 
 export type EngagementType = (typeof ENGAGEMENT_TYPES)[number]
 export type EngagementStatus = (typeof ENGAGEMENT_STATUSES)[number]
+export type PaymentChannel = (typeof PAYMENT_CHANNELS)[number]
 export type AllowanceUnit = (typeof ALLOWANCE_UNITS)[number]
 export type CyclePeriod = (typeof CYCLE_PERIODS)[number]
 export type CycleDecision = (typeof CYCLE_DECISIONS)[number]

@@ -71,8 +71,12 @@ describe('change scope', () => {
   it('refuses non-projects and rolls back when billing fails midway', async () => {
     t = createTestApp()
     const body = { title: 'X', feeMinor: 100, dueOn: '2030-01-10' }
-    const retainer = await t.call('POST', '/engagements/e-masar/scope', body)
-    expect(retainer.status).toBe(409)
+    const subscription = await t.call(
+      'POST',
+      '/engagements/e-masar/scope',
+      body
+    )
+    expect(subscription.status).toBe(409)
 
     // No exchange rate → the invoice step throws after the deliverable insert.
     t.db.delete(exchangeRates).run()

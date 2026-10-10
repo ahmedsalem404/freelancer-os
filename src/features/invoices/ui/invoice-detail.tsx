@@ -1,13 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import {
+  useCanGoBack,
+  useLocation,
+  useNavigate,
+  useRouter,
+} from '@tanstack/react-router'
 import { PageShell } from '@/app/client/layout/page-shell'
 import { RecordNotFound } from '@/app/client/layout/record-not-found'
 import { useDb } from '@/app/client/snapshot-query'
 import { Panel } from '@/shared/components/panel'
 import { waLink } from '@/shared/lib/whatsapp'
 import { todayIso } from '@/shared/model/dates'
-import { Ban, MessageCircle, Printer, Wallet } from 'lucide-react'
+import {
+  ArrowRight,
+  Ban,
+  FileDown,
+  MessageCircle,
+  Printer,
+  Wallet,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { fileUrl } from '@/features/files'
 import {
   invoiceBalance,
   invoicePaid,
@@ -20,6 +34,7 @@ import { Money } from '@/features/rates/ui/money'
 import { InvoiceDocument } from './invoice-document'
 import { RemindersPanel } from './reminders-panel'
 import { useInvoiceMessage } from './use-invoice-message'
+import { useSaveInvoicePdf } from './use-save-invoice-pdf'
 import { VoidInvoiceDialog } from './void-invoice-dialog'
 
 export function InvoiceDetail({ id }: { id: string }) {
@@ -34,9 +49,31 @@ export function InvoiceDetail({ id }: { id: string }) {
 function InvoiceView({ invoice }: { invoice: Invoice }) {
   const { t } = useTranslation()
   const invoiceMessage = useInvoiceMessage()
+  const router = useRouter()
+  const canGoBack = useCanGoBack()
+  const navigate = useNavigate()
+  const pdf = useSaveInvoicePdf()
+  const { state } = useLocation()
   const db = useDb()
   const [isPaying, setIsPaying] = useState(false)
   const [isVoiding, setIsVoiding] = useState(false)
+  const savedPdf = db.attachments.find((a) => a.invoiceId === invoice.id)
+  const canSavePdf = invoice.engagementId !== undefined && !savedPdf
+  // Just issued from an engagement: keep a PDF copy with its files, once.
+  const wantsPdf = state.attachPdf === true
+  const hasTried = useRef(false)
+  useEffect(() => {
+    if (!wantsPdf || !canSavePdf || hasTried.current) return
+    hasTried.current = true
+    void pdf.save(invoice).then(() =>
+      navigate({
+        to: '/invoices/$id',
+        params: { id: invoice.id },
+        replace: true,
+        state: {},
+      })
+    )
+  }, [wantsPdf, canSavePdf, pdf, invoice, navigate])
   const client = db.clients.find((c) => c.id === invoice.clientId)!
   const status = invoiceStatus(db, invoice, todayIso())
   const isVoid = invoice.state === 'void'
@@ -48,6 +85,16 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
       (p) => p.invoiceId === invoice.id && p.status !== 'rejected'
     )
   const message = invoiceMessage(invoice, 'invoice_send')
+  // Back to where the user came from; a direct link falls back to its list.
+  const goBack = () =>
+    canGoBack
+      ? router.history.back()
+      : invoice.engagementId
+        ? navigate({
+            to: '/engagements/$id',
+            params: { id: invoice.engagementId },
+          })
+        : navigate({ to: '/finance' })
 
   return (
     <PageShell
@@ -60,9 +107,34 @@ function InvoiceView({ invoice }: { invoice: Invoice }) {
       }
       actions={
         <>
+          <Button variant='outline' size='sm' onClick={goBack}>
+            <ArrowRight className='ltr:rotate-180' /> {t('common.back')}
+          </Button>
           <Button variant='outline' size='sm' onClick={() => window.print()}>
             <Printer /> {t('common.print')}
           </Button>
+          {canSavePdf && (
+            <Button
+              variant='outline'
+              size='sm'
+              disabled={pdf.isPending}
+              onClick={() => void pdf.save(invoice)}
+            >
+              <FileDown />{' '}
+              {t(pdf.isPending ? 'invoice.pdf.saving' : 'invoice.pdf.save')}
+            </Button>
+          )}
+          {savedPdf?.hasFile && (
+            <Button asChild variant='outline' size='sm'>
+              <a
+                href={fileUrl(savedPdf.id)}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <FileDown /> {t('invoice.pdf.open')}
+              </a>
+            </Button>
+          )}
           {balance > 0 && (
             <Button
               variant='outline'

@@ -17,6 +17,7 @@ export const filesAr = {
       contract: 'عقد',
       payment_proof: 'إثبات دفع',
       receipt: 'إيصال',
+      invoice: 'نسخة فاتورة',
       deliverable_file: 'ملف تسليم',
       logo: 'شعار',
       other: 'ملف',

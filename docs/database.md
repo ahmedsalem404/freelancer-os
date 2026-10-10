@@ -11,6 +11,10 @@
 
 ---
 
+> **2026-10-06 — changes since this design:** the `retainer` type, `tickets` and `time_entries` are removed from the product (see ARCHITECTURE.md §5). `engagements` gained `payment_channel`; `attachments` gained `invoice_id` and kind `invoice`. The CHECK lists in the SQL below that name `retainer` stay in the live database but the app never writes them.
+
+---
+
 ## 1. Overview & key design decisions
 
 | Decision | Choice | Why |

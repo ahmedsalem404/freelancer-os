@@ -19,6 +19,7 @@ export const filesEn: Widen<typeof filesAr> = {
       contract: 'Contract',
       payment_proof: 'Payment proof',
       receipt: 'Receipt',
+      invoice: 'Invoice copy',
       deliverable_file: 'Delivered file',
       logo: 'Logo',
       other: 'File',

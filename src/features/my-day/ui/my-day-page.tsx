@@ -7,11 +7,9 @@ import { AccountPanel, SignOutButton, sessionQuery } from '@/features/auth'
 import { useWorkspace } from '../api/workspace-query'
 import { MyCloseDay } from './my-close-day'
 import { MyTasks } from './my-tasks'
-import { MyTime } from './my-time'
 
 /**
- * The assistant's whole app: their tasks, their time and their end-of-day
- * note. It reads `/api/workspace` only — never the owner's snapshot.
+ * The assistant's whole app: their tasks and their end-of-day note. It reads `/api/workspace` only — never the owner's snapshot.
  */
 export function MyDayPage() {
   const { t } = useTranslation()
@@ -42,7 +40,6 @@ export function MyDayPage() {
       </header>
       <main className='mx-auto grid max-w-3xl gap-4 px-4 py-6'>
         <MyTasks workspace={workspace} />
-        <MyTime workspace={workspace} />
         <MyCloseDay workspace={workspace} />
         <AccountPanel />
       </main>

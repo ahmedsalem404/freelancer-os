@@ -10,7 +10,6 @@ export const INVOICE_ITEM_SOURCES = [
   'manual',
   'deposit',
   'revision_overage',
-  'retainer_overage',
   'scope_change',
   'renewal',
 ] as const

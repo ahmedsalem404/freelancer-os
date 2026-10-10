@@ -8,6 +8,7 @@ import { TextField } from '@/shared/components/text-field'
 import { useFieldErrors } from '@/shared/lib/use-field-errors'
 import { isArchived } from '@/shared/model/archive'
 import { todayIso } from '@/shared/model/dates'
+import { CURRENCIES, type Currency } from '@/shared/money/currency'
 import { toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -29,11 +30,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useOpenEngagement } from '../api/use-save-engagement'
-import { ENGAGEMENT_TYPES, type EngagementType } from '../model/enums'
+import {
+  ENGAGEMENT_TYPES,
+  type EngagementType,
+  type PaymentChannel,
+} from '../model/enums'
 import { openEngagementInput } from '../model/terms.input'
+import { PaymentChannelSelect } from './payment-channel-select'
 
 const PERIODS = ['monthly', 'yearly'] as const
-const DEFAULT_HOURS = '10'
 
 type Props = {
   /** Preselects the client (e.g. opened from the client page). */
@@ -56,17 +61,21 @@ export function NewEngagementDialog({
   const [type, setType] = useState<EngagementType>('project')
   const [amount, setAmount] = useState('')
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>('monthly')
-  const [hours, setHours] = useState(DEFAULT_HOURS)
   const [startOn, setStartOn] = useState(todayIso())
+  const [pickedCurrency, setPickedCurrency] = useState<Currency>()
+  const [paymentChannel, setPaymentChannel] = useState<PaymentChannel>()
   const client = clients.find((c) => c.id === clientId)
+  // Until one is picked, the client's currency applies.
+  const currency = pickedCurrency ?? client?.currency
   const body = {
     clientId,
     title,
     type,
     amountMinor: toMinor(Number(amount)),
     startOn,
+    currency,
+    paymentChannel,
     cyclePeriod: type === 'project' ? undefined : period,
-    includedHours: type === 'retainer' ? Number(hours) : undefined,
   }
   const isValid =
     amount.trim() !== '' && openEngagementInput.safeParse(body).success
@@ -133,7 +142,7 @@ export function NewEngagementDialog({
           <div className='grid grid-cols-2 gap-3'>
             <TextField
               id='engagement-amount'
-              label={`${t('engagements.form.amount')} (${client?.currency ?? '—'})`}
+              label={`${t('engagements.form.amount')} (${currency ?? '—'})`}
               dir='ltr'
               inputMode='decimal'
               className='num'
@@ -150,17 +159,18 @@ export function NewEngagementDialog({
               onChange={setStartOn}
             />
           </div>
-          {type === 'retainer' && (
-            <TextField
-              id='engagement-hours'
-              label={t('engagements.form.hours')}
-              dir='ltr'
-              inputMode='decimal'
-              className='num'
-              value={hours}
-              onChange={setHours}
-            />
-          )}
+          <ChoiceRow
+            label={t('engagements.form.currency')}
+            options={CURRENCIES}
+            value={currency ?? CURRENCIES[0]}
+            onChange={setPickedCurrency}
+            labelOf={(c) => c}
+          />
+          <PaymentChannelSelect
+            id='engagement-channel'
+            value={paymentChannel}
+            onChange={setPaymentChannel}
+          />
           <MissingFields
             fields={[
               !clientId && t('common.client'),

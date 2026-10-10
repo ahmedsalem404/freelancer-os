@@ -1,3 +1,4 @@
+import { isoDay } from '@/shared/model/dates'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createTestApp } from './test-app'
 
@@ -17,11 +18,10 @@ async function freshEngagement(clientId: string) {
   const res = await t.call('POST', '/engagements', {
     clientId,
     title: 'Monthly support',
-    type: 'retainer',
+    type: 'subscription',
     amountMinor: 100_000,
     startOn: '2026-09-01',
     cyclePeriod: 'monthly',
-    includedHours: 10,
   })
   expect(res.status).toBe(201)
   return String(res.json.data.id)
@@ -112,6 +112,24 @@ describe('archiving and deleting engagements', () => {
     await t.call('POST', '/engagements/e-souq/stop')
     const after = await t.call('POST', '/engagements/e-souq/archive')
     expect(after.status).toBe(200)
+  })
+
+  it('resumes a stopped subscription with a fresh cycle from today', async () => {
+    t = createTestApp()
+    await t.call('POST', '/engagements/e-souq/stop')
+    const res = await t.call('POST', '/engagements/e-souq/resume')
+    expect(res.status).toBe(200)
+    const snap = await t.snapshot()
+    expect(snap.engagements.find((e) => e.id === 'e-souq')?.status).toBe(
+      'active'
+    )
+    const open = snap.cycles.filter(
+      (c) => c.engagementId === 'e-souq' && c.decision === 'pending'
+    )
+    expect(open).toHaveLength(1)
+    expect(open[0]?.startsOn).toBe(isoDay(new Date()))
+    const again = await t.call('POST', '/engagements/e-souq/resume')
+    expect(again.status).toBe(409)
   })
 
   it('lets the client be archived once its engagements are', async () => {

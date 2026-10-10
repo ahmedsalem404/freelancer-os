@@ -26,7 +26,6 @@ import { useConvertLead } from '../api/use-convert-lead'
 import type { Lead } from '../model/lead.schema'
 
 const PERIODS = ['monthly', 'yearly'] as const
-const DEFAULT_HOURS = '10'
 
 type Props = { lead: Lead; onClose: () => void }
 
@@ -40,12 +39,8 @@ export function ConvertLeadDialog({ lead, onClose }: Props) {
   const [type, setType] = useState<EngagementType>('project')
   const [amount, setAmount] = useState(String(toMajor(lead.amount)))
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>('monthly')
-  const [hours, setHours] = useState(DEFAULT_HOURS)
   const name = lead.company ?? lead.name
-  const isValid =
-    title.trim().length > 0 &&
-    Number(amount) >= 0 &&
-    (type !== 'retainer' || Number(hours) > 0)
+  const isValid = title.trim().length > 0 && Number(amount) >= 0
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -58,7 +53,6 @@ export function ConvertLeadDialog({ lead, onClose }: Props) {
         amountMinor: toMinor(Number(amount)),
         startOn: todayIso(),
         cyclePeriod: type === 'project' ? undefined : period,
-        includedHours: type === 'retainer' ? Number(hours) : undefined,
       },
       {
         onSuccess: ({ engagementId }) => {
@@ -122,21 +116,6 @@ export function ConvertLeadDialog({ lead, onClose }: Props) {
                 <p className='text-xs text-destructive'>{positive(amount)}</p>
               )}
             </div>
-            {type === 'retainer' && (
-              <div className='grid gap-2'>
-                <Label htmlFor='convert-hours'>
-                  {t('leads.convert.hours')}
-                </Label>
-                <Input
-                  id='convert-hours'
-                  dir='ltr'
-                  inputMode='decimal'
-                  className='num'
-                  value={hours}
-                  onChange={(e) => setHours(e.target.value)}
-                />
-              </div>
-            )}
           </div>
           <DialogFooter>
             <Button type='button' variant='ghost' onClick={onClose}>

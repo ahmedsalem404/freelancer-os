@@ -3,14 +3,18 @@ import type { engagementsAr } from './ar'
 
 export const engagementsEn: Widen<typeof engagementsAr> = {
   types: {
-    project: 'Project',
-    retainer: 'Retainer',
+    project: 'Project / feature',
     subscription: 'Subscription',
+  },
+  channels: {
+    cash: 'Cash',
+    kuraimi: 'Transfer — Kuraimi',
+    qutaibi: 'Transfer — Qutaibi',
+    aden: 'Transfer — Bank of Aden',
+    unified: 'Transfer — Unified Network',
   },
   units: {
     revisions: 'revisions',
-    hours: 'hours',
-    tickets: 'tickets',
     days: 'days',
   },
   status: {
@@ -35,9 +39,6 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
     billRound: 'Bill the extra round',
     scopeBanner: 'Tracking {{tracked}} deliverables, {{agreed}} agreed',
     billScope: 'Extend scope & bill',
-    retainerOver:
-      '{{used}} of {{included}} hours used — {{over}} hours beyond the plan',
-    billHours: 'Bill extra hours ({{amount}})',
     invoiceCreated: 'Invoice {{number}} created',
   },
   subState: {
@@ -51,13 +52,16 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
   },
   engagements: {
     title: 'Engagements',
-    subtitle: 'Every project, retainer and subscription — each with its limit.',
+    subtitle: 'Every project and subscription — each with its limit.',
     add: 'New engagement',
     usage: 'Usage',
     nextAction: 'Next step',
     edit: 'Edit',
     form: {
-      hint: 'Currency and billing identity come from the client.',
+      hint: 'The billing identity comes from the client. The currency defaults to the client’s; change it for this engagement if needed.',
+      currency: 'Engagement currency',
+      paymentChannel: 'Agreed payment method',
+      noChannel: 'Not set',
       pickClient: 'Choose a client',
       title: 'Engagement title',
       type: 'Engagement type',
@@ -65,7 +69,6 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
       monthly: 'Monthly',
       yearly: 'Yearly',
       amount: 'Amount',
-      hours: 'Hours included per cycle',
       startOn: 'Start date',
       submit: 'Open the engagement',
       opened: 'Engagement opened',
@@ -83,10 +86,8 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
     tabs: {
       work: 'Deliverables & stages',
       money: 'Money',
-      time: 'Time',
       files: 'Attachments',
       cycle: 'Subscription cycle',
-      usage: 'Plan usage',
     },
     stages: 'Stages',
     deliverables: 'Deliverables',
@@ -111,9 +112,6 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
     collected: 'Collected',
     invoiced: 'Invoiced',
     newInvoice: 'New invoice',
-    logHours: 'Log hours',
-    hoursPlaceholder: 'What did you work on?',
-    hoursLogged: '{{hours}} hours logged',
     overagePrice: 'Extra unit price',
     attachments: 'Attachments',
     attachmentsHint:
@@ -133,6 +131,10 @@ export const engagementsEn: Widen<typeof engagementsAr> = {
       'You switch the service off yourself — the system records the decision and reminds you.',
     renewed: 'Renewal invoice {{number}} issued',
     paused: 'Subscription stopped',
+    pausedNote:
+      'Subscription stopped: its data and invoices stay. Resume it whenever the client returns.',
+    resume: 'Resume subscription',
+    resumed: 'Subscription resumed — a new cycle starts today',
     graceExtended: 'Grace period extended',
     clientLink: 'Client link',
     clientLinkHint:

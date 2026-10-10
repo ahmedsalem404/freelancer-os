@@ -52,25 +52,6 @@ describe('assistant workspace', () => {
     expect(other.status).toBe(404)
   })
 
-  it('logs time only on engagements from their tasks', async () => {
-    t = createTestApp()
-    await assign('صمم الغلاف', 'e-nakhla')
-    const call = asAssistant()
-    const ok = await call('POST', '/time', {
-      engagementId: 'e-nakhla',
-      minutes: 30,
-      description: 'غلاف',
-      billable: true,
-    })
-    const blocked = await call('POST', '/time', {
-      engagementId: 'e-masar',
-      minutes: 30,
-      description: 'x',
-      billable: true,
-    })
-    expect([ok.status, blocked.status]).toEqual([201, 403])
-  })
-
   it('adds tasks for themselves only', async () => {
     t = createTestApp()
     const call = asAssistant()
@@ -98,7 +79,7 @@ describe('assistant workspace', () => {
     const call = asAssistant()
     for (const [method, path] of [
       ['GET', '/snapshot'],
-      ['POST', '/engagements/e-nakhla/bill-hours'],
+      ['POST', '/engagements/e-nakhla/renew'],
       ['PUT', '/rates/today'],
       ['POST', '/clients'],
     ]) {

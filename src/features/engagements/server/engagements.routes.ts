@@ -13,7 +13,12 @@ import {
   updateEngagementInput,
   updateTermsInput,
 } from '../model/terms.input'
-import { extendGrace, renewCycle, stopCycle } from './cycles.service'
+import {
+  extendGrace,
+  renewCycle,
+  resumeCycle,
+  stopCycle,
+} from './cycles.service'
 import {
   addFeedback,
   approveDeliverable,
@@ -93,6 +98,10 @@ export const engagementsRoutes = new Hono<AppEnv>()
   .post('/engagements/:id/stop', (c) => {
     const id = c.req.param('id')
     return c.json(success(c.var.run((ctx) => stopCycle(ctx, id))))
+  })
+  .post('/engagements/:id/resume', (c) => {
+    const id = c.req.param('id')
+    return c.json(success(c.var.run((ctx) => resumeCycle(ctx, id))))
   })
   .post('/stages/:id/toggle', (c) => {
     const id = c.req.param('id')

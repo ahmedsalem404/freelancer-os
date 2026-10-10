@@ -15,6 +15,7 @@ export function loadFiles(db: Database) {
         clientId: attachments.clientId,
         engagementId: attachments.engagementId,
         paymentId: attachments.paymentId,
+        invoiceId: attachments.invoiceId,
         note: attachments.note,
         hasFile: sql<boolean>`${attachments.storagePath} IS NOT NULL`.mapWith(
           Boolean

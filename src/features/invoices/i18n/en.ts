@@ -35,6 +35,7 @@ export const invoicesEn: Widen<typeof invoicesAr> = {
     lineTotal: 'Total',
     total: 'Amount due',
     payWith: 'Payment methods',
+    agreedChannel: 'Agreed payment: {{channel}}',
     thanks: 'Thank you for your trust.',
     reminders: 'Automatic reminders',
     remindersHint: 'A ready message from the system — no awkwardness',
@@ -43,7 +44,7 @@ export const invoicesEn: Widen<typeof invoicesAr> = {
     notFound: 'Invoice not found',
     form: {
       title: 'New invoice',
-      hint: "Issued at once with the next number, in the client's currency at today's rate.",
+      hint: 'Preview the invoice first; it is then issued with the next number at today’s rate.',
       engagement: 'Engagement (optional)',
       noEngagement: 'No engagement',
       lines: 'Lines',
@@ -51,8 +52,20 @@ export const invoicesEn: Widen<typeof invoicesAr> = {
       removeLine: 'Remove line',
       dueHint: 'Leave empty for the default payment terms',
       note: 'Note on the invoice',
+      preview: 'Preview the invoice',
+      previewTitle: 'This is how the client sees it',
+      previewHint:
+        'Not issued yet. Press Issue to give it a number, or go back and edit.',
+      backToEdit: 'Back to edit',
       submit: 'Issue invoice',
       issued: 'Invoice {{number}} issued',
+    },
+    pdf: {
+      save: 'Save PDF to the engagement files',
+      open: 'Open the PDF copy',
+      saving: 'Preparing the PDF…',
+      saved: 'PDF copy saved in the engagement files',
+      failed: 'Could not save the PDF copy',
     },
     void: {
       action: 'Void invoice',

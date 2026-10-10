@@ -27,19 +27,17 @@ type Props = { engagement: Engagement; onClose: () => void }
 const initialPeriod = (e: Engagement): Period =>
   e.cyclePeriod === 'yearly' ? 'yearly' : 'monthly'
 
-/** Changes the agreed amount, billing period and included hours. */
+/** Changes the agreed amount and billing period. */
 export function EditTermsDialog({ engagement: e, onClose }: Props) {
   const { t } = useTranslation()
   const { positive } = useFieldErrors()
   const update = useUpdateTerms()
   const [amount, setAmount] = useState(String(toMajor(e.amount)))
   const [period, setPeriod] = useState<Period>(initialPeriod(e))
-  const [hours, setHours] = useState(String(e.allowanceIncluded))
   const body = {
     type: e.type,
     amountMinor: toMinor(Number(amount)),
     cyclePeriod: e.type === 'project' ? undefined : period,
-    includedHours: e.type === 'retainer' ? Number(hours) : undefined,
   }
   const isValid =
     amount.trim() !== '' && updateTermsInput.safeParse(body).success
@@ -94,17 +92,6 @@ export function EditTermsDialog({ engagement: e, onClose }: Props) {
             onChange={setAmount}
             error={positive(amount)}
           />
-          {e.type === 'retainer' && (
-            <TextField
-              id='terms-hours'
-              label={t('engagements.form.hours')}
-              dir='ltr'
-              inputMode='decimal'
-              className='num'
-              value={hours}
-              onChange={setHours}
-            />
-          )}
           <DialogFooter>
             <Button type='button' variant='ghost' onClick={onClose}>
               {t('common.cancel')}

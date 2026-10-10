@@ -2,6 +2,7 @@ import { useDb } from '@/app/client/snapshot-query'
 import { useMessageTemplate } from '@/app/client/use-message-template'
 import { useDateFormat } from '@/shared/lib/dates'
 import { daysBetween, todayIso } from '@/shared/model/dates'
+import { useTranslation } from 'react-i18next'
 import { useMoneyText } from '@/features/rates/ui/money'
 import { invoiceBalance } from '../model/invoice-status'
 import type { Invoice } from '../model/invoice.schema'
@@ -13,14 +14,23 @@ export type InvoiceMessageKey =
 export function useInvoiceMessage() {
   const db = useDb()
   const fill = useMessageTemplate()
+  const { t } = useTranslation()
   const fmt = useDateFormat()
   const moneyText = useMoneyText()
   return (invoice: Invoice, key: InvoiceMessageKey) => {
     const client = db.clients.find((c) => c.id === invoice.clientId)
-    const payMethods = db.paymentMethods
+    const channel = db.engagements.find(
+      (e) => e.id === invoice.engagementId
+    )?.paymentChannel
+    const methodLines = db.paymentMethods
       .filter((m) => m.billingIdentityId === invoice.billingIdentityId)
       .map((m) => `• ${m.label}: ${m.details}`)
-      .join('\n')
+    const payMethods = [
+      ...(channel
+        ? [t('invoice.agreedChannel', { channel: t(`channels.${channel}`) })]
+        : []),
+      ...methodLines,
+    ].join('\n')
     return fill(key, {
       client_name: client?.name,
       invoice_number: invoice.number,

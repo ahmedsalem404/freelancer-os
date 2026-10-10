@@ -39,7 +39,6 @@ import {
   teamMemberSchema,
 } from '@/features/settings/model/settings.schema'
 import { savedTemplateSchema } from '@/features/settings/model/template.schema'
-import { timeEntrySchema } from '@/features/time/model/time.schema'
 import {
   reflectionSchema,
   taskSchema,
@@ -71,7 +70,6 @@ export const snapshotSchema = z.object({
   payments: z.array(paymentSchema),
   expenses: z.array(expenseSchema),
   ownSubscriptions: z.array(ownSubscriptionSchema),
-  timeEntries: z.array(timeEntrySchema),
   tasks: z.array(taskSchema),
   reflections: z.array(reflectionSchema),
   importantDates: z.array(importantDateSchema),

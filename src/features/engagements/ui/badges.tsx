@@ -6,7 +6,6 @@ import type { EngagementType } from '@/features/engagements/model/enums'
 
 const TYPE_STYLE: Record<EngagementType, string> = {
   project: 'bg-accent text-accent-foreground',
-  retainer: 'bg-secondary text-secondary-foreground ring-1 ring-border',
   subscription: 'bg-primary/10 text-primary dark:bg-primary/15',
 }
 

@@ -3,6 +3,7 @@ export const ATTACHMENT_KINDS = [
   'contract',
   'payment_proof',
   'receipt',
+  'invoice',
   'deliverable_file',
   'logo',
   'other',

@@ -4,8 +4,7 @@ import type {
   InvoiceItem,
 } from '@/features/invoices/model/invoice.schema'
 import type { Settings } from '@/features/settings/model/settings.schema'
-import type { TimeEntry } from '@/features/time/model/time.schema'
-import { currentCycle, retainerOverage } from './cycles'
+import { currentCycle } from './cycles'
 import type { Engagement, EngagementCycle } from './engagement.schema'
 import type { AllowanceUnit } from './enums'
 import {
@@ -33,7 +32,6 @@ export type MeterDb = {
   deliverables: Deliverable[]
   rounds: ReviewRound[]
   cycles: EngagementCycle[]
-  timeEntries: TimeEntry[]
   invoiceItems: InvoiceItem[]
   invoices: Invoice[]
 }
@@ -63,28 +61,15 @@ export function engagementMeter(
   const cycle = currentCycle(db, e.id)
   if (!cycle) return { unit: e.allowanceUnit, ...EMPTY, state: 'ok' }
 
-  if (e.type === 'subscription') {
-    const included = daysBetween(cycle.startsOn, cycle.endsOn)
-    const used = Math.max(0, daysBetween(cycle.startsOn, today))
-    const overage = Math.max(0, used - included)
-    return {
-      unit: 'days',
-      used,
-      included,
-      overage,
-      unbilled: overage,
-      state: allowanceState(included, used, near),
-    }
-  }
-
-  const { used, overage, unbilled } = retainerOverage(db, e.id, cycle)
-  const included = cycle.includedUnits
+  const included = daysBetween(cycle.startsOn, cycle.endsOn)
+  const used = Math.max(0, daysBetween(cycle.startsOn, today))
+  const overage = Math.max(0, used - included)
   return {
-    unit: e.allowanceUnit,
+    unit: 'days',
     used,
     included,
     overage,
-    unbilled,
+    unbilled: overage,
     state: allowanceState(included, used, near),
   }
 }

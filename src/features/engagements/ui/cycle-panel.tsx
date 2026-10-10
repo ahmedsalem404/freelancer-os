@@ -5,12 +5,12 @@ import { Panel } from '@/shared/components/panel'
 import { useDateFormat } from '@/shared/lib/dates'
 import { cn } from '@/shared/lib/utils'
 import { todayIso } from '@/shared/model/dates'
-import { CalendarClock, Pause, Receipt, TimerReset } from 'lucide-react'
+import { CalendarClock, Pause, Play, Receipt, TimerReset } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
-  currentCycle,
+  latestCycle,
   subscriptionState,
 } from '@/features/engagements/model/cycles'
 import type { Engagement } from '@/features/engagements/model/engagement.schema'
@@ -22,6 +22,7 @@ import { useMoneyText } from '@/features/rates/ui/money'
 import {
   useExtendGrace,
   useRenewCycle,
+  useResumeCycle,
   useStopCycle,
 } from '../api/use-engagement-actions'
 
@@ -37,13 +38,19 @@ export function CyclePanel({ engagement }: { engagement: Engagement }) {
   const renew = useRenewCycle()
   const extendGrace = useExtendGrace()
   const stop = useStopCycle()
+  const resume = useResumeCycle()
   const invoiceToast = useInvoiceToast()
-  const isBusy = renew.isPending || extendGrace.isPending || stop.isPending
+  const isBusy =
+    renew.isPending ||
+    extendGrace.isPending ||
+    stop.isPending ||
+    resume.isPending
   // Renew issues an invoice and pause stops the plan: both ask first.
   const [asking, setAsking] = useState<'renew' | 'pause' | null>(null)
   const done = () => setAsking(null)
 
-  const cycle = currentCycle(db, engagement.id)
+  // A stopped subscription keeps showing its last cycle, marked as stopped.
+  const cycle = latestCycle(db, engagement.id)
   if (!cycle) return null
   const { state, daysLeft } = subscriptionState(
     cycle,
@@ -116,6 +123,23 @@ export function CyclePanel({ engagement }: { engagement: Engagement }) {
             {moneyText(engagement.amount, engagement.currency)} ·{' '}
             {t('engagements.pauseHint')}
           </p>
+        </div>
+      )}
+      {engagement.status === 'paused' && (
+        <div className='flex flex-wrap items-center justify-between gap-3 rounded-lg bg-muted/60 p-3'>
+          <p className='text-sm text-muted-foreground'>
+            {t('engagements.pausedNote')}
+          </p>
+          <Button
+            disabled={isBusy}
+            onClick={() =>
+              resume.mutate(engagement.id, {
+                onSuccess: () => toast.success(t('engagements.resumed')),
+              })
+            }
+          >
+            <Play /> {t('engagements.resume')}
+          </Button>
         </div>
       )}
       <ConfirmDialog

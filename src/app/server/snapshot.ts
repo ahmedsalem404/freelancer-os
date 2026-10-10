@@ -10,7 +10,6 @@ import { loadPortal } from '@/features/portal/server'
 import { loadRates } from '@/features/rates/server'
 import { loadReminders } from '@/features/reminders/server'
 import { loadSettings } from '@/features/settings/server'
-import { loadTime } from '@/features/time/server'
 import { loadToday } from '@/features/today/server'
 
 /**
@@ -26,7 +25,6 @@ export function loadSnapshot(db: Database) {
     ...loadEngagements(tx),
     ...loadInvoices(tx),
     ...loadFinance(tx),
-    ...loadTime(tx),
     ...loadToday(tx),
     ...loadCalendar(tx),
     ...loadFiles(tx),

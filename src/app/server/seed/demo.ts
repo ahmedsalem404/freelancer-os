@@ -37,7 +37,6 @@ import {
 } from '@/features/settings/server/identities.table'
 import { settings } from '@/features/settings/server/settings.table'
 import { teamMembers } from '@/features/settings/server/team.table'
-import { timeEntries } from '@/features/time/server/time.table'
 import { dailyReflections, tasks } from '@/features/today/server/today.table'
 import { dailyRates, seedDb } from './demo-data'
 
@@ -168,7 +167,6 @@ export function seedDemo(db: Database) {
       }))
     )
     insertAll(tx, expenses, demo.expenses)
-    insertAll(tx, timeEntries, demo.timeEntries)
     insertAll(tx, importantDates, demo.importantDates)
     insertAll(
       tx,

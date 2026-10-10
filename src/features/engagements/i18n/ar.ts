@@ -1,14 +1,18 @@
 /** Arabic strings owned by `engagements` (keys stay global: `t('types.…')`). */
 export const engagementsAr = {
   types: {
-    project: 'مشروع',
-    retainer: 'ريتينر',
+    project: 'مشروع / ميزة',
     subscription: 'اشتراك',
+  },
+  channels: {
+    cash: 'نقداً',
+    kuraimi: 'تحويل — الكريمي',
+    qutaibi: 'تحويل — القطيبي',
+    aden: 'تحويل — بنك عدن',
+    unified: 'تحويل — الشبكة الموحدة',
   },
   units: {
     revisions: 'مراجعات',
-    hours: 'ساعات',
-    tickets: 'تذاكر',
     days: 'أيام',
   },
   status: {
@@ -33,9 +37,6 @@ export const engagementsAr = {
     billRound: 'فوتر المراجعة الإضافية',
     scopeBanner: 'تتابع {{tracked}} مخرجات والمتفق عليه {{agreed}}',
     billScope: 'وسّع النطاق وفوتر',
-    retainerOver:
-      'استهلكت {{used}} ساعة من {{included}} — {{over}} ساعة خارج الباقة',
-    billHours: 'فوتر الساعات الإضافية ({{amount}})',
     invoiceCreated: 'أُنشئت الفاتورة {{number}}',
   },
   subState: {
@@ -49,13 +50,16 @@ export const engagementsAr = {
   },
   engagements: {
     title: 'الاتفاقات',
-    subtitle: 'كل مشروع وريتينر واشتراك في مكان واحد، ولكل واحد حدّه.',
+    subtitle: 'كل مشروع واشتراك في مكان واحد، ولكل واحد حدّه.',
     add: 'اتفاق جديد',
     usage: 'الاستهلاك',
     nextAction: 'الخطوة التالية',
     edit: 'تعديل',
     form: {
-      hint: 'العملة وهوية الفوترة تؤخذ من العميل.',
+      hint: 'تؤخذ هوية الفوترة من العميل. العملة افتراضياً عملة العميل، وتقدر تغيرها لهذا الاتفاق.',
+      currency: 'عملة الاتفاق',
+      paymentChannel: 'طريقة الدفع المتفق عليها',
+      noChannel: 'غير محددة',
       pickClient: 'اختر العميل',
       title: 'عنوان الاتفاق',
       type: 'نوع الاتفاق',
@@ -63,7 +67,6 @@ export const engagementsAr = {
       monthly: 'شهري',
       yearly: 'سنوي',
       amount: 'المبلغ',
-      hours: 'الساعات المشمولة في الدورة',
       startOn: 'تاريخ البدء',
       submit: 'افتح الاتفاق',
       opened: 'تم فتح الاتفاق',
@@ -81,10 +84,8 @@ export const engagementsAr = {
     tabs: {
       work: 'المخرجات والمراحل',
       money: 'المالية',
-      time: 'الوقت',
       files: 'المرفقات',
       cycle: 'دورة الاشتراك',
-      usage: 'استهلاك الباقة',
     },
     stages: 'المراحل',
     deliverables: 'المخرجات',
@@ -108,9 +109,6 @@ export const engagementsAr = {
     collected: 'المحصّل',
     invoiced: 'المفوتر',
     newInvoice: 'فاتورة جديدة',
-    logHours: 'سجّل ساعات',
-    hoursPlaceholder: 'على ماذا عملت؟',
-    hoursLogged: 'سُجّلت {{hours}} ساعة',
     overagePrice: 'سعر الوحدة الإضافية',
     attachments: 'المرفقات',
     attachmentsHint: 'العقود ولقطات اتفاق الواتساب — للمرجعية فقط',
@@ -127,6 +125,10 @@ export const engagementsAr = {
       'الإيقاف الفعلي للخدمة يتم يدوياً عندك — النظام يحفظ القرار ويذكّرك.',
     renewed: 'صدرت فاتورة التجديد {{number}}',
     paused: 'أُوقف الاشتراك',
+    pausedNote:
+      'الاشتراك موقوف: بياناته وفواتيره باقية. تقدر تستأنفه متى ما رجع العميل.',
+    resume: 'استأنف الاشتراك',
+    resumed: 'استؤنف الاشتراك — فُتحت دورة جديدة من اليوم',
     graceExtended: 'مُدّدت المهلة',
     clientLink: 'رابط العميل',
     clientLinkHint:

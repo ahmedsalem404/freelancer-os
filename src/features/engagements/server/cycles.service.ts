@@ -2,7 +2,7 @@ import { newId } from '@/shared/db/new-id'
 import { DomainError, required } from '@/shared/http/errors'
 import { addMonthsIso } from '@/shared/model/dates'
 import type { Ctx } from '@/shared/server/context'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { issueInvoice } from '@/features/invoices/server'
 import { settings } from '@/features/settings/server'
 import type { ExtendGraceInput } from '../model/engagement.input'
@@ -73,7 +73,6 @@ export function renewCycle(ctx: Ctx, engagementId: string) {
       startsOn: cycle.endsOn,
       endsOn: addMonthsIso(cycle.endsOn, PERIOD_MONTHS[e.cyclePeriod]),
       amount: e.amount,
-      includedUnits: e.type === 'retainer' ? e.allowanceIncluded : null,
       graceDays: e.graceDays ?? setup.graceDays,
     })
     .run()
@@ -137,4 +136,49 @@ export function stopCycle(ctx: Ctx, engagementId: string) {
     .where(eq(engagements.id, engagementId))
     .run()
   return { status: 'paused' as const }
+}
+
+/** Resume a stopped subscription: active again, with a new cycle from today. */
+export function resumeCycle(ctx: Ctx, engagementId: string) {
+  const e = findEngagement(ctx, engagementId)
+  if (e.status !== 'paused' || !e.cyclePeriod) {
+    throw new DomainError(
+      'not_paused',
+      'Only a stopped subscription resumes',
+      409
+    )
+  }
+  const setup = required(
+    ctx.db
+      .select({ graceDays: settings.defaultGraceDays })
+      .from(settings)
+      .get(),
+    'settings',
+    '1'
+  )
+  const last = ctx.db
+    .select({ seq: engagementCycles.seq })
+    .from(engagementCycles)
+    .where(eq(engagementCycles.engagementId, engagementId))
+    .orderBy(desc(engagementCycles.seq))
+    .get()
+  ctx.db
+    .insert(engagementCycles)
+    .values({
+      id: newId('cycle'),
+      engagementId,
+      seq: (last?.seq ?? 0) + 1,
+      startsOn: ctx.today,
+      endsOn: addMonthsIso(ctx.today, PERIOD_MONTHS[e.cyclePeriod]),
+      amount: e.amount,
+      includedUnits: null,
+      graceDays: e.graceDays ?? setup.graceDays,
+    })
+    .run()
+  ctx.db
+    .update(engagements)
+    .set({ status: 'active' })
+    .where(eq(engagements.id, engagementId))
+    .run()
+  return { status: 'active' as const }
 }
