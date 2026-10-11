@@ -27,6 +27,7 @@ import { TypeBadge } from '@/features/engagements/ui/badges'
 import { InvoiceTable } from '@/features/invoices/ui/invoice-table'
 import { BaseMoney } from '@/features/rates/ui/money'
 import { ClientFormDialog } from './ui/client-form-dialog'
+import { ClientInfoPanel } from './ui/client-info-panel'
 import { VaultPanel } from './ui/vault-panel'
 
 export function ClientDetail({ id }: { id: string }) {
@@ -39,7 +40,7 @@ export function ClientDetail({ id }: { id: string }) {
 }
 
 function ClientView({ client }: { client: Client }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const fmt = useDateFormat()
   const db = useDb()
   const now = todayIso()
@@ -47,10 +48,6 @@ function ClientView({ client }: { client: Client }) {
   const engagements = db.engagements.filter((e) => e.clientId === client.id)
   const invoices = db.invoices.filter((i) => i.clientId === client.id)
   const outstanding = clientOutstandingBase(db, client.id, now)
-  const localTime = new Intl.DateTimeFormat(
-    i18n.language === 'en' ? 'en-GB' : 'ar-SA-u-nu-latn',
-    { hour: '2-digit', minute: '2-digit', timeZone: client.timezone }
-  ).format(new Date())
   const [isEditing, setIsEditing] = useState(false)
   const navigate = useNavigate()
   const lifecycle = useLifecycle('clients', client.id, {
@@ -154,49 +151,10 @@ function ClientView({ client }: { client: Client }) {
         </div>
 
         <div className='grid content-start gap-4'>
-          <Panel bodyClassName='grid gap-3 text-sm'>
-            <Row
-              label='WhatsApp'
-              value={
-                client.whatsapp && (
-                  <span className='num'>+{client.whatsapp}</span>
-                )
-              }
-            />
-            {client.email && (
-              <Row
-                label={t('clients.form.email')}
-                value={<span dir='ltr'>{client.email}</span>}
-              />
-            )}
-            <Row label={t('clients.city')} value={client.city} />
-            <Row
-              label={t('clients.localTime')}
-              value={<span className='num'>{localTime}</span>}
-            />
-            <Row
-              label={t('clients.currency')}
-              value={<span className='num'>{client.currency}</span>}
-            />
-            <Row label={t('clients.identity')} value={identity?.name} />
-            {client.notes && (
-              <p className='border-t pt-3 whitespace-pre-line text-muted-foreground'>
-                {client.notes}
-              </p>
-            )}
-          </Panel>
+          <ClientInfoPanel client={client} identityName={identity?.name} />
           <VaultPanel clientId={client.id} />
         </div>
       </div>
     </PageShell>
-  )
-}
-
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className='flex items-center justify-between gap-3'>
-      <span className='text-muted-foreground'>{label}</span>
-      <span className='font-medium'>{value}</span>
-    </div>
   )
 }

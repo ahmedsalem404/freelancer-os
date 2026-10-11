@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useDb } from '@/app/client/snapshot-query'
 import { useDateFormat } from '@/shared/lib/dates'
 import { cn } from '@/shared/lib/utils'
-import { Check, MessageSquarePlus, Receipt } from 'lucide-react'
+import { Check, MessageSquarePlus } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -23,6 +23,8 @@ import {
   useBillOverageRounds,
 } from '../api/use-deliverable-actions'
 import { FeedbackForm } from './feedback-form'
+import { OverageBanner } from './overage-banner'
+import { RoundList } from './round-list'
 
 type Props = { deliverable: Deliverable; engagement: Engagement }
 
@@ -131,46 +133,14 @@ export function DeliverableCard({ deliverable, engagement }: Props) {
         }}
       />
 
-      {rounds.length > 0 && (
-        <ol className='grid gap-1.5 border-s-2 ps-3'>
-          {rounds.map((r) => (
-            <li key={r.id} className='text-sm'>
-              <span
-                className={cn(
-                  'me-2 text-xs font-medium',
-                  r.roundNo > deliverable.revisionLimit
-                    ? 'text-billable-foreground dark:text-billable'
-                    : 'text-muted-foreground'
-                )}
-              >
-                {t('engagements.round', { n: r.roundNo })}
-                {r.invoiceItemId && ` · ${t('engagements.billed')}`}
-              </span>
-              {r.note}
-            </li>
-          ))}
-        </ol>
-      )}
+      <RoundList rounds={rounds} deliverable={deliverable} />
 
-      {guard.unbilledOver > 0 && (
-        <div className='flex flex-wrap items-center justify-between gap-2 rounded-lg bg-billable-soft p-3 text-sm'>
-          <span className='text-billable-foreground dark:text-billable'>
-            {t('meter.overage', { count: guard.unbilledOver })}
-          </span>
-          <Button
-            size='sm'
-            onClick={billRounds}
-            disabled={billOverageRounds.isPending}
-            className='bg-billable text-[#241a00] hover:bg-billable/90'
-          >
-            <Receipt /> {t('guard.billRound')} ·{' '}
-            {moneyText(
-              guard.unbilledOver * engagement.overageUnitPrice,
-              engagement.currency
-            )}
-          </Button>
-        </div>
-      )}
+      <OverageBanner
+        unbilled={guard.unbilledOver}
+        engagement={engagement}
+        isPending={billOverageRounds.isPending}
+        onBill={billRounds}
+      />
 
       <AnimatePresence initial={false} mode='wait'>
         {isLogging ? (

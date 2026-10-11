@@ -1,6 +1,6 @@
 import { Outlet } from '@tanstack/react-router'
 import { AppSidebar } from '@/app/client/layout/app-sidebar'
-import { SkipToMain } from '@/shared/components/skip-to-main'
+import { SkipToMain } from '@/app/client/layout/skip-to-main'
 import { LayoutProvider } from '@/shared/context/layout-provider'
 import { SearchProvider } from '@/shared/context/search-provider'
 import { getCookie } from '@/shared/lib/cookies'

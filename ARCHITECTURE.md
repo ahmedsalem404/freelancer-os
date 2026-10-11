@@ -45,7 +45,7 @@ freelancer-os/
    ├─ routes/                 ← TanStack file routes: thin, import a feature page
    ├─ app/                    ← composition root: wires features, owns no business rules
    │  ├─ client/              ← snapshot query + schema, useAction, ui prefs, i18n composition
-   │  │  └─ layout/           ← app chrome: page shell, header, sidebar, command menu
+   │  │  └─ layout/           ← app chrome: page shell, header, sidebar, command menu, search box, skip link, route progress bar
    │  └─ server/              ← Node entry, Hono app, per-request context, snapshot, seed
    │     └─ api/              ← API integration tests (in-memory SQLite)
    ├─ features/
@@ -197,6 +197,7 @@ feature ui ─ api hook ── fetch /api/* ─▶ app/server/app.ts
 | 2026-10-06 | An engagement has its own **currency** (default: the client's) and an agreed **payment channel** (`cash`, `kuraimi`, `qutaibi`, `aden`, `unified`; nullable column, validated by the API, no CHECK). A manual invoice for an engagement uses the engagement's currency. The channel is printed on the invoice and put first in the WhatsApp payment lines. The client's currency lock (2026-09-27) is unchanged; `PaymentMethodKind` (bank / kuraimi / usdt / cash) is unchanged | owner request |
 | 2026-10-06 | A manual invoice is **previewed before it is issued** (same `InvoiceSheet` the saved invoice uses). Issued from an engagement, a **PDF copy is saved in its files** (made in the browser with html2canvas-pro + jsPDF, uploaded as kind `invoice` with `invoiceId`; migration `0007` rebuilds the leaf table `attachments`) and the engagement's files tab lists its invoices as links. A "Save PDF" button covers the rest; the invoice page has a Back button | owner request |
 | 2026-10-06 | Leads can be added, edited and deleted (`POST /leads`, `PUT`/`DELETE /leads/:id`); a won lead is a client and is edited there | leads only came from seed data before |
+| 2026-10-11 | Architecture audit: `navigation-progress`, `search` and `skip-to-main` moved from `shared/components` to `app/client/layout` (only the app shell used them; `shared/` is for code used by ≥ 3 features). `archive-actions` (clients, engagements) and `password-input` (auth, clients) stay in `shared/` as a known exception: each is used by two features, and a feature may not import another feature's `ui/`. Files at 200+ lines were split (invoice detail, lead board, deliverable card, lead / subscription dialogs, client detail) into one component or hook per file; behaviour unchanged | owner request: keep the code on the file-size and layering rules |
 | 2026-09-25 | Every API response uses `{ ok, data }` / `{ ok, error: { code, message } }` (`shared/http/envelope.ts`) | one envelope for all features |
 
 ## 6. Delivery phases & status

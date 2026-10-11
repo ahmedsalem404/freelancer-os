@@ -1,6 +1,6 @@
 import { Header } from '@/app/client/layout/header'
 import { useUiPrefs } from '@/app/client/ui-prefs'
-import { Search } from '@/shared/components/search'
+import { Search } from '@/app/client/layout/search'
 import { useLocale } from '@/shared/context/direction-provider'
 import { useTheme } from '@/shared/context/theme-provider'
 import { cn } from '@/shared/lib/utils'

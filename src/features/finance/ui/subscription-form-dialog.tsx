@@ -1,12 +1,7 @@
 import { useState } from 'react'
-import { ChoiceRow } from '@/shared/components/choice-row'
 import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { PendingButton } from '@/shared/components/pending-button'
-import { TextField } from '@/shared/components/text-field'
-import { useFieldErrors } from '@/shared/lib/use-field-errors'
-import { addDaysIso, todayIso } from '@/shared/model/dates'
-import { CURRENCIES, type Currency } from '@/shared/money/currency'
-import { toMajor, toMinor } from '@/shared/money/money'
+import { toMinor } from '@/shared/money/money'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -22,13 +17,13 @@ import {
   useDeleteOwnSubscription,
   useSaveOwnSubscription,
 } from '../api/use-own-subscriptions'
-import { SUBSCRIPTION_PERIODS, type SubscriptionPeriod } from '../model/enums'
 import type { OwnSubscription } from '../model/finance.schema'
 import { ownSubscriptionInput } from '../model/own-subscription.input'
-
-/** A new subscription renews in a month by default. */
-const DEFAULT_RENEWAL_DAYS = 30
-const DEFAULT_REMIND_DAYS = '3'
+import { SubscriptionFormFields } from './subscription-form-fields'
+import {
+  initialSubscriptionForm,
+  type SetSubscriptionField,
+} from './subscription-form-state'
 
 type Props = {
   /** The subscription to edit; omitted to add a new one. */
@@ -42,34 +37,23 @@ type Props = {
  */
 export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
   const { t } = useTranslation()
-  const { positive } = useFieldErrors()
   const save = useSaveOwnSubscription()
   const remove = useDeleteOwnSubscription()
-  const [name, setName] = useState(s?.name ?? '')
-  const [vendor, setVendor] = useState(s?.vendor ?? '')
-  const [amount, setAmount] = useState(s ? String(toMajor(s.amount)) : '')
-  const [currency, setCurrency] = useState<Currency>(s?.currency ?? 'USD')
-  const [period, setPeriod] = useState<SubscriptionPeriod>(
-    s?.period ?? 'monthly'
-  )
-  const [nextRenewalOn, setNextRenewalOn] = useState(
-    s?.nextRenewalOn ?? addDaysIso(todayIso(), DEFAULT_RENEWAL_DAYS)
-  )
-  const [remindDays, setRemindDays] = useState(
-    s ? String(s.remindDaysBefore) : DEFAULT_REMIND_DAYS
-  )
+  const [form, setForm] = useState(() => initialSubscriptionForm(s))
+  const set: SetSubscriptionField = (key) => (value) =>
+    setForm((prev) => ({ ...prev, [key]: value }))
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const body = {
-    name,
-    vendor,
-    amountMinor: toMinor(Number(amount)),
-    currency,
-    period,
-    nextRenewalOn,
-    remindDaysBefore: Number(remindDays),
+    name: form.name,
+    vendor: form.vendor,
+    amountMinor: toMinor(Number(form.amount)),
+    currency: form.currency,
+    period: form.period,
+    nextRenewalOn: form.nextRenewalOn,
+    remindDaysBefore: Number(form.remindDays),
   }
   const isValid =
-    amount.trim() !== '' && ownSubscriptionInput.safeParse(body).success
+    form.amount.trim() !== '' && ownSubscriptionInput.safeParse(body).success
   const isBusy = save.isPending || remove.isPending
 
   const submit = (event: React.FormEvent) => {
@@ -105,61 +89,7 @@ export function SubscriptionFormDialog({ subscription: s, onClose }: Props) {
             </DialogTitle>
             <DialogDescription>{t('finance.subForm.hint')}</DialogDescription>
           </DialogHeader>
-          <TextField
-            id='sub-name'
-            label={t('finance.subForm.name')}
-            value={name}
-            onChange={setName}
-          />
-          <TextField
-            id='sub-vendor'
-            label={t('finance.subForm.vendor')}
-            value={vendor}
-            onChange={setVendor}
-          />
-          <ChoiceRow
-            label={t('finance.subForm.period')}
-            options={SUBSCRIPTION_PERIODS}
-            value={period}
-            onChange={setPeriod}
-            labelOf={(v) => t(`finance.subForm.${v}`)}
-          />
-          <div className='grid grid-cols-2 gap-3'>
-            <TextField
-              id='sub-amount'
-              label={t('finance.subForm.amount')}
-              dir='ltr'
-              inputMode='decimal'
-              className='num'
-              value={amount}
-              onChange={setAmount}
-              error={positive(amount)}
-            />
-            <TextField
-              id='sub-renewal'
-              label={t('finance.subForm.nextRenewalOn')}
-              type='date'
-              dir='ltr'
-              value={nextRenewalOn}
-              onChange={setNextRenewalOn}
-            />
-          </div>
-          <ChoiceRow
-            label={t('finance.subForm.currency')}
-            options={CURRENCIES}
-            value={currency}
-            onChange={setCurrency}
-            labelOf={(c) => c}
-          />
-          <TextField
-            id='sub-remind'
-            label={t('finance.subForm.remindDays')}
-            dir='ltr'
-            inputMode='numeric'
-            className='num'
-            value={remindDays}
-            onChange={setRemindDays}
-          />
+          <SubscriptionFormFields form={form} set={set} />
           <DialogFooter className='sm:justify-between'>
             {s ? (
               <Button
